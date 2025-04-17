@@ -1,0 +1,17 @@
+{
+  "name": "data-server",
+  "version": "1.0.0",
+  "description": "data server for axios calls connected to mongodb for Nerdipedia project",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "run": "node app.js"
+  },
+  "author": "Mark Abelo, Michael Moonan, Kendell Muldrow, Kush Parmar",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0"
+  }
+}
