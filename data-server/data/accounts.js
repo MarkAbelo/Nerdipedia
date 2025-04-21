@@ -1,4 +1,7 @@
 import { accounts } from "../config/mongoCollections";
+import { ObjectId } from "mongodb";
+import validationFunctions from "../validation/validation";
+import idValidationFunctions from "../validation/id_validation";
 
 const accountsDataFunctions = {
     async createAccount(username, passwordHash, email, profilePic) {
@@ -14,8 +17,42 @@ const accountsDataFunctions = {
             likedPosts: Array<string> (empty)
             dislikedPosts: Array<string> (empty)
         */
+        // needs firebase auth integration
+        return 'TODO';
+    },
 
-        
+    async addPostToAccount(accountID, postID) {
+        // adds the postID to the account's posts list
+        accountID = idValidationFunctions.validObjectId(accountID, 'accountID');
+        postID = idValidationFunctions.validObjectId(postID, 'postID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        const updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$push :{posts: postID}})
+        if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
+            throw 'Failed to add post to account info';
+        }
+        return true;
+    },
+
+    async removePostFromAccount(accountID, postID) {
+        // removes the postID from the account's posts list
+        accountID = idValidationFunctions.validObjectId(accountID, 'accountID');
+        postID = idValidationFunctions.validObjectId(postID, 'postID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        const updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID}})
+        if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
+            throw 'Failed to remove post from account info';
+        }
+        return true;
     }
 
 }
