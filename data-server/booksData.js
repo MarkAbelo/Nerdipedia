@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection, posts as postCollection } from './config/mongoCollections.js'
 import axios from "axios";
 
-const booksData={
+const booksDataFunctions={
 
     getId (workKey){
         if (!workKey) throw ('No key provided');
@@ -158,4 +158,4 @@ const booksData={
     }
 
 }
-export default booksData
+export default booksDataFunctions;
