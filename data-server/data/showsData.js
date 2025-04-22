@@ -1,4 +1,4 @@
-import validationFunctions from "../validation/validation";
+import idValidationFunctions from "../validation/id_validation";
 import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections";
 import axios from "axios";
@@ -14,7 +14,7 @@ const showsDataFunctions = {
         */
         if (!id) throw ('Id must be provided!');
         //show ids are numbers like: 139 for the show "Girls"
-        id = await validationFunctions.validPositiveNumber(id, "Show ID");
+        id = await idValidationFunctions.validPositiveNumber(id, "Show ID");
 
         let showInfo; 
         try {
@@ -64,7 +64,7 @@ const showsDataFunctions = {
         //paramter checking
         if (!searchTerm) throw ('Search term must be provided');
         if (typeof pageNum !== 'number') throw ('Page must be a number'); 
-        searchTerm = await validationFunctions.validString(searchTerm, "show");
+        searchTerm = await idValidationFunctions.validString(searchTerm, "show");
         //encodes the query 
         const encodedSearchTerm = encodeURIComponent(searchTerm);
         //sets the start-end indexes for pagination
@@ -102,7 +102,7 @@ const showsDataFunctions = {
     async getShowCard(id) {
         //given a show id, returns the title and image of the show 
         if (!id) throw ('Id must be provided!');
-        id = await validationFunctions.validPositiveNumber(id, "show ID");
+        id = await idValidationFunctions.validPositiveNumber(id, "show ID");
 
         let showInfo;
         try {
