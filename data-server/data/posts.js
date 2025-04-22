@@ -185,8 +185,7 @@ const postsDataFunctions = {
         n = await validationFunctions.validPostitiveNumber(n, 'Number of Posts');
         let matchCase = {};
         if (section) {
-            section = await validationFunctions.validSection(section);
-            matchCase.section = section;
+            matchCase.section = await validationFunctions.validSection(section);
         }
 
         const postCol = await posts();
@@ -197,6 +196,7 @@ const postsDataFunctions = {
             { $limit: n },
             { $project: {_id: 1}}
         ]).toArray();
+        if (!postsList) throw 'Could not get popular posts';
 
         postsList = postsList.map((post) => post._id);
         postsList = await Promise.all(postsList.map(this.getPostCard));
@@ -210,13 +210,13 @@ const postsDataFunctions = {
         n = await validationFunctions.validPostitiveNumber(n, 'Number of Posts');
         let matchCase = {};
         if (section) {
-            section = await validationFunctions.validSection(section);
-            matchCase.section = section;
+            matchCase.section = await validationFunctions.validSection(section);
         }
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
         let postsList = await postCol.find(matchCase, {projection: {_id: 1, timeStamp: 1}}).toArray();
+        if (!postsList) throw 'Could not get recent posts';
 
         postsList.sort((p1, p2) => new Date(p2.timeStamp) - new Date(p1.timeStamp));
         postsList = postsList.map((post) => post._id).slice(0, n);
@@ -224,11 +224,37 @@ const postsDataFunctions = {
         return postsList;
     },
 
-    async searchPostsByTitle(section){
+    async searchPostsByTitle(searchTerm, section){
         // returns posts
         // if section is given, only considers those with that section
         // when section is null/undefined, returns most popular posts of any section
-        if (section) section = await validationFunctions.validSection(section);
+        searchTerm = validationFunctions.validString(searchTerm, 'Search term');
+        let matchCase = {};
+        if (section) {
+            matchCase.section = await validationFunctions.validSection(section);
+        }
+        
+        const postCol = await posts();
+        if(!postCol) throw 'Failed to connect to post database';
+        matchCase.title = {$regex: searchTerm, $options: "i"};
+        let postsList = await postCol.find(matchCase, {projection: {_id: 1}}).toArray();
+        if (!postsList) throw 'Could not search posts';
+        if (postsList.length === 0) throw 'No posts found';
+
+        postsList = postsList.map((post) => post._id);
+        postsList = await Promise.all(postsList.map(this.getPostCard));
+        return postsList;
+    },
+    
+    async getPostsByAuthor(accountID){
+        accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
+
+        const postCol = await posts();
+        if(!postCol) throw 'Failed to connect to post database';
+        const postsList = await postCol.find({posterID: accountID}, {projection: {_id: 1, title: 1, section: 1}}).toArray();
+        if (!postsList) throw 'Could not get posts by author';
+        if (postsList.length === 0) throw 'No posts found';
+        return postsList;
     }
 
 }
