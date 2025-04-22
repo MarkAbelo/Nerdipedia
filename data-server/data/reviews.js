@@ -189,7 +189,7 @@ const reviewsDataFunctions = {
         // In case there are any bad movie cards, filter them out
         return movieCards.filter(card => card !== null);
     },
-    async mostPopularShows(){
+    async mostPopularShows(n=20){
         const reviewsCollection = await reviews();
         const ratedShows  = await reviewsCollection().aggregate([
             {
@@ -233,7 +233,7 @@ const reviewsDataFunctions = {
         // In case there are any bad show cards, filter them out
         return showCards.filter(card => card !== null);
     },
-    async mostPopularBooks(){
+    async mostPopularBooks(n=20){
         const reviewsCollection = await reviews();
         const ratedBooks  = await reviewsCollection().aggregate([
             {
