@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
+import validationFunctions from "./validation";
 
-const validationFunctions= {
+const idValidationFunctions = {
     async validObjectId(id,type){
         if(!id) throw (`No id provided for ${type}`);
         if(typeof id!== 'string') throw (`Id for ${type} must be a string`);
@@ -23,4 +24,4 @@ const validationFunctions= {
         return number;
     }
 }
-export default validationFunctions
+export default idValidationFunctions;

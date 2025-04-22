@@ -1,4 +1,4 @@
-import validationFunctions from "../validation.js";
+import validationFunctions from "../validation/validation.js";
 import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from '../config/mongoCollections.js'
 import axios from "axios";
@@ -119,16 +119,6 @@ const booksDataFunctions={
     },
     async recommendBooks(){
 
-    },
-    async popularPosts(){
-
-    },
-    async getRecentPosts(){
-
-    },
-    async searchPosts(){
-        
     }
-
 }
 export default booksDataFunctions;
