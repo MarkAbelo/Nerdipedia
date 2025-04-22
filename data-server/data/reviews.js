@@ -1,5 +1,8 @@
 import { reviews, accounts } from "../config/mongoCollections";
 import validationFunctions from "../validation";
+import booksDataFunctions from "../data/booksData.js";
+import moviesDataFunctions from "../data/moviesData.js";
+import showsDataFunctions from "../data/showsData.js";
 const reviewsDataFunctions = {
     async createReview(posterID, body, rating, section, forID){
         if(!posterID) throw (`No User ID found`);
@@ -9,11 +12,9 @@ const reviewsDataFunctions = {
         if(!forID) throw (`No media ID found`);
         posterID= await validationFunctions.validObjectId(posterID, "posterID");
         body= await validationFunctions.validString(body, "body");
-        section= await validationFunctions.validString(section, "section");
-        section= section.toLowerCase();
+        section= await validationFunctions.validSection(reviewObject.section);
         forID= await validationFunctions.validString(forID, "forID");
-        if(typeof rating !== 'number' && rating<1 && rating>10) throw (`Rating must be a number between 1 and 10`);
-        if(section !== 'show' || section !== 'movie' || section !== 'book' || section !== 'd&d') throw (`Section must be one of the following: show, movie, book, d&d`);
+        if(typeof rating !== 'number' && rating<1 || rating>10) throw (`Rating must be a number between 1 and 10`);
         let timeNow = new Date();
         const reviewToAdd={
             posterID: posterID,
@@ -30,39 +31,39 @@ const reviewsDataFunctions = {
         return newId;
     },
 
-    async updateReview(reviewObject){
+    async updateReview(id, reviewObject){
         //check to see if the review object is valid
+        if(!id) throw (`No review ID found`);
+        id= await validationFunctions.validObjectId(id, "reviewID");
+
         if(!reviewObject) throw (`No review object found`);
         if(typeof reviewObject !== 'object') throw (`Review object must be an object`);
         if(Array.isArray(reviewObject)) throw (`Review object must not be an array`);
-        if(!reviewObject._id) throw (`No review ID found`);
-        if(!reviewObject.posterID) throw (`No poster ID found`)
-        if(!reviewObject.forID) throw (`No media ID found`);
-        if(!reviewObject.body) throw (`No review body text found`);
-        if(!reviewObject.rating) throw (`No rating found`);
-        if(!reviewObject.section) throw (`No section found`);
+
+        if(reviewObject.posterID){
+            reviewObject.posterID= await validationFunctions.validObjectId(reviewObject.posterID, "posterID");
+        }
+        if(reviewObject.forID){
+            reviewObject.forID= await validationFunctions.validString(reviewObject.forID, "forID");
+        }
+        if(reviewObject.body){
+            reviewObject.body= await validationFunctions.validString(reviewObject.body, "body");
+        }
+        if(reviewObject.rating){
+            if(typeof reviewObject.rating !== 'number' && reviewObject.rating<1 || reviewObject.rating>10) throw (`Rating must be a number between 1 and 10`);
+        }
+        if(reviewObject.section){
+            reviewObject.section= await validationFunctions.validSection(reviewObject.section);
+        }
         //run validation checks
         //I am not sure if all these fields are required, but I am going to assume they are for now
-        reviewObject._id= await validationFunctions.validObjectId(reviewObject._id, "reviewID");
-        reviewObject.posterID= await validationFunctions.validObjectId(reviewObject.posterID, "posterID");
-        reviewObject.body= await validationFunctions.validString(reviewObject.body, "body");
-        reviewObject.section= await validationFunctions.validString(reviewObject.section, "section");
-        reviewObject.section= reviewObject.section.toLowerCase();
-        reviewObject.forID= await validationFunctions.validString(reviewObject.forID, "forID");
-        if(typeof reviewObject.rating !== 'number' && reviewObject.rating<1 && reviewObject.rating>10) throw (`Rating must be a number between 1 and 10`);
-        if(reviewObject.section !== 'show' || reviewObject.section !== 'movie' || reviewObject.section !== 'book' || reviewObject.section !== 'd&d') throw (`Section must be one of the following: show, movie, book, d&d`);
         //grab the review to update
         let timeNow = new Date();
+        reviewObject.timeStamp= timeNow.toString();
         const reviewsCollection = await reviews();
         const reviewToUpdate = await reviewsCollection.findOneAndUpdate(
             { _id: new ObjectId(reviewObject._id) },
-            { $set: { 
-                body: reviewObject.body,
-                rating: reviewObject.rating,
-                section: reviewObject.section,
-                forID: reviewObject.forID,
-                timeStamp: timeNow
-            } },
+            { $set:reviewObject}, 
             { returnDocument: 'after' }
         );
         if (!reviewToUpdate.modifiedCount ) throw (`Could not update review with id of ${reviewObject._id}`);
@@ -141,7 +142,141 @@ const reviewsDataFunctions = {
             username: accountName
         }));
         return reviewListWithUsernames;
-    }
+    },
+    async mostPopularMovies(n=20){
+        //grab all the reviews for movies
+        
+        const reviewsCollection = await reviews();
+        const ratedMovies  = await reviewsCollection().aggregate([
+            {
+              $match: {
+                section: "movie" // Only include movie
+              }
+            },
+            {
+              $group: {
+                _id: "$forID", // Group by the ID
+                averageRating: { $avg: "$rating" }, // Calculate average rating
+                reviewCount: { $sum: 1 } // Count the number of reviews
+              }
+            },
+            {
+              $sort: {                 
+                averageRating: -1, // Sort by highest average rating
+                reviewCount: -1 // Secondary sort by number of reviews
+                }            
+            },
+            {
+                $limit:n
+            }
+          ]).toArray();
+          const movieCards = await Promise.all(
+            ratedMovies.map(async (movie) => {
+                try {
+                    const movieCard = await moviesDataFunctions.getMovieCard(movie._id);
+                    return {
+                        ...movieCard,
+                        //we can get rid of the forID field i am just keeping it there in case
+                        forID: movie._id,
+                        averageRating: movie.averageRating.toFixed(1), // Round the averageRating to the first decimal
+                        reviewCount: movie.reviewCount
+                    };
+                } catch (e) {
+                    throw (`Failed to fetch movie ${movie._id}:`, e);
+                }
+            })
+        );
+        // In case there are any bad movie cards, filter them out
+        return movieCards.filter(card => card !== null);
+    },
+    async mostPopularShows(){
+        const reviewsCollection = await reviews();
+        const ratedShows  = await reviewsCollection().aggregate([
+            {
+              $match: {
+                section: "show" // Only include movie
+              }
+            },
+            {
+              $group: {
+                _id: "$forID", // Group by the ID
+                averageRating: { $avg: "$rating" }, // Calculate average rating
+                reviewCount: { $sum: 1 } // Count the number of reviews
+              }
+            },
+            {
+              $sort: {                 
+                averageRating: -1, // Sort by highest average rating
+                reviewCount: -1 // Secondary sort by number of reviews
+                }            
+            },
+            {
+                $limit:n
+            }
+          ]).toArray();
+          const showCards = await Promise.all(
+            ratedShows.map(async (show) => {
+                try {
+                    const showCard = await showsDataFunctions.getShowCard(show._id);
+                    return {
+                        ...showCard,
+                        //we can get rid of the forID field i am just keeping it there in case
+                        forID: show._id,
+                        averageRating: show.averageRating.toFixed(1), // Round the averageRating to the first decimal
+                        reviewCount: show.reviewCount
+                    };
+                } catch (e) {
+                    throw(`Failed to fetch show ${show._id}:`, e);
+                }
+            })
+        );
+        // In case there are any bad show cards, filter them out
+        return showCards.filter(card => card !== null);
+    },
+    async mostPopularBooks(){
+        const reviewsCollection = await reviews();
+        const ratedBooks  = await reviewsCollection().aggregate([
+            {
+              $match: {
+                section: "book" // Only include movie
+              }
+            },
+            {
+              $group: {
+                _id: "$forID", // Group by the ID
+                averageRating: { $avg: "$rating" }, // Calculate average rating
+                reviewCount: { $sum: 1 } // Count the number of reviews
+              }
+            },
+            {
+              $sort: {                 
+                averageRating: -1, // Sort by highest average rating
+                reviewCount: -1 // Secondary sort by number of reviews
+                }            
+            },
+            {
+                $limit:n
+            }
+          ]).toArray();
+          const bookCards = await Promise.all(
+            ratedBooks.map(async (book) => {
+                try {
+                    const bookCard = await booksDataFunctions.getBookCard(book._id);
+                    return {
+                        ...bookCard,
+                        //we can get rid of the forID field i am just keeping it there in case
+                        forID: book._id,
+                        averageRating: book.averageRating.toFixed(1), // Round the averageRating to the first decimal
+                        reviewCount: book.reviewCount
+                    };
+                } catch (e) {
+                    throw(`Failed to fetch book ${book._id}:`, e);
+                }
+            })
+        );
+        // In case there are any bad show cards, filter them out
+        return bookCards.filter(card => card !== null);
+    },
 }
 
 export default reviewsDataFunctions;
