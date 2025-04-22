@@ -1,6 +1,6 @@
 import validationFunctions from "./validation.js";
 import { ObjectId } from "mongodb";
-import { reviews as reviewsCollection, accounts as accountsCollection } from './config/mongoCollections.js'
+import { reviews as reviewsCollection, accounts as accountsCollection, posts as postCollection } from './config/mongoCollections.js'
 import axios from "axios";
 
 const booksData={
@@ -114,7 +114,7 @@ const booksData={
             throw (e);
         }
         //-S, -M, -L for image size
-        return {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null }
+        return {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg`:null }
 
     },
     async recommendBooks(){
@@ -123,11 +123,38 @@ const booksData={
     async popularPosts(){
 
     },
-    async getRecentPosts(){
-
+    async getRecentBookPosts(){
+        const posts = await postCollection()
+        //There is no date time stamp so i am just grabbing to newest entries where the section is book
+        const recentBookPosts= await posts
+            .find({section:'book'})
+            .sort({_id:-1})
+            .limit(20)
+            .toArray(); 
+        if (recentBookPosts.length===0){
+            return 'There are no new Book posts'
+        }
+        return recentBookPosts;
     },
-    async searchPosts(){
-        
+    async searchPosts(searchTerm, pageNum=1, limit= 20){
+        //basic params checking
+        if(!searchTerm) throw ('Search Term must be provided');
+        if(typeof pageNum!=='number') throw ('Page must be a number')
+        if(typeof limit!=='number') throw ('Limit must be a number')
+        searchTerm= await validationFunctions.validString(searchTerm,"book");
+        //defines how many many posts to skip
+        const skip = (pageNum - 1) * limit;
+        //grab the posts from the database
+        const posts = await postCollection()
+        const postList = await posts.find({section:'book', title: {$regex: searchTerm, $options: 'i'}})
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        //if there are no posts
+        if(postList.length===0){
+            return 'No posts found!'
+        }
+        return postList;
     }
 
 }
