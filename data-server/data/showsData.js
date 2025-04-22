@@ -1,4 +1,4 @@
-import validationFunctions from "../validation";
+import validationFunctions from "../validation/validation";
 import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections";
 import axios from "axios";
