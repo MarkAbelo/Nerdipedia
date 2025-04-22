@@ -119,16 +119,6 @@ const booksDataFunctions={
     },
     async recommendBooks(){
 
-    },
-    async popularPosts(){
-
-    },
-    async getRecentPosts(){
-
-    },
-    async searchPosts(){
-        
     }
-
 }
 export default booksDataFunctions;
