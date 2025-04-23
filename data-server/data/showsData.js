@@ -1,6 +1,6 @@
-import idValidationFunctions from "../validation/id_validation";
+import idValidationFunctions from "../validation/id_validation.js";
 import { ObjectId } from "mongodb";
-import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections";
+import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections.js";
 import axios from "axios";
 
 //root for TVMaze API: https://www.tvmaze.com/
