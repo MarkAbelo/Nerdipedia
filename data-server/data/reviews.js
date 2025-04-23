@@ -1,5 +1,5 @@
-import { reviews, accounts } from "../config/mongoCollections";
-import validationFunctions from "../validation";
+import { reviews, accounts } from "../config/mongoCollections.js";
+import validationFunctions from "../validation/validation.js";
 import booksDataFunctions from "../data/booksData.js";
 import moviesDataFunctions from "../data/moviesData.js";
 import showsDataFunctions from "../data/showsData.js";
@@ -85,7 +85,7 @@ const reviewsDataFunctions = {
         forID= await validationFunctions.validString(forID, "forID");
         section= await validationFunctions.validString(section, "section");
         section= section.toLowerCase();
-        if(section !== 'show' || section !== 'movie' || section !== 'book' || section !== 'd&d') throw (`Section must be one of the following: show, movie, book, d&d`);
+        if(section !== 'show' && section !== 'movie' && section !== 'book' && section !== 'd&d') throw (`Section must be one of the following: show, movie, book, d&d`); // Michael - fixed logic from || to &&
         //grab the reviews for a particular piece of media
         const reviewsCollection = await reviews();
         const reviewList = await reviewsCollection.find({forID: forID, section: section}).toArray();

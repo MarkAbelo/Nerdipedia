@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import validationFunctions from "./validation";
+import validationFunctions from "./validation.js";
 
 const idValidationFunctions = {
     async validObjectId(id,type){
