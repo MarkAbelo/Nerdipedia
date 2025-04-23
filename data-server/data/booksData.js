@@ -37,7 +37,7 @@ const booksDataFunctions={
             const posterIDs = bookReviewList.map(review => review.posterID);
             const posterObjectIDs = posterIDs.map(id => new ObjectId(id));
             //grab user names 
-            const accounts = await accountsCollection
+            const accounts = await accountsCollection()
             const accountList = await accounts.find({
                 _id: { $in: posterObjectIDs } 
               }, {
