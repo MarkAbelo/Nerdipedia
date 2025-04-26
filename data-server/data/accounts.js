@@ -4,12 +4,22 @@ import validationFunctions from "../validation/validation";
 import idValidationFunctions from "../validation/id_validation";
 
 const accountsDataFunctions = {
-    async getAccount(id){
+    async getAccount(id) {
         id = await idValidationFunctions.validObjectId(id, "Account ID");
 
         const accountCol = await accounts();
         if(!accountCol) throw 'Failed to connect to post database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)});
+        if (!accountFound) throw 'Account not found';
+        return accountFound;
+    },
+
+    async getAccountCard(id) {
+        id = await idValidationFunctions.validObjectId(id, "Account ID");
+
+        const accountCol = await accounts();
+        if(!accountCol) throw 'Failed to connect to post database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, username: 1, profilePic: 1}});
         if (!accountFound) throw 'Account not found';
         return accountFound;
     },
