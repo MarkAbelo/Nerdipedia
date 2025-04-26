@@ -37,14 +37,25 @@ import axios from "axios";
 import { reviews as reviewsCollection, accounts as accountsCollection} from '../config/mongoCollections.js'
 import reviewsDataFunctions from "./reviews.js";
 
-
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
 
 const uri = 'http://www.omdbapi.com/?apikey=3e10e10a&plot=full&type=movie&'
 
 const moviesDataFunctions = {
     async getMovie(id) {
         if (!id) throw "An ID must be supplied!";
-        id = await validationFunctions.validString(id,"movie")
+        id = await validationFunctions.validString(id,"movie");
+
+        // check cache
+        const cacheKey = `movie/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         // Get Movie, handling bad input
         let movieInfo;
         try {
@@ -58,8 +69,12 @@ const moviesDataFunctions = {
         }
         // Get reviews for movie
         const reviews = await reviewsDataFunctions.getAllReviews(id, "movie") // Errors handled by func, returns a string if no reviews
-        movieInfo['movieReview'] = reviews
-        return movieInfo
+        movieInfo['movieReview'] = reviews;
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(movieInfo));
+
+        return movieInfo;
     },
     async searchMovieByTitle(searchTerm, pageNum=1) {
 
@@ -102,6 +117,14 @@ const moviesDataFunctions = {
         if (!id) throw "An ID must be supplied!"
         id = await validationFunctions.validString(id, "movie")
 
+        // check cache
+        const cacheKey = `movie/card/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         let movieInfo;
         try {
             const movieResponse = await axios.get(uri + `i=${id}`)
@@ -118,6 +141,9 @@ const moviesDataFunctions = {
             title: movieInfo.Title,
             image: movieInfo.Poster // Handle "N/A" poster here, or in frontend?
         }
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(movieCard));
 
         return movieCard
     }

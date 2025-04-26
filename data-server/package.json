@@ -10,10 +10,14 @@
   "author": "Mark Abelo, Michael Moonan, Kendell Muldrow, Kush Parmar",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
+    "@maruware/raccoon": "^0.4.2",
     "axios": "^1.8.4",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "firebase": "^11.6.0",
-    "mongodb": "^6.15.0"
+    "mongodb": "^6.15.0",
+    "multer": "^1.4.5-lts.2",
+    "redis": "^4.7.0"
   }
 }

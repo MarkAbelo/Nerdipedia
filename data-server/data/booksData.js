@@ -3,6 +3,10 @@ import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from '../config/mongoCollections.js'
 import axios from "axios";
 
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
+
 const booksDataFunctions={
 
     getId (workKey){
@@ -15,6 +19,15 @@ const booksDataFunctions={
         if(!id) throw('Id must be provided!')
         //the book ids look like this: OL27448W 
         id= await validationFunctions.validString(id,"book");
+
+        // check cache
+        const cacheKey = `book/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         // I might just grab the info i need for the page here ngl.
         let bookInfo;
         try{
@@ -55,6 +68,10 @@ const booksDataFunctions={
         }
         //put the reviews in
         bookInfo['bookReview']=bookReview;
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(bookInfo));
+
         return bookInfo;
     },
     async searchBookByTitle(searchTerm, pageNum=1){
@@ -103,6 +120,15 @@ const booksDataFunctions={
         if(!id) throw('Id must be provided!')
         //the book ids look like this: OL27448W 
         id= await validationFunctions.validString(id,"book");
+
+        // check cache
+        const cacheKey = `book/card/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         // might need to run this function depending how the id is given
         //id = this.getId(book.key)  
         let bookInfo;
@@ -114,10 +140,15 @@ const booksDataFunctions={
             throw (e);
         }
         //-S, -M, -L for image size
-        return {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null }
+        const returnCard = {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(returnInfo));
+
+        return returnCard;
 
     },
-    
+
     async recommendBooks(){
 
     }

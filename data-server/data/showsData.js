@@ -3,6 +3,10 @@ import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections.js";
 import axios from "axios";
 
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
+
 //root for TVMaze API: https://www.tvmaze.com/
 
 
@@ -15,6 +19,14 @@ const showsDataFunctions = {
         if (!id) throw ('Id must be provided!');
         //show ids are numbers like: 139 for the show "Girls"
         id = await idValidationFunctions.validPositiveNumber(id, "Show ID");
+
+        // check cache
+        const cacheKey = `show/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
 
         let showInfo; 
         try {
@@ -54,6 +66,10 @@ const showsDataFunctions = {
         }
         //put reviews in
         showInfo['showReview'] = showReview;
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(showInfo));
+
         return showInfo;
     },
 
@@ -104,6 +120,14 @@ const showsDataFunctions = {
         if (!id) throw ('Id must be provided!');
         id = await idValidationFunctions.validPositiveNumber(id, "show ID");
 
+        // check cache
+        const cacheKey = `show/card/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         let showInfo;
         try {
             const showResponse = await axios.get(`https://www.tvmaze.com/shows/${id}`)
@@ -111,7 +135,12 @@ const showsDataFunctions = {
         } catch(e) {
             throw (e);
         }
-        return {title: showInfo.show.name, image: show.image?.medium || null};
+        const returnCard =  {title: showInfo.show.name, image: show.image?.medium || null};
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(returnInfo));
+
+        return returnCard;
     }
 }
 
