@@ -4,19 +4,52 @@ import validationFunctions from "../validation/validation";
 import idValidationFunctions from "../validation/id_validation";
 import { ObjectId } from "mongodb";
 
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
+import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
+
+const recentPostsAllCacheKey = 'recentPostCardsAll';
+const recentPostsSectionCacheKeys = {
+    'show': 'recentPostCardsBooks',
+    'book': 'recentPostCardsShows',
+    'movie': 'recentPostCardsMovies',
+    'd&d': 'recentPostCardsDnD'
+}
+
 const postsDataFunctions = {
     async getPost(id) {
         id = await idValidationFunctions.validObjectId(id, "Post ID");
+
+        // check cache
+        const cacheKey = `post/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
         const postFound = await postCol.findOne({_id: new ObjectId(id)});
         if (!postFound) throw 'Post not found';
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(postFound));
+
         return postFound;
     },
 
     async getPostCard(id) {
         id = await idValidationFunctions.validObjectId(id, "Post ID");
+
+        // check cache
+        const cacheKey = `post/card/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
@@ -31,6 +64,10 @@ const postsDataFunctions = {
             posterProfilePic: poster.profilePic,
             likes: postFound.likes
         };
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(returnInfo));
+
         return returnInfo;
     },
 
@@ -49,7 +86,7 @@ const postsDataFunctions = {
         posterID = await idValidationFunctions.validObjectId(posterID, "Poster Account ID");
         section = await validationFunctions.validSection(section);
         body = await validationFunctions.validPostBody(body);
-        images = images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL'));
+        images = await Promise.all(images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
@@ -72,6 +109,11 @@ const postsDataFunctions = {
         // add post to poster account's post array
         await accountsDataFunctions.addPostToAccount(posterID, postID)
 
+        // delete related cache entries
+        await redis_client.del(`post/by/${posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[section]);
+
         return postID;
     },
 
@@ -84,6 +126,14 @@ const postsDataFunctions = {
         if (!deletedPost) throw 'Could not delete post';
         // remove post from poster account's post array
         await accountsDataFunctions.removePostFromAccount(deletedPost.posterID, id);
+
+        // delete related cache entries
+        await redis_client.del(`post/${id}`);
+        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/by/${deletedPost.posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[deletedPost.section]);
+
         return true;
     },
 
@@ -93,8 +143,16 @@ const postsDataFunctions = {
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
-        const deletionInfo = await postCol.deleteOne({_id: new ObjectId(id)});
-        if (!deletionInfo || deletionInfo.deletedCount === 0) throw 'Could not delete post';
+        const deletedPost = await postCol.findOneAndDelete({_id: new ObjectId(id)});
+        if (!deletedPost) throw 'Could not delete post';
+
+        // delete related cache entries
+        await redis_client.del(`post/${id}`);
+        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/by/${deletedPost.posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[deletedPost.section]);
+
         return true;
     },
 
@@ -103,16 +161,24 @@ const postsDataFunctions = {
         if (updateObject.title) updateObject.title = await validationFunctions.validString(updateObject.title, "Post title");
         if (updateObject.section) updateObject.section = await validationFunctions.validSection(updateObject.section);
         if (updateObject.body) updateObject.body = await validationFunctions.validPostBody(updateObject.body);
-        if (updateObject.images) updateObject.images = updateObject.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL'));
+        if (updateObject.images) updateObject.images = await Promise.all(updateObject.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
-        await this.getPost(id);
+        const postFound = await this.getPost(id);
 
         let timeNow = new Date();
         updateObject.timeStamp = timeNow.toUTCString();
         const updateInfo = await postCol.updateOne({_id: new ObjectId(id)}, {$set: updateObject});
         if (!updateInfo.acknowledged  || updateInfo.modifiedCount === 0) throw 'Could not update post';
+
+        // delete related cache entries
+        await redis_client.del(`post/${id}`);
+        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/by/${postFound.posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+
         return true;
     },
 
@@ -144,6 +210,14 @@ const postsDataFunctions = {
         }
         // toggle liked status for post
         await accountsDataFunctions.toggleLikedPost(accountID, postID);
+
+        // delete related cache entries
+        await redis_client.del(`post/${id}`);
+        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/by/${postFound.posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+
         return returnStatus;
     },
 
@@ -175,6 +249,14 @@ const postsDataFunctions = {
         }
         // toggle disliked status for post
         await accountsDataFunctions.toggleDislikedPost(accountID, postID);
+
+        // delete related cache entries
+        await redis_client.del(`post/${id}`);
+        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/by/${postFound.posterID}`);
+        await redis_client.del(recentPostsAllCacheKey);
+        await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+
         return returnStatus;
     },
 
@@ -208,9 +290,18 @@ const postsDataFunctions = {
         // if section is given, only considers those with that section
         // when section is null/undefined, returns most popular posts of any section
         n = await validationFunctions.validPostitiveNumber(n, 'Number of Posts');
+        let cacheKey = recentPostsAllCacheKey;
         let matchCase = {};
         if (section) {
             matchCase.section = await validationFunctions.validSection(section);
+            cacheKey = recentPostsSectionCacheKeys[matchCase.section];
+        }
+
+        // check cache
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await getCachedObjectArray(cacheKey);
+            return cacheData;
         }
 
         const postCol = await posts();
@@ -221,6 +312,10 @@ const postsDataFunctions = {
         postsList.sort((p1, p2) => new Date(p2.timeStamp) - new Date(p1.timeStamp));
         postsList = postsList.map((post) => post._id).slice(0, n);
         postsList = await Promise.all(postsList.map(this.getPostCard));
+
+        // cache data
+        await cacheObjectArray(cacheKey, postList);
+
         return postsList;
     },
 
@@ -249,11 +344,23 @@ const postsDataFunctions = {
     async getPostsByAuthor(accountID){
         accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
 
+        // check cache
+        const cacheKey = `post/by/${accountID}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await getCachedObjectArray(cacheKey);
+            return cacheData;
+        }
+
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
         const postsList = await postCol.find({posterID: accountID}, {projection: {_id: 1, title: 1, section: 1}}).toArray();
         if (!postsList) throw 'Could not get posts by author';
         if (postsList.length === 0) throw 'No posts found';
+
+        // cache data
+        await cacheObjectArray(cacheKey, postsList);
+
         return postsList;
     }
 

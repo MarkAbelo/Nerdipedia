@@ -3,24 +3,52 @@ import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation";
 import idValidationFunctions from "../validation/id_validation";
 
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
+
 const accountsDataFunctions = {
     async getAccount(id) {
         id = await idValidationFunctions.validObjectId(id, "Account ID");
+
+        // check cache
+        const cacheKey = `account/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
 
         const accountCol = await accounts();
         if(!accountCol) throw 'Failed to connect to post database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)});
         if (!accountFound) throw 'Account not found';
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(accountFound));
+
         return accountFound;
     },
 
     async getAccountCard(id) {
         id = await idValidationFunctions.validObjectId(id, "Account ID");
 
+        // check cache
+        const cacheKey = `account/card/${id}`;
+        const checkCache = await redis_client.exists(cacheKey);
+        if (checkCache) {
+            const cacheData = await redis_client.get(cacheKey);
+            return JSON.parse(cacheData);
+        }
+
         const accountCol = await accounts();
         if(!accountCol) throw 'Failed to connect to post database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, username: 1, profilePic: 1}});
         if (!accountFound) throw 'Account not found';
+
+        // cache data
+        await redis_client.set(cacheKey, JSON.stringify(accountFound));
+
         return accountFound;
     },
 
@@ -54,6 +82,10 @@ const accountsDataFunctions = {
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
             throw 'Failed to add post to account info';
         }
+
+        // delete related cache entries
+        await redis_client.del(`account/${accountID}`);
+
         return true;
     },
 
@@ -71,6 +103,10 @@ const accountsDataFunctions = {
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
             throw 'Failed to remove post from account info';
         }
+
+        // delete related cache entries
+        await redis_client.del(`account/${accountID}`);
+
         return true;
     },
 
@@ -95,6 +131,10 @@ const accountsDataFunctions = {
         if (!updateInfo || !updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
             throw 'Failed to update liked posts';
         }
+
+        // delete related cache entries
+        await redis_client.del(`account/${accountID}`);
+
         return true;
     },
 
@@ -119,6 +159,10 @@ const accountsDataFunctions = {
         if (!updateInfo || !updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
             throw 'Failed to update disliked posts';
         }
+
+        // delete related cache entries
+        await redis_client.del(`account/${accountID}`);
+
         return true;
     }
 

@@ -34,7 +34,7 @@ const reviewsDataFunctions = {
     async updateReview(id, reviewObject){
         //check to see if the review object is valid
         if(!id) throw (`No review ID found`);
-        id= await validationFunctions.validObjectId(id, "reviewID");
+        id= await validationFunctions.validObjectId(id, "Review ID");
 
         if(!reviewObject) throw (`No review object found`);
         if(typeof reviewObject !== 'object') throw (`Review object must be an object`);
@@ -62,17 +62,17 @@ const reviewsDataFunctions = {
         reviewObject.timeStamp= timeNow.toString();
         const reviewsCollection = await reviews();
         const reviewToUpdate = await reviewsCollection.findOneAndUpdate(
-            { _id: new ObjectId(reviewObject._id) },
+            { _id: new ObjectId(id) },
             { $set:reviewObject}, 
             { returnDocument: 'after' }
         );
-        if (!reviewToUpdate.modifiedCount ) throw (`Could not update review with id of ${reviewObject._id}`);
+        if (!reviewToUpdate.modifiedCount ) throw (`Could not update review with id of ${id}`);
         return true;
     },
     async deleteReview(id){
         //parameter check and delete
         if(!id) throw (`No review ID found`);
-        id= await validationFunctions.validObjectId(id, "reviewID");
+        id= await validationFunctions.validObjectId(id, "Review ID");
         const reviewsCollection = await reviews();
         const deletionInfo = await reviewsCollection.deleteOne({ _id: new ObjectId(id) });
         if (deletionInfo.deletedCount === 0) throw (`Could not delete review with id of ${id}`);
