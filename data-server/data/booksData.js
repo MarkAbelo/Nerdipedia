@@ -117,6 +117,7 @@ const booksDataFunctions={
         return {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null }
 
     },
+    
     async recommendBooks(){
 
     }

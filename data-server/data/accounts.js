@@ -17,7 +17,6 @@ const accountsDataFunctions = {
     async createAccount(username, passwordHash, email, profilePic) {
         /*
             username: string
-            passwordHash: string
             email: string
             profilePic: string (url, optional)
             posts: Array<string> (empty)
