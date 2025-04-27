@@ -4,25 +4,18 @@ import idValidationFunctions from "../validation/id_validation";
 
 const router = Router();
 
-import redis from 'redis';
-const redis_client = redis.createClient();
-await redis_client.connect();
-
-const recentPostsCacheKeys = {
-    'all': 'recentPostCardsAll',
-    'show': 'recentPostCardsBooks',
-    'book': 'recentPostCardsShows',
-    'movie': 'recentPostCardsMovies',
-    'd&d': 'recentPostCardsDnD'
-}
+// create post
+router.route("/data/:id").get(async (req, res) => {
+    let bodyParams = req.body;
+});
 
 // get post page data
-router.route("/:id").get(async (req, res) => {
+router.route("/data/:id").get(async (req, res) => {
     let reqParams = req.params;
     try {
         reqParams.id = idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
     } catch (e) {
-        return res.status(400).json({error: e})
+        return res.status(400).json({error: e});
     }
     try {
         // call data function and cache data
@@ -43,13 +36,13 @@ router.route("/:id").get(async (req, res) => {
         return returnData;
 
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e})
-        else return res.status(500).json({error: e})
+        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        else return res.status(500).json({error: e});
     }
 });
 
 // update post
-router.route("/:id").patch(async (req, res) => {
+router.route("/data/:id").patch(async (req, res) => {
     let reqParams = req.params;
     let bodyParams = req.body;
     let postInfo = {};
@@ -60,15 +53,33 @@ router.route("/:id").patch(async (req, res) => {
         if (bodyParams.body) postInfo['body'] = await validationFunctions.validPostBody(bodyParams.body);
         if (bodyParams.images) postInfo['images'] = bodyParams.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL'));
     } catch (e) {
-        return res.status(400).json({error: e})
+        return res.status(400).json({error: e});
     }
     try {
         const success = await postData.updatePost(reqParams.id, postInfo);
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e})
-        else return res.status(500).json({error: e})
+        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        else return res.status(500).json({error: e});
+    }
+});
+
+// delete post
+router.route("/data/:id").delete(async (req, res) => {
+    let reqParams = req.params;
+    try {
+        reqParams.id = idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        const success = await postData.deletePost(reqParams.id);
+        return res.status(200).json({success: success});
+
+    } catch (e) {
+        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        else return res.status(500).json({error: e});
     }
 });
 
