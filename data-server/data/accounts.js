@@ -1,12 +1,15 @@
-import { accounts } from "../config/mongoCollections";
+import { accounts, posts } from "../config/mongoCollections";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation";
 import idValidationFunctions from "../validation/id_validation";
 import { auth } from "../config/firebase";
+import { admin } from "../config/firebaseAdmin";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import validSections from "../validation/validSections";
 
 import redis from 'redis';
+import postsDataFunctions from "./posts";
+import reviewsDataFunctions from "./reviews";
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -70,7 +73,12 @@ const accountsDataFunctions = {
         // needs firebase auth integration
 
         //validate inputs
-        email = validationFunctions.validEmail;
+        username = validationFunctions.validString(username);
+        email = validationFunctions.validEmail(email);
+        passwordHash = validationFunctions.validPassword(passwordHash);
+        if (profilePic) {
+            profilePic = validationFunctions.validURL(profilePic);
+        }
         
 
         //Make user in the MongoDB
@@ -104,6 +112,64 @@ const accountsDataFunctions = {
             firebaseUid: firebaseUser.uid,
             monogUserId
         };
+    },
+
+    async deleteAccount(accountID) {
+        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        const userEmail = accountFound.email;
+        if (!userEmail) {
+            throw `No email found for account ${accountID}. This is required for acnt creation/deletion`
+        }
+
+        //looping through posts array and deleting them using deletePostUnstable
+        for (const postID of accountFound.posts) {
+            try {
+                await postsDataFunctions.deletePostUnstable(postID);
+            } catch (e) {
+                console.error(`Failed to delete post ${postID}: ${e}`)
+            }
+        }
+
+        //Delete reviews by getting the user's review list, looping through, and using deleteReview
+        try {
+            const userReviews = await reviewsDataFunctions.getReviewsForAUser(accountID);
+
+            if (Array.isArray(userReviews)) {
+                for (const review of userReviews) {
+                    try {
+                        await reviewsDataFunctions.deleteReview(review._id.toString());
+                    } catch (e) {
+                        console.error(`Failed to delete review ${review._id}: ${e}`);
+                    }
+                }
+            }
+        } catch(e) {
+            console.error(`Failed to get/delete user reviews for ${accountID}: ${e}`);
+        }
+
+        //Delete from firebase
+        if (userEmail) {
+            try {
+                const user = await admin.auth().getUserByEmail(userEmail);
+                await admin.auth().deleteUser(user.uid);
+            } catch(e) {
+                console.error(`Failed to delete Firebase user with email ${userEmail}:`, e)
+            }
+        }
+
+        //delete the account
+        const deleteData = await accountCol.deleteOne({_id: new ObjectId(accountID) });
+        if (!deleteData.acknowledged || deleteData.deletedCount === 0) {
+            throw 'Failed to delete account';
+        }
+
+        //delete related cache entries TODO
     },
 
     async addPostToAccount(accountID, postID) {
