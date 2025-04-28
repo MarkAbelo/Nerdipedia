@@ -2,6 +2,9 @@ import { accounts } from "../config/mongoCollections";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation";
 import idValidationFunctions from "../validation/id_validation";
+import { auth } from "../config/firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import validSections from "../validation/validSections";
 
 import redis from 'redis';
 const redis_client = redis.createClient();
@@ -65,7 +68,42 @@ const accountsDataFunctions = {
             dislikedPosts: Array<string> (empty)
         */
         // needs firebase auth integration
-        return 'TODO';
+
+        //validate inputs
+        email = validationFunctions.validEmail;
+        
+
+        //Make user in the MongoDB
+        const newUser = {
+            username,
+            passwordHash,
+            email,
+            profilePic: profilePic || null,
+            posts: [],
+            topMovies: [],
+            topShows: [],
+            likedPosts: [],
+            dislikedPosts: []
+        };
+
+        const insertResult = await accounts.insertOne(newUser);
+        if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
+
+        const monogUserId = insertResult.insertedId.toString();
+
+        //create user in firebase auth
+        const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
+        const firebaseUser = firebaseUserCredential.user;
+
+        //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
+        await updateProfile(firebaseUser, {
+            displayName: monogUserId
+        });
+
+        return {
+            firebaseUid: firebaseUser.uid,
+            monogUserId
+        };
     },
 
     async addPostToAccount(accountID, postID) {
