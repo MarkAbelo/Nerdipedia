@@ -114,6 +114,62 @@ const accountsDataFunctions = {
         };
     },
 
+    async editAccount(accountID, newUsername, newPassword, newEmail) {
+        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        //validating inputs for the edit if they exist
+        if (newUsername) {
+            newUsername = validationFunctions.validString(newUsername);
+        } else {
+            newUsername = accountFound.username
+        }
+        if (newEmail) {
+            newEmail = validationFunctions.validEmail(newEmail);
+        } else {
+            newEmail = accountFound.email;
+        }
+        if (newPassword) {
+            newPassword = validationFunctions.validPassword(newPassword);
+        }
+
+        const currEmail = accountFound.email;
+
+        //update Firebase
+        try {
+            //finding user with email
+            const user = await admin.auth().getUserByEmail(currEmail);
+
+            const updateObj = {};
+            if (newEmail && newEmail !== currEmail) updateObj.email = newEmail;
+            if (newPassword) updateObj.password = newPassword;
+
+            if (Object.keys(updateObj).length > 0) {
+                await admin.auth().updateUser(user.uid, updateObj);
+            }
+        } catch(e) {
+            throw `Failed to update Firebase account info for ${accountID}`;
+        }
+
+        //update monogoDB
+        const updateInfo = await accountCol.updateOne(
+            {_id: new ObjectId(accountID) },
+            {$set: { username: newUsername, email: newEmail } }
+        );
+
+        if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
+            throw `Faialed to update MongoDB account info for ${accountID}`;
+        }
+
+        //delete related cache entries TODO
+
+        return true
+    },
+
     async deleteAccount(accountID) {
         accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
 
@@ -170,6 +226,8 @@ const accountsDataFunctions = {
         }
 
         //delete related cache entries TODO
+
+        return true
     },
 
     async addPostToAccount(accountID, postID) {
