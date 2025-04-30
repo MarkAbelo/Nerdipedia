@@ -1,7 +1,7 @@
-import { posts } from "../config/mongoCollections";
-import accountsDataFunctions from "./accounts";
-import validationFunctions from "../validation/validation";
-import idValidationFunctions from "../validation/id_validation";
+import { posts } from "../config/mongoCollections.js";
+import accountsDataFunctions from "./accounts.js";
+import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
 import { ObjectId } from "mongodb";
 
 import redis from 'redis';
@@ -87,6 +87,9 @@ const postsDataFunctions = {
         section = await validationFunctions.validSection(section);
         body = await validationFunctions.validPostBody(body);
         images = await Promise.all(images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
+
+        // check if the poster account exists
+        await accountsDataFunctions.getAccountCard(posterID);
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';

@@ -1,7 +1,7 @@
-import { accounts } from "../config/mongoCollections";
+import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
-import validationFunctions from "../validation/validation";
-import idValidationFunctions from "../validation/id_validation";
+import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
 
 import redis from 'redis';
 const redis_client = redis.createClient();

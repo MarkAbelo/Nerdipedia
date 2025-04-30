@@ -1,12 +1,30 @@
 import { Router } from "express";
 import { postData, accountData } from "../data/index.js";
-import idValidationFunctions from "../validation/id_validation";
+import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
 
 const router = Router();
 
 // create post
-router.route("/data/:id").get(async (req, res) => {
+router.route("/create").post(async (req, res) => {
     let bodyParams = req.body;
+    try {
+        bodyParams.title = await validationFunctions.validString(title, "Post title");
+        bodyParams.posterID = await idValidationFunctions.validObjectId(posterID, "Poster Account ID");
+        bodyParams.section = await validationFunctions.validSection(section);
+        bodyParams.body = await validationFunctions.validPostBody(body);
+        bodyParams.images = await Promise.all(images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        const postID = postData.createPost(bodyParams.title, bodyParams.posterID, bodyParams.section, bodyParams.body, bodyParams.images);
+        return res.status(200).json({postID: postID});
+    } catch (e) {
+        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        else return res.status(500).json({error: e});
+    }
+
 });
 
 // get post page data
@@ -82,5 +100,42 @@ router.route("/data/:id").delete(async (req, res) => {
         else return res.status(500).json({error: e});
     }
 });
+
+// gets list of popular posts (reqBody: n, section (optional))
+router.route("/popularposts/:n/:section").get(async (req, res) => {
+    let reqParams = req.params;
+    try {
+        reqParams.n = await validationFunctions.validPostitiveNumber(reqParams.n, 'Number of Posts');
+        if (reqParams.section) reqParams.section = await validationFunctions.validSection(bodyParams.section);
+    } catch (e) {
+        console.log(e)
+        return res.status(400).json({error: e});
+    }
+    try {
+        const postsList = await postData.getPopularPosts(n, bodyParams.section);
+        return res.status(200).json(postsList);
+    } catch (e) {
+        return res.status(500).json({error: e});
+    }
+});
+
+// gets list of recent posts (reqBody: n, section (optional))
+router.route("/recentposts/:n/:section").get(async (req, res) => {
+    let reqParams = req.params;
+    try {
+        reqParams.n = await validationFunctions.validPostitiveNumber(bodyParams.n, 'Number of Posts');
+        if (reqParams.section) reqParams.section = await validationFunctions.validSection(reqParams.section);
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        return res.status(200).json({n: reqParams.n, section: reqParams.section}); 
+        // const postsList = await postData.getRecentPosts(reqParamsn, reqParams.section);
+        // return res.status(200).json(postsList);
+    } catch (e) {
+        return res.status(500).json({error: e});
+    }
+});
+
 
 export default router;
