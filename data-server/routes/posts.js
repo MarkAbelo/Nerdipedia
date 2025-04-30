@@ -101,38 +101,60 @@ router.route("/data/:id").delete(async (req, res) => {
     }
 });
 
-// gets list of popular posts (reqBody: n, section (optional))
-router.route("/popularposts/:n/:section").get(async (req, res) => {
-    let reqParams = req.params;
+// gets list of popular posts (url as: /popularposts?n=[]&section=[], section (optional))
+// 
+router.route("/popularposts").get(async (req, res) => {
+    let queryParams = req.query;
     try {
-        reqParams.n = await validationFunctions.validPostitiveNumber(reqParams.n, 'Number of Posts');
-        if (reqParams.section) reqParams.section = await validationFunctions.validSection(bodyParams.section);
+        queryParams.n = await validationFunctions.validPositiveNumber(Number(queryParams.n), 'Number of Posts');
+        if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
     } catch (e) {
         console.log(e)
         return res.status(400).json({error: e});
     }
     try {
-        const postsList = await postData.getPopularPosts(n, bodyParams.section);
+        const postsList = await postData.getPopularPosts(queryParams.n, queryParams.section);
         return res.status(200).json(postsList);
     } catch (e) {
         return res.status(500).json({error: e});
     }
 });
 
-// gets list of recent posts (reqBody: n, section (optional))
-router.route("/recentposts/:n/:section").get(async (req, res) => {
-    let reqParams = req.params;
+// gets list of recent posts (url as: /recentposts?n=[]&section=[], section (optional))
+router.route("/recentposts").get(async (req, res) => {
+    let queryParams = req.query;
     try {
-        reqParams.n = await validationFunctions.validPostitiveNumber(bodyParams.n, 'Number of Posts');
-        if (reqParams.section) reqParams.section = await validationFunctions.validSection(reqParams.section);
+        queryParams.n = await validationFunctions.validPositiveNumber(Number(queryParams.n), 'Number of Posts');
+        if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
     } catch (e) {
+        console.log(e)
         return res.status(400).json({error: e});
     }
     try {
-        return res.status(200).json({n: reqParams.n, section: reqParams.section}); 
-        // const postsList = await postData.getRecentPosts(reqParamsn, reqParams.section);
-        // return res.status(200).json(postsList);
+        const postsList = await postData.getRecentPosts(queryParams.n, queryParams.section);
+        return res.status(200).json(postsList);
     } catch (e) {
+        console.log(e)
+        return res.status(500).json({error: e});
+    }
+});
+
+// search posts by title and optional section (url as: /search?term=[]&section=[], section (optional))
+router.route("/search").get(async (req, res) => {
+    let queryParams = req.query;
+    try {
+        queryParams.term = await validationFunctions.validString(queryParams.term, 'Search term');
+        if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
+    } catch (e) {
+        console.log(e)
+        return res.status(400).json({error: e});
+    }
+    try {
+        const postsList = await postData.searchPostsByTitle(queryParams.term, queryParams.section);
+        return res.status(200).json(postsList);
+    } catch (e) {
+        console.log(e)
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         return res.status(500).json({error: e});
     }
 });
