@@ -1,9 +1,15 @@
-import { accounts } from "../config/mongoCollections.js";
+import { accounts, posts } from "../config/mongoCollections";
 import { ObjectId } from "mongodb";
-import validationFunctions from "../validation/validation.js";
-import idValidationFunctions from "../validation/id_validation.js";
+import validationFunctions from "../validation/validation";
+import idValidationFunctions from "../validation/id_validation";
+import { auth } from "../config/firebase";
+import { admin } from "../config/firebaseAdmin";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import validSections from "../validation/validSections";
 
 import redis from 'redis';
+import postsDataFunctions from "./posts";
+import reviewsDataFunctions from "./reviews";
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -65,7 +71,163 @@ const accountsDataFunctions = {
             dislikedPosts: Array<string> (empty)
         */
         // needs firebase auth integration
-        return 'TODO';
+
+        //validate inputs
+        username = validationFunctions.validString(username);
+        email = validationFunctions.validEmail(email);
+        passwordHash = validationFunctions.validPassword(passwordHash);
+        if (profilePic) {
+            profilePic = validationFunctions.validURL(profilePic);
+        }
+        
+
+        //Make user in the MongoDB
+        const newUser = {
+            username,
+            passwordHash,
+            email,
+            profilePic: profilePic || null,
+            posts: [],
+            topMovies: [],
+            topShows: [],
+            likedPosts: [],
+            dislikedPosts: []
+        };
+
+        const insertResult = await accounts.insertOne(newUser);
+        if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
+
+        const monogUserId = insertResult.insertedId.toString();
+
+        //create user in firebase auth
+        const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
+        const firebaseUser = firebaseUserCredential.user;
+
+        //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
+        await updateProfile(firebaseUser, {
+            displayName: monogUserId
+        });
+
+        return {
+            firebaseUid: firebaseUser.uid,
+            monogUserId
+        };
+    },
+
+    async editAccount(accountID, newUsername, newPassword, newEmail) {
+        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        //validating inputs for the edit if they exist
+        if (newUsername) {
+            newUsername = validationFunctions.validString(newUsername);
+        } else {
+            newUsername = accountFound.username
+        }
+        if (newEmail) {
+            newEmail = validationFunctions.validEmail(newEmail);
+        } else {
+            newEmail = accountFound.email;
+        }
+        if (newPassword) {
+            newPassword = validationFunctions.validPassword(newPassword);
+        }
+
+        const currEmail = accountFound.email;
+
+        //update Firebase
+        try {
+            //finding user with email
+            const user = await admin.auth().getUserByEmail(currEmail);
+
+            const updateObj = {};
+            if (newEmail && newEmail !== currEmail) updateObj.email = newEmail;
+            if (newPassword) updateObj.password = newPassword;
+
+            if (Object.keys(updateObj).length > 0) {
+                await admin.auth().updateUser(user.uid, updateObj);
+            }
+        } catch(e) {
+            throw `Failed to update Firebase account info for ${accountID}`;
+        }
+
+        //update monogoDB
+        const updateInfo = await accountCol.updateOne(
+            {_id: new ObjectId(accountID) },
+            {$set: { username: newUsername, email: newEmail } }
+        );
+
+        if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
+            throw `Faialed to update MongoDB account info for ${accountID}`;
+        }
+
+        //delete related cache entries TODO
+
+        return true
+    },
+
+    async deleteAccount(accountID) {
+        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
+        if (!accountFound) throw 'No account with that ID';
+
+        const userEmail = accountFound.email;
+        if (!userEmail) {
+            throw `No email found for account ${accountID}. This is required for acnt creation/deletion`
+        }
+
+        //looping through posts array and deleting them using deletePostUnstable
+        for (const postID of accountFound.posts) {
+            try {
+                await postsDataFunctions.deletePostUnstable(postID);
+            } catch (e) {
+                console.error(`Failed to delete post ${postID}: ${e}`)
+            }
+        }
+
+        //Delete reviews by getting the user's review list, looping through, and using deleteReview
+        try {
+            const userReviews = await reviewsDataFunctions.getReviewsForAUser(accountID);
+
+            if (Array.isArray(userReviews)) {
+                for (const review of userReviews) {
+                    try {
+                        await reviewsDataFunctions.deleteReview(review._id.toString());
+                    } catch (e) {
+                        console.error(`Failed to delete review ${review._id}: ${e}`);
+                    }
+                }
+            }
+        } catch(e) {
+            console.error(`Failed to get/delete user reviews for ${accountID}: ${e}`);
+        }
+
+        //Delete from firebase
+        if (userEmail) {
+            try {
+                const user = await admin.auth().getUserByEmail(userEmail);
+                await admin.auth().deleteUser(user.uid);
+            } catch(e) {
+                console.error(`Failed to delete Firebase user with email ${userEmail}:`, e)
+            }
+        }
+
+        //delete the account
+        const deleteData = await accountCol.deleteOne({_id: new ObjectId(accountID) });
+        if (!deleteData.acknowledged || deleteData.deletedCount === 0) {
+            throw 'Failed to delete account';
+        }
+
+        //delete related cache entries TODO
+
+        return true
     },
 
     async addPostToAccount(accountID, postID) {
