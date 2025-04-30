@@ -15,7 +15,7 @@ const constructorMethod = (app) => {
     app.use('/images', imageRoutes);
 
     // undefined routes
-    app.use('*', (_req, res) => {
+    app.use('/{*any}', (_req, res) => {
         res.status(404).json({error: "data route not found"});
     });
 };

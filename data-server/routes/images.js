@@ -1,7 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
 import { Storage } from "@google-cloud/storage";
-import { projectId, bucketName} from "../config/imageServer.js";
+import imageServerConfig from "../config/imageServer.js";
+const { projectId, bucketName } = imageServerConfig;
 
 const router = Router();
 
@@ -17,7 +18,7 @@ const storage = new Storage({
 const bucket = storage.bucket(bucketName);
 
 // route for uploading an image to google cloud storage
-router.post("/upload", multer.single('imgfile'), async (req, res) => {
+router.post("/upload", upload.single('imgfile'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({error: "No file uploaded"});
