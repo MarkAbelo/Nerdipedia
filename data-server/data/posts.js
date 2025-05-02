@@ -108,7 +108,7 @@ const postsDataFunctions = {
 
         const creationInfo = await postCol.insertOne(newPost);
         if (!creationInfo.acknowledged || !creationInfo.insertedId) throw 'Could not create post';
-        postID = creationInfo.insertedId.toString();
+        let postID = creationInfo.insertedId.toString()
         // add post to poster account's post array
         await accountsDataFunctions.addPostToAccount(posterID, postID)
 

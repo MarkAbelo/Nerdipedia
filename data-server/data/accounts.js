@@ -1,15 +1,15 @@
-import { accounts, posts } from "../config/mongoCollections";
+import { accounts, posts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
-import validationFunctions from "../validation/validation";
-import idValidationFunctions from "../validation/id_validation";
-import { auth } from "../config/firebase";
-import { admin } from "../config/firebaseAdmin";
+import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
+import { auth } from "../config/firebase.js";
+import { admin } from "../config/firebaseAdmin.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import validSections from "../validation/validSections";
+import validSections from "../validation/validSections.js";
 
 import redis from 'redis';
-import postsDataFunctions from "./posts";
-import reviewsDataFunctions from "./reviews";
+import postsDataFunctions from "./posts.js";
+import reviewsDataFunctions from "./reviews.js";
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -73,15 +73,25 @@ const accountsDataFunctions = {
         // needs firebase auth integration
 
         //validate inputs
-        username = validationFunctions.validString(username);
-        email = validationFunctions.validEmail(email);
-        passwordHash = validationFunctions.validPassword(passwordHash);
+        username = await validationFunctions.validString(username);
+        email = await validationFunctions.validEmail(email);
+        passwordHash = await validationFunctions.validPassword(passwordHash);
         if (profilePic) {
-            profilePic = validationFunctions.validURL(profilePic);
+            profilePic = await validationFunctions.validURL(profilePic);
         }
         
 
-        //Make user in the MongoDB
+        // Try create user in firebase auth BEFORE inserting to mongodb
+        let firebaseUser
+        try {
+            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
+            firebaseUser = firebaseUserCredential.user;
+        } catch (e) {
+            console.log(e)
+            throw e
+        }
+        
+        //Passed Firebase, Make user in the MongoDB
         const newUser = {
             username,
             passwordHash,
@@ -94,14 +104,11 @@ const accountsDataFunctions = {
             dislikedPosts: []
         };
 
-        const insertResult = await accounts.insertOne(newUser);
+        const accountCol = await accounts()
+        const insertResult = await accountCol.insertOne(newUser);
         if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
 
         const monogUserId = insertResult.insertedId.toString();
-
-        //create user in firebase auth
-        const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
-        const firebaseUser = firebaseUserCredential.user;
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
         await updateProfile(firebaseUser, {
@@ -115,7 +122,7 @@ const accountsDataFunctions = {
     },
 
     async editAccount(accountID, newUsername, newPassword, newEmail) {
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -124,17 +131,17 @@ const accountsDataFunctions = {
 
         //validating inputs for the edit if they exist
         if (newUsername) {
-            newUsername = validationFunctions.validString(newUsername);
+            newUsername = await validationFunctions.validString(newUsername);
         } else {
             newUsername = accountFound.username
         }
         if (newEmail) {
-            newEmail = validationFunctions.validEmail(newEmail);
+            newEmail = await validationFunctions.validEmail(newEmail);
         } else {
             newEmail = accountFound.email;
         }
         if (newPassword) {
-            newPassword = validationFunctions.validPassword(newPassword);
+            newPassword = await validationFunctions.validPassword(newPassword);
         }
 
         const currEmail = accountFound.email;
@@ -171,7 +178,7 @@ const accountsDataFunctions = {
     },
 
     async deleteAccount(accountID) {
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -232,8 +239,8 @@ const accountsDataFunctions = {
 
     async addPostToAccount(accountID, postID) {
         // adds the postID to the account's posts list
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
