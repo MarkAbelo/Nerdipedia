@@ -1,15 +1,15 @@
-import { accounts, posts } from "../config/mongoCollections";
+import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
-import validationFunctions from "../validation/validation";
-import idValidationFunctions from "../validation/id_validation";
-import { auth } from "../config/firebase";
-import { admin } from "../config/firebaseAdmin";
+import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
+import { auth } from "../config/firebase.js";
+import { admin } from "../config/firebaseAdmin.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import validSections from "../validation/validSections";
+import validSections from "../validation/validSections.js";
 
 import redis from 'redis';
-import postsDataFunctions from "./posts";
-import reviewsDataFunctions from "./reviews";
+import postsDataFunctions from "./posts.js";
+import reviewsDataFunctions from "./reviews.js";
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -73,11 +73,11 @@ const accountsDataFunctions = {
         // needs firebase auth integration
 
         //validate inputs
-        username = validationFunctions.validString(username);
-        email = validationFunctions.validEmail(email);
-        passwordHash = validationFunctions.validPassword(passwordHash);
+        username = await validationFunctions.validString(username);
+        email = await validationFunctions.validEmail(email);
+        passwordHash = await validationFunctions.validPassword(passwordHash);
         if (profilePic) {
-            profilePic = validationFunctions.validURL(profilePic);
+            profilePic = await validationFunctions.validURL(profilePic);
         }
         
 
@@ -115,7 +115,7 @@ const accountsDataFunctions = {
     },
 
     async editAccount(accountID, newUsername, newPassword, newEmail) {
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -124,17 +124,17 @@ const accountsDataFunctions = {
 
         //validating inputs for the edit if they exist
         if (newUsername) {
-            newUsername = validationFunctions.validString(newUsername);
+            newUsername = await validationFunctions.validString(newUsername);
         } else {
             newUsername = accountFound.username
         }
         if (newEmail) {
-            newEmail = validationFunctions.validEmail(newEmail);
+            newEmail = await validationFunctions.validEmail(newEmail);
         } else {
             newEmail = accountFound.email;
         }
         if (newPassword) {
-            newPassword = validationFunctions.validPassword(newPassword);
+            newPassword = await validationFunctions.validPassword(newPassword);
         }
 
         const currEmail = accountFound.email;
@@ -166,12 +166,13 @@ const accountsDataFunctions = {
         }
 
         //delete related cache entries TODO
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
 
     async deleteAccount(accountID) {
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -225,15 +226,16 @@ const accountsDataFunctions = {
             throw 'Failed to delete account';
         }
 
-        //delete related cache entries TODO
+        //delete related cache entries
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
 
     async addPostToAccount(accountID, postID) {
         // adds the postID to the account's posts list
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -253,8 +255,8 @@ const accountsDataFunctions = {
 
     async removePostFromAccount(accountID, postID) {
         // removes the postID from the account's posts list
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -274,8 +276,8 @@ const accountsDataFunctions = {
 
     async toggleLikedPost(accountID, postID) {
         // toggles the liked status of a post for an account
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -302,8 +304,8 @@ const accountsDataFunctions = {
 
     async toggleDislikedPost(accountID, postID) {
         // toggles the disliked status of a post for an account
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
