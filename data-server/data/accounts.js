@@ -166,6 +166,7 @@ const accountsDataFunctions = {
         }
 
         //delete related cache entries TODO
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
@@ -225,7 +226,8 @@ const accountsDataFunctions = {
             throw 'Failed to delete account';
         }
 
-        //delete related cache entries TODO
+        //delete related cache entries
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
