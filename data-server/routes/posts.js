@@ -21,7 +21,7 @@ router.route("/create").post(async (req, res) => {
         const postID = postData.createPost(bodyParams.title, bodyParams.posterID, bodyParams.section, bodyParams.body, bodyParams.images);
         return res.status(200).json({postID: postID});
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 
@@ -54,7 +54,7 @@ router.route("/data/:id").get(async (req, res) => {
         return returnData;
 
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -78,7 +78,7 @@ router.route("/data/:id").patch(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -96,7 +96,7 @@ router.route("/data/:id").delete(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('not found')) return res.status(404).json({error: e});
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -109,7 +109,6 @@ router.route("/popularposts").get(async (req, res) => {
         queryParams.n = await validationFunctions.validPositiveNumber(Number(queryParams.n), 'Number of Posts');
         if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
     } catch (e) {
-        console.log(e)
         return res.status(400).json({error: e});
     }
     try {
@@ -127,14 +126,12 @@ router.route("/recentposts").get(async (req, res) => {
         queryParams.n = await validationFunctions.validPositiveNumber(Number(queryParams.n), 'Number of Posts');
         if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
     } catch (e) {
-        console.log(e)
         return res.status(400).json({error: e});
     }
     try {
         const postsList = await postData.getRecentPosts(queryParams.n, queryParams.section);
         return res.status(200).json(postsList);
     } catch (e) {
-        console.log(e)
         return res.status(500).json({error: e});
     }
 });
@@ -146,14 +143,67 @@ router.route("/search").get(async (req, res) => {
         queryParams.term = await validationFunctions.validString(queryParams.term, 'Search term');
         if (queryParams.section) queryParams.section = await validationFunctions.validSection(queryParams.section);
     } catch (e) {
-        console.log(e)
         return res.status(400).json({error: e});
     }
     try {
         const postsList = await postData.searchPostsByTitle(queryParams.term, queryParams.section);
         return res.status(200).json(postsList);
     } catch (e) {
-        console.log(e)
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        return res.status(500).json({error: e});
+    }
+});
+
+// get all the posts by an account
+router.route("/byAuthor/:authorID").get(async (req, res) => {
+    let reqParams = req.params;
+    try {
+        reqParams.accountID = await idValidationFunctions.validObjectId(reqParams.accountID, "Account ID");
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        const postsList = await getPostsByAuthor(reqParams.accountID);
+        return res.status(200).json(postsList);
+    } catch (e) {
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        return res.status(500).json({error: e});
+    }
+});
+
+// toggle the like status of a post, returns {status: [likes || dislikes || none]}
+// body {postID, accountID}
+router.route("/toggleLikePost").patch(async (req, res) => {
+    let bodyParams = req.body;
+    try {
+        bodyParams.postID = await idValidationFunctions.validObjectId(bodyParams.postID, "Post ID");
+        bodyParams.accountID = await idValidationFunctions.validObjectId(bodyParams.accountID, "Account ID");
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        const likeStatus = await toggleLikePost(bodyParams.postID, bodyParams.accountID);
+        return res.status(200).json(likeStatus);
+    } catch (e) {
+        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        return res.status(500).json({error: e});
+    }
+});
+
+// toggle the dislike status of a post, returns {status: [likes || dislikes || none]}
+// body {postID, accountID}
+router.route("/toggleDislikePost").patch(async (req, res) => {
+    let bodyParams = req.body;
+    try {
+        bodyParams.postID = await idValidationFunctions.validObjectId(bodyParams.postID, "Post ID");
+        bodyParams.accountID = await idValidationFunctions.validObjectId(bodyParams.accountID, "Account ID");
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try {
+        const dislikeStatus = await toggleDislikePost(bodyParams.postID, bodyParams.accountID);
+        return res.status(200).json(dislikeStatus);
+    } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         return res.status(500).json({error: e});
     }
