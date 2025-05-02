@@ -81,7 +81,17 @@ const accountsDataFunctions = {
         }
         
 
-        //Make user in the MongoDB
+        // Try create user in firebase auth BEFORE inserting to mongodb
+        let firebaseUser
+        try {
+            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
+            firebaseUser = firebaseUserCredential.user;
+        } catch (e) {
+            console.log(e)
+            throw e
+        }
+        
+        //Passed Firebase, Make user in the MongoDB
         const newUser = {
             username,
             passwordHash,
@@ -94,14 +104,11 @@ const accountsDataFunctions = {
             dislikedPosts: []
         };
 
-        const insertResult = await accounts.insertOne(newUser);
+        const accountCol = await accounts()
+        const insertResult = await accountCol.insertOne(newUser);
         if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
 
         const monogUserId = insertResult.insertedId.toString();
-
-        //create user in firebase auth
-        const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
-        const firebaseUser = firebaseUserCredential.user;
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
         await updateProfile(firebaseUser, {

@@ -9,16 +9,16 @@ const router = Router();
 router.route("/create").post(async (req, res) => {
     let bodyParams = req.body;
     try {
-        bodyParams.title = await validationFunctions.validString(title, "Post title");
-        bodyParams.posterID = await idValidationFunctions.validObjectId(posterID, "Poster Account ID");
-        bodyParams.section = await validationFunctions.validSection(section);
-        bodyParams.body = await validationFunctions.validPostBody(body);
-        bodyParams.images = await Promise.all(images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
+        bodyParams.title = await validationFunctions.validString(bodyParams.title, "Post title");
+        bodyParams.posterID = await idValidationFunctions.validObjectId(bodyParams.posterID, "Poster Account ID");
+        bodyParams.section = await validationFunctions.validSection(bodyParams.section);
+        bodyParams.body = await validationFunctions.validPostBody(bodyParams.body);
+        bodyParams.images = await Promise.all(bodyParams.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
     } catch (e) {
         return res.status(400).json({error: e});
     }
     try {
-        const postID = postData.createPost(bodyParams.title, bodyParams.posterID, bodyParams.section, bodyParams.body, bodyParams.images);
+        const postID = await postData.createPost(bodyParams.title, bodyParams.posterID, bodyParams.section, bodyParams.body, bodyParams.images);
         return res.status(200).json({postID: postID});
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
@@ -31,7 +31,7 @@ router.route("/create").post(async (req, res) => {
 router.route("/data/:id").get(async (req, res) => {
     let reqParams = req.params;
     try {
-        reqParams.id = idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
+        reqParams.id = await idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
     } catch (e) {
         return res.status(400).json({error: e});
     }
@@ -65,11 +65,11 @@ router.route("/data/:id").patch(async (req, res) => {
     let bodyParams = req.body;
     let postInfo = {};
     try {
-        reqParams.id = idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
+        reqParams.id = await idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
         if (bodyParams.title) postInfo['title'] = await validationFunctions.validString(bodyParams.title, "Post title");
         if (bodyParams.section) postInfo['section'] = await validationFunctions.validSection(bodyParams.section);
         if (bodyParams.body) postInfo['body'] = await validationFunctions.validPostBody(bodyParams.body);
-        if (bodyParams.images) postInfo['images'] = bodyParams.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL'));
+        if (bodyParams.images) postInfo['images'] = await Promise.all(bodyParams.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
     } catch (e) {
         return res.status(400).json({error: e});
     }
@@ -87,7 +87,7 @@ router.route("/data/:id").patch(async (req, res) => {
 router.route("/data/:id").delete(async (req, res) => {
     let reqParams = req.params;
     try {
-        reqParams.id = idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
+        reqParams.id = await idValidationFunctions.validObjectId(reqParams.id, 'Post ID');
     } catch (e) {
         return res.status(400).json({error: e});
     }

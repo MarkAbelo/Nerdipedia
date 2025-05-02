@@ -43,8 +43,8 @@ const validationFunctions= {
         url = await this.validString(url, type)
         // try to make url into a URL object
         try{
-            new URL (link);
-            return link
+            new URL (url);
+            return url
         } catch(e){
             throw `${type} is invalid`;
         }
