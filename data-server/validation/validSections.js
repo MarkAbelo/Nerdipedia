@@ -2,7 +2,7 @@ const validSections = [
     'show',
     'movie',
     'book',
-    'd&d'
+    'dnd'
 ];
 
 export default validSections;

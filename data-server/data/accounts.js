@@ -1,4 +1,4 @@
-import { accounts, posts } from "../config/mongoCollections.js";
+import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
@@ -173,6 +173,7 @@ const accountsDataFunctions = {
         }
 
         //delete related cache entries TODO
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
@@ -232,7 +233,8 @@ const accountsDataFunctions = {
             throw 'Failed to delete account';
         }
 
-        //delete related cache entries TODO
+        //delete related cache entries
+        await redis_client.del(`account/${accountID}`);
 
         return true
     },
@@ -260,8 +262,8 @@ const accountsDataFunctions = {
 
     async removePostFromAccount(accountID, postID) {
         // removes the postID from the account's posts list
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -281,8 +283,8 @@ const accountsDataFunctions = {
 
     async toggleLikedPost(accountID, postID) {
         // toggles the liked status of a post for an account
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
@@ -309,8 +311,8 @@ const accountsDataFunctions = {
 
     async toggleDislikedPost(accountID, postID) {
         // toggles the disliked status of a post for an account
-        accountID = idValidationFunctions.validObjectId(accountID, 'Account ID');
-        postID = idValidationFunctions.validObjectId(postID, 'Post ID');
+        accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
+        postID = await idValidationFunctions.validObjectId(postID, 'Post ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';

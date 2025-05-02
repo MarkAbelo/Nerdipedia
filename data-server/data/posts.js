@@ -14,7 +14,7 @@ const recentPostsSectionCacheKeys = {
     'show': 'recentPostCardsBooks',
     'book': 'recentPostCardsShows',
     'movie': 'recentPostCardsMovies',
-    'd&d': 'recentPostCardsDnD'
+    'dnd': 'recentPostCardsDnD'
 }
 
 const postsDataFunctions = {
@@ -267,7 +267,7 @@ const postsDataFunctions = {
         // returns n posts with the highest like count
         // if section is given, only considers those with that section
         // when section is null/undefined, returns most popular posts of any section
-        n = await validationFunctions.validPostitiveNumber(n, 'Number of Posts');
+        n = await validationFunctions.validPositiveNumber(n, 'Number of Posts');
         let matchCase = {};
         if (section) {
             matchCase.section = await validationFunctions.validSection(section);
@@ -292,7 +292,7 @@ const postsDataFunctions = {
         // returns n posts with the most recent timeStamp
         // if section is given, only considers those with that section
         // when section is null/undefined, returns most popular posts of any section
-        n = await validationFunctions.validPostitiveNumber(n, 'Number of Posts');
+        n = await validationFunctions.validPositiveNumber(n, 'Number of Posts');
         let cacheKey = recentPostsAllCacheKey;
         let matchCase = {};
         if (section) {
@@ -317,7 +317,7 @@ const postsDataFunctions = {
         postsList = await Promise.all(postsList.map(this.getPostCard));
 
         // cache data
-        await cacheObjectArray(cacheKey, postList);
+        await cacheObjectArray(cacheKey, postsList);
 
         return postsList;
     },
@@ -326,7 +326,7 @@ const postsDataFunctions = {
         // returns posts
         // if section is given, only considers those with that section
         // when section is null/undefined, returns most popular posts of any section
-        searchTerm = validationFunctions.validString(searchTerm, 'Search term');
+        searchTerm = await validationFunctions.validString(searchTerm, 'Search term');
         let matchCase = {};
         if (section) {
             matchCase.section = await validationFunctions.validSection(section);
