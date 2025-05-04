@@ -146,8 +146,8 @@ const moviesDataFunctions = {
         return movieCard
     },
     async recommendMovies(){
-
-    }
+        //to be implemented
+    },
 }
 
 export default moviesDataFunctions; 
