@@ -37,36 +37,9 @@ const booksDataFunctions={
         catch(e){
             throw (e);
         }
-        //grab the reviews
-        const reviews = await reviewsCollection()
-        const bookReviewList= await reviews.find ({forID: id, section:'book'}).toArray();
-        let bookReview;
-        //if there are no reviews 
-        if(bookReviewList.length===0){
-            bookReview = 'There are no reviews';
-        }
-        //if there are reviews
-        else{
-            const posterIDs = bookReviewList.map(review => review.posterID);
-            const posterObjectIDs = posterIDs.map(id => new ObjectId(id));
-            //grab user names 
-            const accounts = await accountsCollection()
-            const accountList = await accounts.find({
-                _id: { $in: posterObjectIDs } 
-              }, {
-                projection: { username: 1 }
-              }).toArray();
-
-            const accountMap = new Map();
-            accountList.forEach(account => {
-                accountMap.set(account._id.toString(), account.username);
-            });
-            bookReview = bookReviewList.map(review => ({
-                ...review,
-                username: accountMap.get(review.posterID.toString()) || 'Deleted User'
-            }));
-        }
+        
         //put the reviews in
+        const bookReview = await reviewsDataFunctions.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
         bookInfo['bookReview']=bookReview;
 
         // cache data
