@@ -32,9 +32,7 @@
 */
 
 import validationFunctions from "../validation/validation.js";
-import { ObjectId } from "mongodb";
 import axios from "axios";
-import { reviews as reviewsCollection, accounts as accountsCollection} from '../config/mongoCollections.js'
 import reviewsDataFunctions from "./reviews.js";
 
 import redis from 'redis';
@@ -146,6 +144,9 @@ const moviesDataFunctions = {
         await redis_client.set(cacheKey, JSON.stringify(movieCard));
 
         return movieCard
+    },
+    async recommendMovies(){
+
     }
 }
 
