@@ -163,7 +163,7 @@ router.route("/byAuthor/:authorID").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try {
-        const postsList = await getPostsByAuthor(reqParams.accountID);
+        const postsList = await postData.getPostsByAuthor(reqParams.accountID);
         return res.status(200).json(postsList);
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
@@ -182,7 +182,7 @@ router.route("/toggleLikePost").patch(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try {
-        const likeStatus = await toggleLikePost(bodyParams.postID, bodyParams.accountID);
+        const likeStatus = await accountData.toggleLikedPost(bodyParams.accountID,bodyParams.postID);
         return res.status(200).json(likeStatus);
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
@@ -201,7 +201,7 @@ router.route("/toggleDislikePost").patch(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try {
-        const dislikeStatus = await toggleDislikePost(bodyParams.postID, bodyParams.accountID);
+        const dislikeStatus = await accountData.toggleDislikedPost(bodyParams.accountID,bodyParams.postID);
         return res.status(200).json(dislikeStatus);
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
