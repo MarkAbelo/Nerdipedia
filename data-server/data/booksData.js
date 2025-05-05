@@ -1,7 +1,6 @@
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
 import { ObjectId } from "mongodb";
-import { reviews as reviewsCollection, accounts as accountsCollection } from '../config/mongoCollections.js'
 import accountsDataFunctions from "./accounts.js";
 import axios from "axios";
 

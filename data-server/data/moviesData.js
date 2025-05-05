@@ -34,8 +34,6 @@
 import idValidationFunctions from "../validation/id_validation.js";
 import validationFunctions from "../validation/validation.js";
 import axios from "axios";
-import reviewsDataFunctions from "./reviews.js";
-import accountsDataFunctions from "./accounts.js";
 
 import redis from 'redis';
 const redis_client = redis.createClient();
