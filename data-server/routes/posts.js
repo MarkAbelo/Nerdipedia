@@ -102,7 +102,6 @@ router.route("/data/:id").delete(async (req, res) => {
 });
 
 // gets list of popular posts (url as: /popularposts?n=[]&section=[], section (optional))
-// 
 router.route("/popularposts").get(async (req, res) => {
     let queryParams = req.query;
     try {
