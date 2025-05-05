@@ -39,38 +39,6 @@ const showsDataFunctions = {
         } catch(e) {
             throw (e);
         }
-        //grab reviews
-        const reviews = await reviewsCollection()
-        const showReviewList = await reviews.find({forID: id, section:'show'}).toArray();
-        let showReview;
-        //if no reviews
-        if (showReviewList.length === 0 ) {
-            showReview = 'There are no reviews';
-        }
-        //if there are reviews
-        else {
-            const posterIDs = showReviewList.map(review => review.posterID);
-            const posterObjectIDs = posterIDs.map(id => new ObjectId(id));
-            //grab user names
-            const accounts = await accountsCollection()
-            const accountList = await accounts.find({
-                _id: { $in: posterObjectIDs }
-            }, {
-                projection: { username: 1 }
-            }).toArray();
-
-            const accountMap = new Map();
-            accountList.forEach(account => {
-                accountMap.set(account._id.toString(), account.username);
-            });
-            showReview = showReviewList.map(review => ({
-                ...review,
-                username: accountMap.get(review.posterID.toString()) || 'Deleted User'
-            }));
-        }
-        //put reviews in
-        showInfo['showReview'] = showReview;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(showInfo));
 

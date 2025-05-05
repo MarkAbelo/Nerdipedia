@@ -69,10 +69,6 @@ const moviesDataFunctions = {
         } catch (e) {
             throw e
         }
-        // Get reviews for movie
-        const reviews = await reviewsDataFunctions.getAllReviews(id, "movie") // Errors handled by func, returns a string if no reviews
-        movieInfo['movieReview'] = reviews;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(movieInfo));
 
