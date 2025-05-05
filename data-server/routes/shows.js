@@ -7,6 +7,7 @@ const router = Router();
 
 router.route("/getShow/:showId").get(async (req, res) => {
     let id= req.params.showId;
+    let showFound;
     try{
         if(!id) throw "No show id provided";
         id= await idValidationFunctions.validObjectId(id, "Show ID");
@@ -14,7 +15,7 @@ router.route("/getShow/:showId").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try{
-        const showFound= await showData.getShow(id);
+        showFound= await showData.getShow(id);
     }
     catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
