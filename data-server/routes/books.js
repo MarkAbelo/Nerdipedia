@@ -71,6 +71,23 @@ router.route("/popularBooks").get(async (req,res)=>{
     }
 })
 //we have not written this function yet 
-router.route("/recommendBooks").get(async (req, res) => {
+router.route("/getBooksRecs").get(async (req, res) => {
+    let accountId= req.query.accountId
+    let n = req.query.n
+    try{
+        if(!accountId) throw "No account id provided";
+        accountId= await idValidationFunctions.validObjectId(accountId, "Account ID");
+        if(!n) n= 10;
+        if (isNaN(n)) n = 10;
+        n= await validationFunctions.validPositiveNumber(n, "Number of Books")
+    }catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try{
+        const bookList = await bookData.getBooksRecs(accountId, n);
+        return res.status(200).json(bookList);
+    }catch (e) {
+        return res.status(500).json({error: e});
+    }
 });
 export default router; 

@@ -69,6 +69,24 @@ router.route("/popularShows").get(async (req,res)=>{
     }
 });
 //we have not written this function yet 
-router.route("/recommendShows").get(async (req, res) => {
+router.route("/getShowsRec").get(async (req, res) => {
+    let accountID = req.query.accountID;
+    let n = req.query.n;
+    try {
+        if (!accountID) throw "No account ID provided";
+        accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
+        if (!n) n = 10;
+        if (isNaN(n)) n = 10;
+        n = await validationFunctions.validPositiveNumber(n, "Number of Movies");
+    } catch (e) {
+        return res.status(400).json({error: e});
+    }
+    try{
+        const showList = await showData.getShowRecs(accountID, n);
+        return res.status(200).json(showList);
+    }
+    catch (e) {
+        return res.status(500).json({error: e});
+    }
 });
 export default router;
