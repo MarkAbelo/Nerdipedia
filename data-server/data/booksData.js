@@ -1,11 +1,8 @@
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
-import { ObjectId } from "mongodb";
-import { reviews as reviewsCollection, accounts as accountsCollection } from '../config/mongoCollections.js'
-import accountsDataFunctions from "./accounts.js";
 import axios from "axios";
-
 import redis from 'redis';
+
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -41,38 +38,6 @@ const booksDataFunctions={
         catch(e){
             throw (e);
         }
-        //grab the reviews
-        const reviews = await reviewsCollection()
-        const bookReviewList= await reviews.find ({forID: id, section:'book'}).toArray();
-        let bookReview;
-        //if there are no reviews 
-        if(bookReviewList.length===0){
-            bookReview = 'There are no reviews';
-        }
-        //if there are reviews
-        else{
-            const posterIDs = bookReviewList.map(review => review.posterID);
-            const posterObjectIDs = posterIDs.map(id => new ObjectId(id));
-            //grab user names 
-            const accounts = await accountsCollection()
-            const accountList = await accounts.find({
-                _id: { $in: posterObjectIDs } 
-              }, {
-                projection: { username: 1 }
-              }).toArray();
-
-            const accountMap = new Map();
-            accountList.forEach(account => {
-                accountMap.set(account._id.toString(), account.username);
-            });
-            bookReview = bookReviewList.map(review => ({
-                ...review,
-                username: accountMap.get(review.posterID.toString()) || 'Deleted User'
-            }));
-        }
-        //put the reviews in
-        bookInfo['bookReview']=bookReview;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(bookInfo));
 

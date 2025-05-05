@@ -34,10 +34,8 @@
 import idValidationFunctions from "../validation/id_validation.js";
 import validationFunctions from "../validation/validation.js";
 import axios from "axios";
-import reviewsDataFunctions from "./reviews.js";
-import accountsDataFunctions from "./accounts.js";
-
 import redis from 'redis';
+
 const redis_client = redis.createClient();
 await redis_client.connect();
 
@@ -69,10 +67,6 @@ const moviesDataFunctions = {
         } catch (e) {
             throw e
         }
-        // Get reviews for movie
-        const reviews = await reviewsDataFunctions.getAllReviews(id, "movie") // Errors handled by func, returns a string if no reviews
-        movieInfo['movieReview'] = reviews;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(movieInfo));
 
