@@ -7,6 +7,7 @@ const router = Router();
 
 router.route("/getBook/:bookId").get(async (req, res) => {
     let id= req.params.bookId;
+    let bookFound;
     try{
         if(!id) throw "No book id provided";
         id= await idValidationFunctions.validObjectId(id, "Book ID");
@@ -14,14 +15,22 @@ router.route("/getBook/:bookId").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try{
-        const bookFound= await bookData.getBook(id);
-        return res.status(200).json(bookFound);
+        bookFound= await bookData.getBook(id);
     }
     catch (e) {
         //not really sure why the error is written like this, but i am sticking with it
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
+    try{
+        const bookReview = await reviewsDataFunctions.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
+        bookInfo['bookReview']=bookReview;
+        return res.status(200).json(bookFound);
+    }
+    catch (e) {
+        return res.status(500).json({error: e});
+    }
+
 });
 
 router.route("/search").get(async (req, res) => { //the url in the search bar should be /books/search?searchTerm=bookName&pageNum=1

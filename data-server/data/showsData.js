@@ -1,6 +1,4 @@
 import idValidationFunctions from "../validation/id_validation.js";
-import { ObjectId } from "mongodb";
-import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections.js";
 import axios from "axios";
 
 import redis from 'redis';
@@ -35,10 +33,6 @@ const showsDataFunctions = {
         } catch(e) {
             throw (e);
         }
-        
-        const showReview = await reviewsDataFunctions.getAllReviews(id, "show") // Errors handled by func, returns a string if no reviews
-        showInfo['showReview'] = showReview;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(showInfo));
 

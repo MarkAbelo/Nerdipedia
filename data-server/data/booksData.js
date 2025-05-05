@@ -1,6 +1,5 @@
 import validationFunctions from "../validation/validation.js";
 import axios from "axios";
-import reviewsDataFunctions from "./reviews.js";
 
 
 import redis from 'redis';
@@ -37,11 +36,6 @@ const booksDataFunctions={
         catch(e){
             throw (e);
         }
-        
-        //put the reviews in
-        const bookReview = await reviewsDataFunctions.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
-        bookInfo['bookReview']=bookReview;
-
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(bookInfo));
 

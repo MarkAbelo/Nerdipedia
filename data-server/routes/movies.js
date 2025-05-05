@@ -6,6 +6,7 @@ import idValidationFunctions from "../validation/id_validation.js";
 const router = Router();
 router.route("/getMovie/:movieId").get(async (req, res) => {
     let id= req.params.movieId;
+    let movieFound;
     try{
         if(!id) throw "No movie id provided";
         id= await idValidationFunctions.validObjectId(id, "Movie ID");
@@ -13,12 +14,19 @@ router.route("/getMovie/:movieId").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try{
-        const movieFound= await movieData.getMovie(id);
-        return res.status(200).json(movieFound);
+        movieFound= await movieData.getMovie(id);
     }
     catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
+    }
+    try{
+        const movieReview = await reviewData.getAllReviews(id, "movie") // Errors handled by func, returns a string if no reviews
+        movieFound['movieReview']=movieReview;
+        return res.status(200).json(movieFound);
+    }
+    catch (e) {
+        return res.status(500).json({error: e});
     }
 });
 
