@@ -5,7 +5,6 @@ import idValidationFunctions from "../validation/id_validation.js";
 import { auth } from "../config/firebase.js";
 import { admin } from "../config/firebaseAdmin.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import validSections from "../validation/validSections.js";
 
 import redis from 'redis';
 import postsDataFunctions from "./posts.js";
@@ -64,9 +63,6 @@ const accountsDataFunctions = {
             email: string
             profilePic: string (url, optional)
             posts: Array<string> (empty)
-            topMovies: Array<string> (empty)
-            topBooks: Array<string> (empty)
-            topShows: Array<string> (empty)
             likedPosts: Array<string> (empty)
             dislikedPosts: Array<string> (empty)
         */
@@ -98,8 +94,6 @@ const accountsDataFunctions = {
             email,
             profilePic: profilePic || null,
             posts: [],
-            topMovies: [],
-            topShows: [],
             likedPosts: [],
             dislikedPosts: []
         };
@@ -172,8 +166,9 @@ const accountsDataFunctions = {
             throw `Faialed to update MongoDB account info for ${accountID}`;
         }
 
-        //delete related cache entries TODO
+        //delete related cache entries
         await redis_client.del(`account/${accountID}`);
+        await redis_client.del(`account/card/${accountID}`);
 
         return true
     },
@@ -235,6 +230,7 @@ const accountsDataFunctions = {
 
         //delete related cache entries
         await redis_client.del(`account/${accountID}`);
+        await redis_client.del(`account/card/${accountID}`);
 
         return true
     },

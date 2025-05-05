@@ -31,15 +31,17 @@
     "Response": "True"
 */
 
+import idValidationFunctions from "../validation/id_validation.js";
 import validationFunctions from "../validation/validation.js";
-import { ObjectId } from "mongodb";
 import axios from "axios";
-import { reviews as reviewsCollection, accounts as accountsCollection} from '../config/mongoCollections.js'
 import reviewsDataFunctions from "./reviews.js";
+import accountsDataFunctions from "./accounts.js";
 
 import redis from 'redis';
 const redis_client = redis.createClient();
 await redis_client.connect();
+
+import { movieRec } from "../config/recRaccoon.js";
 
 const uri = 'http://www.omdbapi.com/?apikey=3e10e10a&plot=full&type=movie&'
 
@@ -139,13 +141,23 @@ const moviesDataFunctions = {
 
         const movieCard = {
             title: movieInfo.Title,
-            image: movieInfo.Poster // Handle "N/A" poster here, or in frontend?
+            image: movieInfo.Poster? movieInfo.Poster : null
         }
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(movieCard));
 
         return movieCard
+    },
+
+    async getMovieRecs(accountID, n){
+        // assumes accountID exists
+        accountID = await idValidationFunctions.validObjectId(accountID);
+        n = await validationFunctions.validPositiveNumber(n);
+
+        let movieList = await movieRec.recommendFor(accountID, n);
+        movieList = await Promise.all(movieList.map(this.getMovieCard));
+        return movieList;
     }
 }
 

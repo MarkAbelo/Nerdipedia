@@ -1,11 +1,15 @@
 import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
 import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from '../config/mongoCollections.js'
+import accountsDataFunctions from "./accounts.js";
 import axios from "axios";
 
 import redis from 'redis';
 const redis_client = redis.createClient();
 await redis_client.connect();
+
+import { bookRec } from "../config/recRaccoon.js";
 
 const booksDataFunctions={
 
@@ -149,8 +153,14 @@ const booksDataFunctions={
 
     },
 
-    async recommendBooks(){
+    async getBookRecs(accountID, n){
+        // assumes accountID exists
+        accountID = await idValidationFunctions.validObjectId(accountID);
+        n = await validationFunctions.validPositiveNumber(n);
 
+        let bookList = await bookRec.recommendFor(accountID, n);
+        bookList = await Promise.all(bookList.map(this.getBookCard));
+        return bookList;
     }
 }
 export default booksDataFunctions;

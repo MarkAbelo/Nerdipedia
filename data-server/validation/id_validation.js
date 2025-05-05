@@ -16,12 +16,6 @@ const idValidationFunctions = {
         string= string.trim();
         if(string.length===0) throw (`String for ${type} must not be an empty string`);
         return string;
-    },
-    async validPositiveNumber(number, type) {
-        if(!number) throw (`No number provided for ${type}`);
-        if (typeof number !== 'number') throw (`${type} must be type number`);
-        if (number < 1) throw (`${type} must be greater than 0`);
-        return number;
     }
 }
 export default idValidationFunctions;

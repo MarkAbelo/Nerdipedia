@@ -1,13 +1,17 @@
 import idValidationFunctions from "../validation/id_validation.js";
+import validationFunctions from "../validation/validation.js";
 import { ObjectId } from "mongodb";
 import { reviews as reviewsCollection, accounts as accountsCollection } from "../config/mongoCollections.js";
+import accountsDataFunctions from "./accounts.js";
 import axios from "axios";
 
 import redis from 'redis';
 const redis_client = redis.createClient();
 await redis_client.connect();
 
-//root for TVMaze API: https://www.tvmaze.com/
+import { showRec } from "../config/recRaccoon.js";
+
+//root for TVMaze API: https://api.tvmaze.com/
 
 
 const showsDataFunctions = {
@@ -30,7 +34,7 @@ const showsDataFunctions = {
 
         let showInfo; 
         try {
-            const showResponse = await axios.get(`https://www.tvmaze.com/shows/${id}`)
+            const showResponse = await axios.get(`https://api.tvmaze.com/shows/${id}`)
             showInfo = showResponse.data;
         } catch(e) {
             throw (e);
@@ -130,7 +134,7 @@ const showsDataFunctions = {
 
         let showInfo;
         try {
-            const showResponse = await axios.get(`https://www.tvmaze.com/shows/${id}`)
+            const showResponse = await axios.get(`https://api.tvmaze.com/shows/${id}`)
             showInfo = showResponse.data;
         } catch(e) {
             throw (e);
@@ -141,6 +145,16 @@ const showsDataFunctions = {
         await redis_client.set(cacheKey, JSON.stringify(returnInfo));
 
         return returnCard;
+    },
+
+    async getShowRecs(accountID, n){
+        // assumes accountID exists
+        accountID = await idValidationFunctions.validObjectId(accountID);
+        n = await validationFunctions.validPositiveNumber(n);
+
+        let showList = await showRec.recommendFor(accountID, n);
+        showList = await Promise.all(showList.map(this.getShowCard));
+        return movieList;
     }
 }
 
