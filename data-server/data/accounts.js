@@ -57,7 +57,7 @@ const accountsDataFunctions = {
         return accountFound;
     },
 
-    async createAccount(username, passwordHash, email, profilePic) {
+    async createAccount(username, password, email, profilePic) {
         /*
             username: string
             email: string
@@ -71,7 +71,7 @@ const accountsDataFunctions = {
         //validate inputs
         username = await validationFunctions.validString(username);
         email = await validationFunctions.validEmail(email);
-        passwordHash = await validationFunctions.validPassword(passwordHash);
+        password = await validationFunctions.validPassword(password);
         if (profilePic) {
             profilePic = await validationFunctions.validURL(profilePic);
         }
@@ -80,7 +80,7 @@ const accountsDataFunctions = {
         // Try create user in firebase auth BEFORE inserting to mongodb
         let firebaseUser
         try {
-            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, passwordHash);
+            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, password);
             firebaseUser = firebaseUserCredential.user;
         } catch (e) {
             console.log(e)
@@ -90,7 +90,6 @@ const accountsDataFunctions = {
         //Passed Firebase, Make user in the MongoDB
         const newUser = {
             username,
-            passwordHash,
             email,
             profilePic: profilePic || null,
             posts: [],
