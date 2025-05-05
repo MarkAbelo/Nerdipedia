@@ -1,11 +1,8 @@
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
-import { ObjectId } from "mongodb";
-import accountsDataFunctions from "./accounts.js";
 import axios from "axios";
-
-
 import redis from 'redis';
+
 const redis_client = redis.createClient();
 await redis_client.connect();
 
