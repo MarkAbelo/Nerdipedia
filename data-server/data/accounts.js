@@ -101,32 +101,33 @@ const accountsDataFunctions = {
         const insertResult = await accountCol.insertOne(newUser);
         if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
 
-        const monogUserId = insertResult.insertedId.toString();
+        const mongoUserId = insertResult.insertedId.toString();
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
         await updateProfile(firebaseUser, {
-            displayName: monogUserId
+            displayName: mongoUserId
         });
 
         return {
             firebaseUid: firebaseUser.uid,
-            monogUserId
+            mongoUserId
         };
     },
 
-    async editAccount(accountID, newUsername, newPassword, newEmail) {
+    async editAccount(accountID, newUsername, newPassword, newEmail, newProfilePic) {
         accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
 
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         //validating inputs for the edit if they exist
+
         if (newUsername) {
             newUsername = await validationFunctions.validString(newUsername);
         } else {
-            newUsername = accountFound.username
+            newUsername = accountFound.username;
         }
         if (newEmail) {
             newEmail = await validationFunctions.validEmail(newEmail);
@@ -135,6 +136,11 @@ const accountsDataFunctions = {
         }
         if (newPassword) {
             newPassword = await validationFunctions.validPassword(newPassword);
+        }
+        if (newProfilePic) {
+            newProfilePic = await validationFunctions.validURL(newProfilePic);
+        } else {
+            newProfilePic = accountFound.profilePic;
         }
 
         const currEmail = accountFound.email;
@@ -158,7 +164,7 @@ const accountsDataFunctions = {
         //update monogoDB
         const updateInfo = await accountCol.updateOne(
             {_id: new ObjectId(accountID) },
-            {$set: { username: newUsername, email: newEmail } }
+            {$set: { username: newUsername, email: newEmail , profilePic: newProfilePic} }
         );
 
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
@@ -178,7 +184,7 @@ const accountsDataFunctions = {
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         const userEmail = accountFound.email;
         if (!userEmail) {
@@ -242,7 +248,7 @@ const accountsDataFunctions = {
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         const updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$push :{posts: postID}})
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
@@ -263,7 +269,7 @@ const accountsDataFunctions = {
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         const updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID}})
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
@@ -284,7 +290,7 @@ const accountsDataFunctions = {
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         let updateInfo = null;
         if (accountFound.likedPosts.includes(postID)){
@@ -312,7 +318,7 @@ const accountsDataFunctions = {
         const accountCol = await accounts();
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
-        if (!accountFound) throw 'No account with that ID';
+        if (!accountFound) throw 'No account found with that ID';
 
         let updateInfo = null;
         if (accountFound.dislikedPosts.includes(postID)){

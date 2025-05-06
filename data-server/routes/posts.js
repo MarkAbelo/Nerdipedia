@@ -51,7 +51,7 @@ router.route("/data/:id").get(async (req, res) => {
             images: postFound.images,
             timeStamp: postFound.timeStamp
         };
-        return returnData;
+        return res.status(200).json(returnData);
 
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
