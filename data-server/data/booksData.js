@@ -74,7 +74,6 @@ const booksDataFunctions={
         return booksData.docs.map(book=>
             (
                 {
-                    id: this.getId(book.key),
                     title:book.title,
                     authors: book.author_name || [],
                     //-S, -M, -L for image size
