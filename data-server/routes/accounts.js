@@ -2,6 +2,7 @@ import { Router } from "express";
 import { accountData, postData, reviewData } from "../data/index.js";
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
+import { admin } from "../config/firebaseAdmin.js";
 
 const router = Router();
 
