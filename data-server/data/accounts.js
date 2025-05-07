@@ -2,9 +2,7 @@ import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
-import { auth } from "../config/firebase.js";
 import { admin } from "../config/firebaseAdmin.js";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 import redis from 'redis';
 import postsDataFunctions from "./posts.js";
@@ -80,7 +78,10 @@ const accountsDataFunctions = {
         // Try create user in firebase auth BEFORE inserting to mongodb
         let firebaseUser
         try {
-            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const firebaseUserCredential = await admin.auth().createUser({
+                email,
+                password
+            });
             firebaseUser = firebaseUserCredential.user;
         } catch (e) {
             console.log(e)
@@ -104,7 +105,7 @@ const accountsDataFunctions = {
         const mongoUserId = insertResult.insertedId.toString();
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
-        await updateProfile(firebaseUser, {
+        await admin.auth().updateUser(firebaseUser, {
             displayName: mongoUserId
         });
 

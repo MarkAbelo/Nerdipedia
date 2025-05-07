@@ -18,6 +18,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let auth = null
+try {
+  auth = await getAuth(app);
+} catch(e) {
+  console.log(e)
+}
+
 
 export {app, auth};
