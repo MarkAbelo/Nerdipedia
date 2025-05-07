@@ -47,7 +47,7 @@ router.route("/search").get(async (req, res) => { //the url in the search bar sh
         return res.status(400).json({error: e});
     }
     try {
-        const bookList = await bookData.searchBooks(searchTerm, pageNum);
+        const bookList = await bookData.searchBookByTitle(searchTerm, pageNum);
         return res.status(200).json(bookList);
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
