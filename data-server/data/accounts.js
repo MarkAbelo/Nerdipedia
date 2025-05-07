@@ -2,9 +2,7 @@ import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
-import { auth } from "../../react-client/src/firebase/firebase.js";
 import { admin } from "../config/firebaseAdmin.js";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 import redis from 'redis';
 import postsDataFunctions from "./posts.js";
@@ -61,6 +59,7 @@ const accountsDataFunctions = {
         /*
             username: string
             email: string
+            firebaseUid: string
             profilePic: string (url, optional)
             posts: Array<string> (empty)
             likedPosts: Array<string> (empty)
@@ -80,17 +79,24 @@ const accountsDataFunctions = {
         // Try create user in firebase auth BEFORE inserting to mongodb
         let firebaseUser
         try {
-            const firebaseUserCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const firebaseUserCredential = await admin.auth().createUser({
+                email,
+                password,
+                displayName: username
+            });
             firebaseUser = firebaseUserCredential.user;
         } catch (e) {
             console.log(e)
             throw e
         }
+
+        const firebaseUid = firebaseUser.uid;
         
         //Passed Firebase, Make user in the MongoDB
         const newUser = {
             username,
             email,
+            firebaseUid,
             profilePic: profilePic || null,
             posts: [],
             likedPosts: [],
@@ -99,12 +105,16 @@ const accountsDataFunctions = {
 
         const accountCol = await accounts()
         const insertResult = await accountCol.insertOne(newUser);
-        if (!insertResult.acknowledged) throw ("Failed to create MongoDB account");
+        if (!insertResult.acknowledged) {
+            //delete firebase user if mongo insert fails
+            await admin.auth().deleteUser(firebaseUid);
+            throw new Error("Failed to insert user into MongoDB");
+        }
 
         const mongoUserId = insertResult.insertedId.toString();
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
-        await updateProfile(firebaseUser, {
+        await admin.auth().updateUser(firebaseUser, {
             displayName: mongoUserId
         });
 
