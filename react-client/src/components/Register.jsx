@@ -52,23 +52,32 @@ function Register() {
     
 
     return(
-        <div>
+        <div className="card">
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
             <h2>Sign Up</h2>
 
-            <input name="username" placeholder="Username" value={formData.username} onChange={handleChange} />
-            {errors.username && <p style={{ color: 'red' }}>{errors.username}</p>}
+            <div className="m-4">
+                <label>Username:</label><br />
+                <input name="username" className="bg-white" value={formData.username} onChange={handleChange} />
+                {errors.username && <p className="errorText">{errors.username}</p>}
+            
+                <label>Email:</label><br />
+                <input name="email" className="bg-white" value={formData.email} onChange={handleChange} />
+                {errors.email && <p className="errorText">{errors.email}</p>}
 
-            <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-            {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+            
+                <label>Password:</label><br />
+                <input type="password" name="password" className="bg-white" value={formData.password} onChange={handleChange} />
+                {errors.password && <p className="errorText">{errors.password}</p>}
 
-            <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-            {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
 
-            <input name="profilePic" placeholder="Profile Picture URL (optional)" value={formData.profilePic} onChange={handleChange} />
-            {errors.profilePic && <p style={{ color: 'red' }}>{errors.profilePic}</p>}
+                <label>Profile Picture URL:</label><br />
+                <input name="profilePic" className="bg-white" value={formData.profilePic} onChange={handleChange} />
+                {errors.profilePic && <p className="errorText">{errors.profilePic}</p>}
+            </div>
+            
 
-            {serverError && <p style={{ color: 'red' }}>{serverError}</p>}
+            {serverError && <p className="errorText">{serverError}</p>}
             {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
             <button type="submit" disabled={Object.values(errors).some(Boolean)}>Create Account</button>
