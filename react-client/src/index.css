@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #10172a;
 }
 
 h1 {
@@ -64,5 +65,15 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@layer components {
+  .card {
+    @apply text-center text-lg text-blue-400 mt-7 bg-[#71747a] rounded-md w-1/2 place-self-center p-5;
+  }
+
+  .errorText {
+    @apply text-red-500 font-bold bg-red-100 m-2
   }
 }

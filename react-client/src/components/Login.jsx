@@ -24,12 +24,13 @@ const Login = () => {
   };
 
   return (
-    <div className='text-center text-lg text-blue-400'>
-      <h2>Login</h2>
+    <div className='card'>
+      <h2 className="mb-5 text-[46px] font-bold">Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label><br />
           <input
+            className="bg-white"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -39,6 +40,7 @@ const Login = () => {
         <div>
           <label>Password:</label><br />
           <input
+            className="bg-white"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
