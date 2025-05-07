@@ -2,7 +2,7 @@ import { accounts } from "../config/mongoCollections.js";
 import { ObjectId } from "mongodb";
 import validationFunctions from "../validation/validation.js";
 import idValidationFunctions from "../validation/id_validation.js";
-import { auth } from "../config/firebase.js";
+import { auth } from "../../react-client/src/firebase/firebase.js";
 import { admin } from "../config/firebaseAdmin.js";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
