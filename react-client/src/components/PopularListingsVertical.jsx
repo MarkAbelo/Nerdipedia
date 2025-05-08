@@ -32,86 +32,105 @@ function PopularListingsVertical({type, section}) {
         fetchData();
     },[type, section]);
     if(loading){
-        return <div>Loading...</div>;
+        return <div className="p-4 text-gray-500">Loading...</div>;
     }
     if(error){
-        return <div>Error: {error.message}</div>;
+        return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
     if(!listings || listings.length === 0){
-        return <div>No {Type} listings found</div>;
+        return <div className="p-4 text-gray-500">No {type} listings found</div>;
     }
     let body;
     if(type === 'posts'){
         body=(
-            //Todo: Need to figure out tailwind CSS for this component and how to make a visually appealing vertical list of items for posts.
-            //So for now it will be a simple normal css
             //I also need to figure out how if this is the right way to add the pictures for the icon?
-           <div className="popularListings">
-                <ol className="columnListings">
+           <div className="px-4 py-6 space-y-4">
+                <h2 className="text-xl font-bold mb-4">Popular Posts</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     { Array.isArray(listings) && listings.map((post) => (
-                        <li key={post._id} className="postListing">
-                            <Link to= {`/${type}/${post._id}`}>
-                                <h2>{post.title}</h2>
-                            </Link>                        
-                            <img src={post.profilePic || No_image}
-                            onError={(e) => e.target.src = No_image}
-                            alt="profile_picture" 
-                            className="profileIcon"/>
-                            <p>{post.username}</p>
-                            <p>Likes: {post.likes}</p>
-                        </li>
+                        <div key={post._id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                            <div className="flex items-start gap-4">
+                                <img src={post.profilePic || No_image}
+                                onError={(e) => e.target.src = No_image}
+                                loading="lazy"
+                                alt="Profile" 
+                                className="w-12 h-12 rounded-full object-cover"
+                                />
+                                <div className="flex-1">
+                                    <Link to= {`/${type}/${post._id}`} className="hover:text-blue-600">
+                                        <h3 className="text-lg font-semibold">{post.title}</h3>
+                                    </Link>      
+                                    <p className="text-gray-600 text-sm mt-1" >{post.username}</p>
+                                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                        <span>Likes: {post.likes}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     ))
                     }
-                </ol>
+                </div>
             </div>
         )
     }
     else if(type === 'books'){
         body= (
-            //Todo: Need to figure out tailwind CSS for this component, and how to make a visually appealing vertical list of items for books
-            //So for now it will be a simple normal css
-            <div className="popularListings">
-                <ol className="columnListings">
+            <div className="px-4 py-6 space-y-4">
+                <h2 className="text-xl font-bold mb-4">Popular Books</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     { Array.isArray(listings) && listings.map((book)=>(
-                        <li key={book.forID} className="listingItem">
-                            <Link to={`/${type}/${book.forID}`}>
-                                <h2>{book.title}</h2>
-                            </Link>                        
-                            <img src={book.cover|| No_image}
-                             onError={(e) => e.target.src = No_image}
-                             alt="listing_image" 
-                             className="listingImage"/>
-                            <p>Year: {book.publish_year}</p>
-                            <p>Authors: {book.authors?.join(", ") || 'Unknown authors'}</p>
-                            <p>Average Rating: {book.averageRating}</p>
-                            <p>Number of Reviews: {book.reviewCount}</p>
-                        </li>
+                        <div key={book.forID} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">                   
+                            <div className="flex gap-4">
+                                <img src={book.cover|| No_image}
+                                onError={(e) => e.target.src = No_image}
+                                loading="lazy"
+                                alt="Book cover" 
+                                className="w-24 h-32 object-cover rounded"/>
+                                <div className="flex-1">
+                                    <Link to={`/${type}/${book.forID}`} className="hover:text-blue-600">
+                                        <h3 className="text-lg font-semibold" >{book.title}</h3>
+                                    </Link>     
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        {book.authors?.join(", ") || 'Unknown author'}
+                                    </p>
+                                    <div className="mt-2 text-sm space-y-1">
+                                        <p>Authors: {book.authors?.join(", ") || 'Unknown authors'}</p>
+                                        <p>Average Rating: {book.averageRating}</p>
+                                        <p>Number of Reviews: {book.reviewCount}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                </ol>
+                </div>
             </div>
         )
     }
     else if(type === 'shows' || type === 'movies')
     {
         body= (
-            //Todo: Need to figure out tailwind CSS for this component, and how to make a visually appealing vertical list of items for shows/movies
-            //So for now it will be a simple normal css
-            <div className="popularListings">
-                <ol className="columnListings">
+            <div className="px-4 py-6 space-y-4">
+                <h2 className="text-xl font-bold mb-4">Popular {type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     { Array.isArray(listings) && listings.map((media)=>(
-                        <li key={media.forID} className="listingItem">
-                            <Link to={`/${type}/${media.forID}`}>
-                                <h2>{media.title}</h2>
-                            </Link>                        
+                        <div key={media.forID} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
                             <img src={media.image || No_image} 
-                             onError={(e) => e.target.src = No_image}
-                             alt="listing_image" 
-                             className="listingImage"/>
-                            <p>Average Rating: {media.averageRating}</p>
-                            <p>Number of Reviews: {media.reviewCount}</p>
-                        </li>
+                            onError={(e) => e.target.src = No_image}
+                            loading="lazy"
+                            alt="listing_image" 
+                            className="w-full h-48 object-cover rounded-t-lg"/>
+                            <div className="p-4">
+                                <Link to={`/${type}/${media.forID}`} className="hover:text-blue-600">
+                                    <h3 className="text-lg font-semibold">{media.title}</h3>
+                                </Link>   
+                                <div className="mt-2 text-sm space-y-1">                     
+                                    <p>Average Rating: {media.averageRating}</p>
+                                    <p>Number of Reviews: {media.reviewCount}</p>
+                                </div>
+                            </div>
+                        </div>
                     ))}
-                </ol>
+                </div>
             </div>
         )
     }

@@ -36,13 +36,13 @@ function PopularListingsHorizontal({type}) {
         fetchData();
     },[type]);
     if(loading){
-        return <div>Loading...</div>;
+        return <div className="p-4 text-gray-500">Loading...</div>;
     }
     if(error){
-        return <div>Error: {error.message}</div>;
+        return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
     if(!listings || listings.length === 0){
-        return <div>No {Type} listings found</div>;
+        return <div className="p-4 text-gray-500">No {type} listings found</div>;
     }
     let body;
     if(type === 'books'){
@@ -58,6 +58,7 @@ function PopularListingsHorizontal({type}) {
                                                
                             <img src={book.cover|| No_image}
                              onError={(e) => e.target.src = No_image}
+                             loading="lazy"
                              alt="listing_image" 
                              className="w-full h-64 object-cover"/>
                             
@@ -108,6 +109,7 @@ function PopularListingsHorizontal({type}) {
                                 <div className="relative rounded-lg overflow-hidden">
                                     <img 
                                         src={media.image || No_image} 
+                                        loading="lazy"
                                         alt={media.title} 
                                         className="w-full h-64 object-cover"
                                         onError={(e) => e.target.src = No_image}
