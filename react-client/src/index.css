@@ -77,3 +77,11 @@ button:focus-visible {
     @apply text-red-500 font-bold bg-red-100 m-2
   }
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /*Apparently this is need for IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /*Chrome, Safari and Opera */
+}

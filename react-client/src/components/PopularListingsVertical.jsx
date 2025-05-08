@@ -82,7 +82,7 @@ function PopularListingsVertical({type, section}) {
                              alt="listing_image" 
                              className="listingImage"/>
                             <p>Year: {book.publish_year}</p>
-                            <p>Authors: {book.authors?.join(", ") ?? 'Unknown authors'}</p>
+                            <p>Authors: {book.authors?.join(", ") || 'Unknown authors'}</p>
                             <p>Average Rating: {book.averageRating}</p>
                             <p>Number of Reviews: {book.reviewCount}</p>
                         </li>

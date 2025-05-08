@@ -53,7 +53,7 @@ router.route("/search").get(async (req, res) => { //the url in the search bar sh
     }
 });
 router.route("/popularShows").get(async (req,res)=>{
-    let n= req.query.n;
+    let n= parseInt(req.query.n,10);
     try{
         if(!n) n= 10;
         if (isNaN(n)) n = 10;
@@ -71,7 +71,7 @@ router.route("/popularShows").get(async (req,res)=>{
 //we have not written this function yet 
 router.route("/getShowsRec").get(async (req, res) => {
     let accountID = req.query.accountID;
-    let n = req.query.n;
+    let n = parseInt(req.query.n, 10);
     try {
         if (!accountID) throw "No account ID provided";
         accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
