@@ -16,15 +16,15 @@ function NavBar() {
     ]
 
     return (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900">
-            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                <NavLink to='/' className={"flex items-center space-x-3 rtl:space-x-reverse"}>
-                    <img src={nerdipedia_logo} className="h-8" alt="nerdipedia_logo"/>
-                </NavLink>
+        <nav className="bg-teal-600 border-gray-200 dark:bg-teal-800 relative flex h16 items-center absolute inset-y-0 left-0 items-center">
+            <NavLink to='/' className={"flex items-center space-x-3 rtl:space-x-reverse ml-10"}>
+                <img src={nerdipedia_logo} className="w-30 object-scale-down" alt="nerdipedia_logo"/>
+            </NavLink>
+            <div className="max-w-screen-xl flex flex-wrap item-center left-0 p-0 my-0  mx-auto ">
                 <div className="hidden sm:ml-6 sm:block" id="navbar-default">
-                    <div className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <div className="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0">
                         {navigation.map( (navOpt) => (
-                            <NavLink to={navOpt.href} className={navOpt.current? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"}>
+                            <NavLink to={navOpt.href} className={navOpt.current? "bg-teal-900 text-white rounded-md p-5" : "text-gray-300 hover:bg-teal-700 hover:text-white rounded-md p-5 text-sm font-medium"}>
                                 {navOpt.name}
                             </NavLink>
                         ))}
@@ -41,7 +41,7 @@ function NavBar() {
             {currentUser? (
                 <Menu as="div" className="relative ml-3">
                 <div>
-                    <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                    <MenuButton className="relative flex rounded-full bg-teal-900 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">User Menu</span>
                     <img
@@ -76,7 +76,7 @@ function NavBar() {
             ) : (
                 <Menu as="div" className="relative ml-3">
                 <div>
-                    <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                    <MenuButton className="relative flex rounded-full bg-teal-900 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">User Menu</span>
                     <img

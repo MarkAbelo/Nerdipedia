@@ -13,22 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #10172a;
 }
 
 h1 {
@@ -76,4 +64,20 @@ button:focus-visible {
   .errorText {
     @apply text-red-500 font-bold bg-red-100 m-2
   }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /*Apparently this is need for IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /*Chrome, Safari and Opera */
+}
+
+img {
+  @apply max-w-full h-auto;
+}
+
+a {
+  @apply transition-colors duration-200;
 }
