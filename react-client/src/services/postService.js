@@ -148,7 +148,7 @@ const postService = {
     async searchPosts(term, section=null) {
         // Input Validation
         try {
-            term = await validationFunctions.validPositiveNumber(Number(term), 'Number of Posts');
+            term = await validationFunctions.validString(term, 'Search term');
             if (section) section = await validationFunctions.validSection(section);
         } catch (e) {
             console.log(e)
@@ -255,7 +255,7 @@ const postService = {
 //})
 //console.log(x)
 try {
-    const y = await postService.toggleDislikedPost('6815529a5eb4cc6861a53a49', '68154dc228f4196771248e88')
+    const y = await postService.getRecentPosts(2)
     console.log(y)
 } catch (e) {
     console.log(e)

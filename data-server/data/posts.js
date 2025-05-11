@@ -311,7 +311,7 @@ const postsDataFunctions = {
         ]).toArray();
         if (!postsList) throw 'Could not get popular posts';
 
-        postsList = postsList.map((post) => post._id);
+        postsList = postsList.map((post) => post._id.toString()); // Michael: added .toString()
         postsList = await Promise.all(postsList.map(this.getPostCard));
         return postsList;
     },
@@ -341,7 +341,7 @@ const postsDataFunctions = {
         if (!postsList) throw 'Could not get recent posts';
 
         postsList.sort((p1, p2) => new Date(p2.timeStamp) - new Date(p1.timeStamp));
-        postsList = postsList.map((post) => post._id).slice(0, n);
+        postsList = postsList.map((post) => post._id.toString()).slice(0, n); // Michael: added .toString()
         postsList = await Promise.all(postsList.map(this.getPostCard));
 
         // cache data
@@ -366,8 +366,7 @@ const postsDataFunctions = {
         let postsList = await postCol.find(matchCase, {projection: {_id: 1}}).toArray();
         if (!postsList) throw 'Could not search posts';
         if (postsList.length === 0) throw 'No posts found';
-
-        postsList = postsList.map((post) => post._id);
+        postsList = postsList.map((post) => post._id.toString()); // Michael: added .toString()
         postsList = await Promise.all(postsList.map(this.getPostCard));
         return postsList;
     },

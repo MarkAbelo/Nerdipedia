@@ -157,12 +157,12 @@ router.route("/search").get(async (req, res) => {
 router.route("/byAuthor/:authorID").get(async (req, res) => {
     let reqParams = req.params;
     try {
-        reqParams.accountID = await idValidationFunctions.validObjectId(reqParams.accountID, "Account ID");
+        reqParams.authorID = await idValidationFunctions.validObjectId(reqParams.authorID, "Account ID");
     } catch (e) {
         return res.status(400).json({error: e});
     }
     try {
-        const postsList = await postData.getPostsByAuthor(reqParams.accountID);
+        const postsList = await postData.getPostsByAuthor(reqParams.authorID);
         return res.status(200).json(postsList);
     } catch (e) {
         if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
