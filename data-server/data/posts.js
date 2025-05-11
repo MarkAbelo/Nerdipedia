@@ -194,7 +194,7 @@ const postsDataFunctions = {
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
-        const postFound = await postCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, posterID: 1}});
+        const postFound = await postCol.findOne({_id: new ObjectId(postID)}, {projection: {_id: 1, posterID: 1, likes: 1}});
         if (!postFound) throw 'Post not found';
 
         let returnStatus = {status: null};
@@ -207,21 +207,36 @@ const postsDataFunctions = {
             if (poster.dislikedPosts.includes(postID)) {
                 // user has disliked post, remove dislike
                 await accountsDataFunctions.toggleDislikedPost(accountID, postID);
+                await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {dislikes: -1}})
             }
             // user has has not liked post, set status to likes
             returnStatus.status = 'likes';
         }
+
+        let updateLike;
+        if (returnStatus.status == 'none') { // decrease likes
+            if (postFound.likes == 0) { // Prevent negative likes
+                updateLike = 0
+            } else {
+                updateLike = -1
+            }
+        } else if (returnStatus.status == 'likes') { // increase likes
+            updateLike = 1
+        }
+        await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {likes: updateLike}})
+
         // toggle liked status for post
         await accountsDataFunctions.toggleLikedPost(accountID, postID);
 
         // delete related cache entries
-        await redis_client.del(`post/${id}`);
-        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/${postID}`);
+        await redis_client.del(`post/card/${postID}`);
         await redis_client.del(`post/by/${postFound.posterID}`);
         await redis_client.del(recentPostsAllCacheKey);
-        await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+        //if (await redis_client.exists(recentPostsSectionCacheKeys[postFound.section])) await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+        
 
-        return returnStatus;
+        return returnStatus.status;
     },
 
     async toggleDislikePost(postID, accountID){
@@ -233,34 +248,47 @@ const postsDataFunctions = {
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
-        const postFound = await postCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, posterID: 1}});
+        const postFound = await postCol.findOne({_id: new ObjectId(postID)}, {projection: {_id: 1, posterID: 1, dislikes: 1}});
         if (!postFound) throw 'Post not found';
 
         let returnStatus = {status: null};
-
         const poster = await accountsDataFunctions.getAccount(postFound.posterID);
-        if (poster.dislikedPosts.includes(postID)){
+        if (poster.dislikedPosts.includes(postID)) {
             // user has disliked post, set status to none
             returnStatus.status = 'none';
         } else {
             if (poster.likedPosts.includes(postID)) {
                 // user has liked post, remove like
                 await accountsDataFunctions.toggleLikedPost(accountID, postID);
+                await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {likes: -1}})
             }
             // user has has not disliked post, set status to dislikes
             returnStatus.status = 'dislikes';
         }
+        let updateDislike;
+        if (returnStatus.status == 'none') { // decrease dislikes
+            if (postFound.dislikes == 0) { // Prevent negative dislikes
+                updateDislike = 0
+            } else {
+                updateDislike = -1
+            }
+        } else if (returnStatus.status == 'dislikes') { // increase dislikes
+            updateDislike = 1
+        }
+        await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {dislikes: updateDislike}})
+
+
         // toggle disliked status for post
         await accountsDataFunctions.toggleDislikedPost(accountID, postID);
 
         // delete related cache entries
-        await redis_client.del(`post/${id}`);
-        await redis_client.del(`post/card/${id}`);
+        await redis_client.del(`post/${postID}`);
+        await redis_client.del(`post/card/${postID}`);
         await redis_client.del(`post/by/${postFound.posterID}`);
         await redis_client.del(recentPostsAllCacheKey);
-        await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
+        //await redis_client.del(recentPostsSectionCacheKeys[postFound.section]);
 
-        return returnStatus;
+        return returnStatus.status;
     },
 
     async getPopularPosts(n=20, section){
