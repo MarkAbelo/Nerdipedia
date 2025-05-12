@@ -1,12 +1,10 @@
 import axios from 'axios';
-import idValidationFunctions from '../../../data-server/validation/id_validation.js';
 import validationFunctions from '../../../data-server/validation/validation.js';
 
 const movieService={
     async getMovie(id){
         try{
-            if(!id) throw "No movie id provided";
-            id= await idValidationFunctions.validObjectId(id, "Movie ID");
+            if(!id) throw "No movie id provided";;
             const data= await axios.get( `http://localhost:3000/movies/getMovie/${id}`);
             if(data.status === 200){
                 return data.data;
@@ -62,7 +60,6 @@ const movieService={
     async getMovieRecs(accountId, n){
         try{
             if(!accountId) throw "No account id provided";
-            accountId= await idValidationFunctions.validObjectId(accountId, "Account ID");
             if(!n) n= 10;
             if (isNaN(n)) n = 10;
             n= await validationFunctions.validPositiveNumber(n, "Number of shows");

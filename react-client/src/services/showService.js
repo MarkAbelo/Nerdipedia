@@ -1,12 +1,10 @@
 import axios from 'axios';
-import idValidationFunctions from '../../../data-server/validation/id_validation.js';
 import validationFunctions from '../../../data-server/validation/validation.js';
 
 const showService={
     async getShow(id){
         try{
             if(!id) throw "No show id provided";
-            id= await idValidationFunctions.validObjectId(id, "Show ID");
             const data= await axios.get( `http://localhost:3000/shows/getShow/${id}`);
             if(data.status === 200){
                 return data.data;
@@ -62,7 +60,6 @@ const showService={
     async getShowRecs(accountId, n){
         try{
             if(!accountId) throw "No account id provided";
-            accountId= await idValidationFunctions.validObjectId(accountId, "Account ID");
             if(!n) n= 10;
             if (isNaN(n)) n = 10;
             n= await validationFunctions.validPositiveNumber(n, "Number of shows");
