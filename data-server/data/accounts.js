@@ -55,7 +55,7 @@ const accountsDataFunctions = {
         return accountFound;
     },
 
-    async createAccount(username, password, email, profilePic) {
+    async createAccount(username, password, email, profilePic=null) {
         /*
             username: string
             email: string
@@ -84,14 +84,14 @@ const accountsDataFunctions = {
                 password,
                 displayName: username
             });
-            firebaseUser = firebaseUserCredential.user;
+            console.log(firebaseUserCredential)
+            firebaseUser = firebaseUserCredential;
         } catch (e) {
             console.log(e)
             throw e
         }
 
         const firebaseUid = firebaseUser.uid;
-        
         //Passed Firebase, Make user in the MongoDB
         const newUser = {
             username,
@@ -114,7 +114,7 @@ const accountsDataFunctions = {
         const mongoUserId = insertResult.insertedId.toString();
 
         //store the accountID in Firebase (I'm putting it in displayName for now until we think of a better solution)
-        await admin.auth().updateUser(firebaseUser, {
+        await admin.auth().updateUser(firebaseUser.uid, { // Michael: added .uid
             displayName: mongoUserId
         });
 
@@ -281,7 +281,16 @@ const accountsDataFunctions = {
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
         if (!accountFound) throw 'No account found with that ID';
 
-        const updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID}})
+        let updateInfo;
+        if (accountFound.likedPosts.includes(postID)) { // Ensure post removed from likes/dislikes array, if applicable
+            updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID, likedPosts: postID}})
+        }
+        if (accountFound.dislikedPosts.includes(postID)) {
+            updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID, dislikedPosts: postID}})
+        } else {
+            updateInfo = await accountCol.updateOne({_id: new ObjectId(accountID)}, {$pull :{posts: postID}})
+        }
+
         if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
             throw 'Failed to remove post from account info';
         }

@@ -135,7 +135,7 @@ const postsDataFunctions = {
         await redis_client.del(`post/card/${id}`);
         await redis_client.del(`post/by/${deletedPost.posterID}`);
         await redis_client.del(recentPostsAllCacheKey);
-        await redis_client.del(recentPostsSectionCacheKeys[deletedPost.section]);
+        //await redis_client.del(recentPostsSectionCacheKeys[deletedPost.section]);
 
         return true;
     },

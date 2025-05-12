@@ -255,7 +255,14 @@ const postService = {
 //})
 //console.log(x)
 try {
-    const y = await postService.getRecentPosts(2)
+    const y = await postService.deletePost("6815529a5eb4cc6861a53a49")
+    //const x = await postService.createPost({
+    //        'posterID': '68154dc228f4196771248e88', 
+    //        'title': "Thoughts on White Lotus",
+    //        'section': "show",
+    //        'body': "Very fun and awesome to watch :)",
+    //        'images': ["https://sitechecker.pro/wp-content/uploads/2023/05/URL-meaning.jpg"]
+    //    })
     console.log(y)
 } catch (e) {
     console.log(e)
