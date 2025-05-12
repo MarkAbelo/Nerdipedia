@@ -295,7 +295,21 @@ function Post() {
                     className="w-full border my-2 bg-zinc-900 border-gray-300 rounded px-3 py-2"
                   />
                     <br/>
-                    <br/>
+                    <div className="flex flex-row items-center">
+                  <label className="text-lg" for='section'>Section:</label>
+                  <select
+                      id='section'
+                      value={editedSection}
+                      onChange={(e) => setEditedSection(e.target.value)}
+                      className="block w-full mx-2 my-2 px-3 py-2 border border-gray-300 bg-zinc-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                      <option value="">Select a section</option>
+                      <option value="show">Show</option>
+                      <option value="movie">Movie</option>
+                      <option value="book">Book</option>
+                      <option value="dnd">Dungeons & Dragons</option>
+                  </select>
+                </div>
                   <label className="text-lg" for='body'>Body:</label>
                   <textarea
                     id='body'
@@ -305,21 +319,8 @@ function Post() {
                     rows={5}
                   />
                   <br/>
-                  <div className="flex flex-row items-center">
-                  <label className="text-lg" for='section'>Section:</label>
-                  <select
-                      id='section'
-                      value={editedSection}
-                      onChange={(e) => setEditedSection(e.target.value)}
-                      className="block w-full mx-2 my-2 px-3 py-2 border border-gray-300 bg-zinc-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  >
-                      <option value="show">Show</option>
-                      <option value="movie">Movie</option>
-                      <option value="book">Book</option>
-                      <option value="dnd">Dungeons & Dragons</option>
-                  </select>
-                </div>
-                <label className="block text-sm font-medium text-gray-700">
+                  <br/>
+                <label className="block text-sm font-medium text-gray-300">
                     Upload Images
                 </label>
                 <input
