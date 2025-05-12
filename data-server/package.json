@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "run": "node app.js"
+    "start": "node app.js"
   },
   "author": "Mark Abelo, Michael Moonan, Kendell Muldrow, Kush Parmar",
   "license": "ISC",
