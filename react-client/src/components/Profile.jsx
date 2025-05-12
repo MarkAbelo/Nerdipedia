@@ -11,6 +11,14 @@ function Profile(){
     const [ error, setError] = useState(null);
     const [accountData, setAccountData] = useState(undefined);
 
+    // Edit Modal state
+    const [modalActive, setModalActive] = useState(false) 
+    const [editedTitle, setEditedTitle] = useState(null);
+    const [editedBody, setEditedBody] = useState(null);
+    const [editedSection, setEditedSection] = useState(null);
+    const [editedImages, setEditedImages] = useState(null);
+    const [uploadedImages, setUploadedImages] = useState([])
+
     useEffect(() => {
         async function fetchData(){
             try {
@@ -39,7 +47,7 @@ function Profile(){
     }
     return (
         <div>
-            <div className="flex justify-start space-x-10 items-center">
+            <div className="flex justify-start space-x-10 items-center my-5">
                 <img
                     src={accountData.profilePic}
                     alt="Poster profile"
@@ -48,10 +56,10 @@ function Profile(){
                 <h1>{accountData.username}</h1>
             </div>
 
-            POSTS HERE
-            TOP BOOKS HERE
-            TOP MOVIES HERE
-            TOP SHOWS HERE
+            <div>POSTS HERE</div>
+            <div>TOP BOOKS HERE</div>
+            <div>TOP MOVIES HERE</div>
+            <div>TOP SHOWS HERE</div>
 
         </div>
     );
