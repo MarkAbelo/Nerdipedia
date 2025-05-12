@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import validationFunctions from "../../../data-server/validation/validation";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import accountService from "../services/accountService";
+import imageService from "../services/imageService";
 
 
 function Register() {
@@ -13,11 +14,15 @@ function Register() {
         email: '',
         password: '',
         passwordConfirm: '',
-        profilePic: ''
     });
+    const [imageFile, setImageFile] = useState(null);
     const [errors, setErrors] = useState({});
     const [serverError, setServerError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+    const selectFileHandler = (e) => {
+        setImageFile(e.target.files[0]);
+    }
 
     const handleChange = async(e) => {
         const { name, value } = e.target;
@@ -51,16 +56,23 @@ function Register() {
     const handleSubmit = async(e) => {
         e.preventDefault();
 
+        let profilePic = null
+        try {
+            profilePic = await imageService(imageFile);
+        } catch (err) {
+            setServerError('Could not upload image file');
+            console.log(err)
+        }
+
         //validate before submitting
         let username;
         let email;
         let password;
-        let profilePic = null
         try {
             username = await validationFunctions.validString(formData.username, 'Username');
             email = await validationFunctions.validEmail(formData.email);
             password = await validationFunctions.validPassword(formData.password);
-            if (formData.profilePic.trim()) profilePic = await validationFunctions.validURL(formData.profilePic, 'Profile picture URL'); 
+            if (profilePic.trim()) profilePic = await validationFunctions.validURL(profilePic, 'Profile picture URL'); 
 
         } catch (err) {
             setServerError(err.toString());
@@ -69,18 +81,17 @@ function Register() {
 
         //TODO: the actual submission using the service
         try {
-            accountService.createAccount(username, password, email, profilePic)
+            await accountService.createAccount(username, password, email, profilePic)
             setSuccessMessage("Account created successfully!");
             setFormData({ username: '', email: '', password: '', profilePic: '' });
             setTimeout(() => navigate("/login"), 1500); 
-        } catch(e) {
-            console.log(e.response.data)
-            throw "Error: account could not be created"
+        } catch(err) {
+            setServerError(err.toString());
+            return;
         }
 
     }
         
-     
     
 
     return(
@@ -107,8 +118,8 @@ function Register() {
                 {errors.passwordConfirm && <p className="errorText">{errors.passwordConfirm}</p>}
 
 
-                <label>Profile Picture URL:</label>
-                <input name="profilePic" className="bg-white" value={formData.profilePic} onChange={handleChange} /><br />
+                <label>Profile Picture:</label>
+                <input type="file" name="profilePic" className="bg-white" onChange={selectFileHandler} />
                 {errors.profilePic && <p className="errorText">{errors.profilePic}</p>}
             </div>
             

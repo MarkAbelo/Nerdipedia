@@ -12,7 +12,7 @@ const upload = multer({
 })
 
 const storage = new Storage({
-    keyFilename: "../config/imageServerKey.json"
+    keyFilename: "./config/imageServerKey.json"
 })
 
 const bucket = storage.bucket(bucketName);
@@ -23,7 +23,6 @@ router.post("/upload", upload.single('imgfile'), async (req, res) => {
         if (!req.file) {
             return res.status(400).json({error: "No file uploaded"});
         }
-    
         const blob = bucket.file(req.file.originalname);
         const blobStream = blob.createWriteStream();
 

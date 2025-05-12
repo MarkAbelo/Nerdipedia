@@ -13,7 +13,7 @@ function Home() {
 
     return(
         <div>
-            <h1>Hi {getUsername()}!</h1>
+            <h1>Hello, {getUsername()}!</h1>
             <PopularListingsHorizontal type="books"/>
             <PopularListingsHorizontal type="movies"/>
             <PopularListingsHorizontal type="shows"/>

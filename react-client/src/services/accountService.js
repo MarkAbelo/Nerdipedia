@@ -61,7 +61,8 @@ const accountService = {
             return data.data
         } catch (e) {
             console.log(e.response.data)
-            throw "Error: accountService could not create account due to data-server error (see browser logs)"
+            if(e.response.data.error && e.response.data.error.message) throw e.response.data.error.message;
+            else throw "Error: accountService could not create account due to data-server error (see browser logs)";
         }
     },
 

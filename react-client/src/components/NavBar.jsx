@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import nerdipedia_logo from "../assets/Nerdipedia_BGless.png";
+import accountService from "../services/accountService";
 
 function NavBar() {
-    const { currentUser } = useAuth();
+    const { currentUser, mongoUser } = useAuth();
     const location = useLocation();
 
     const navigation = [
@@ -48,7 +49,7 @@ function NavBar() {
                     <span className="sr-only">User Menu</span>
                     <img
                         alt="profile_picture"
-                        src="/nouser.jpg"
+                        src={mongoUser && mongoUser.profilePic?  mongoUser.profilePic : "/nouser.jpg"}
                         className="size-8 rounded-full"
                     />
                     </MenuButton>
