@@ -7,12 +7,19 @@ function Post() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const [ loading, setLoading ] = useState(true);
+    const [ postData, setPostData ] = useState(undefined);
+
+    useEffect(() => {
+        async function fetchData() {
+            await postService.getPost(id);
+        }
+        fetchData();
+    }, [id]);
+
     return(
         <div>
             <h1>Hi</h1>
-            <PopularListingsHorizontal type="books"/>
-            <PopularListingsHorizontal type="movies"/>
-            <PopularListingsHorizontal type="shows"/>
         </div>
     )
 }
