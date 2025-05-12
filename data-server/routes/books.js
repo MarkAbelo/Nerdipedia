@@ -23,7 +23,7 @@ router.route("/getBook/:bookId").get(async (req, res) => {
     }
     try{
         const bookReview = await reviewData.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
-        bookInfo['bookReview']=bookReview;
+        bookFound['bookReview']=bookReview;
         return res.status(200).json(bookFound);
     }
     catch (e) {
