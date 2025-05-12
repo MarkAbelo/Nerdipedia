@@ -16,9 +16,9 @@ const reviewService = {
             throw e;
         }
         try {
-            const response = await axios.post("http://localhost:3000/reviews/create", reviewObj);
-            if (response.status === 200) {
-                return response.data.reviewID;
+            const data = await axios.post("http://localhost:3000/reviews/create", reviewObj);
+            if (data.status === 200) {
+                return data.data.reviewID;
             } else {
                 throw response.error;
             }
@@ -30,15 +30,14 @@ const reviewService = {
 
     async getReview(id) {
         try {
-            const response = await axios.get(`http://localhost:3000/reviews/data/${id}`);
-            if (response.status === 200) {
-                return response.data;
+            const data = await axios.get(`http://localhost:3000/reviews/data/${id}`);
+            if (data.status === 200) {
+                return data.data;
             } else {
-                throw response.error;
+                throw data.error;
             }
         } catch (e) {
             console.log(e);
-            if (e.response?.status === 404) throw "Review not found";
             throw "Error: Failed to fetch review";
         }
     },
@@ -59,8 +58,8 @@ const reviewService = {
             if (updateObj.section) {
                 validatedUpdate.section = await validationFunctions.validSection(updateObj.section);
             }
-            const response = await axios.patch(`http://localhost:3000/reviews/data/${id}`, validatedUpdate);
-            return response.data.success;
+            const data = await axios.patch(`http://localhost:3000/reviews/data/${id}`, validatedUpdate);
+            return data.data.success;
         } catch (e) {
             console.log(e);
             throw "Error: Failed to update review";
@@ -69,11 +68,14 @@ const reviewService = {
 
     async deleteReview(id) {
         try {
-            const response = await axios.delete(`http://localhost:3000/reviews/data/${id}`);
-            return response.data.success;
+            const data = await axios.delete(`http://localhost:3000/reviews/data/${id}`);
+            if (data.status == 200) {
+                return data.data.success
+            } else {
+                throw data.error
+            }
         } catch (e) {
             console.log(e);
-            if (e.response?.status === 404) throw "Review not found";
             throw "Error: Failed to delete review";
         }
     }
