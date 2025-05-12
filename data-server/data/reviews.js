@@ -7,6 +7,11 @@ import showsDataFunctions from "../data/showsData.js";
 import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
 import { movieRec, showRec, bookRec } from "../config/recRaccoon.js";
 
+import redis from 'redis';
+const redis_client = redis.createClient();
+await redis_client.connect();
+import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
+
 const reviewsDataFunctions = {
     async createReview(posterID, body, rating, section, forID){
         if(!posterID) throw (`No User ID found`);
