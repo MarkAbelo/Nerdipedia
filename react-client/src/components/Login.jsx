@@ -17,7 +17,7 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // The context will pick up the change and fetch mongoUser
-      navigate("/home");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }

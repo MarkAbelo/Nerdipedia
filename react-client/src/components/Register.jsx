@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { useAuth } from "../contexts/authContext";
 import validationFunctions from "../../../data-server/validation/validation";
+import { NavLink, useNavigate } from "react-router-dom";
+import accountService from "../services/accountService";
+
 
 function Register() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         username: '',
@@ -32,20 +36,34 @@ function Register() {
     };
 
     const handleSubmit = async(e) => {
-        e.preventdefault();
+        e.preventDefault();
 
         //validate before submitting
+        let username;
+        let email;
+        let password;
+        let profilePic = null
         try {
-            await validationFunctions.validString(formData.username, 'Username');
-            await validationFunctions.validEmail(formData.email);
-            await validationFunctions.validPassword(formData.password);
-            if (formData.profilePic.trim()) await validationFunctions.validURL(formData.profilePic, 'Profile picture URL'); 
+            username = await validationFunctions.validString(formData.username, 'Username');
+            email = await validationFunctions.validEmail(formData.email);
+            password = await validationFunctions.validPassword(formData.password);
+            if (formData.profilePic.trim()) profilePic = await validationFunctions.validURL(formData.profilePic, 'Profile picture URL'); 
         } catch (err) {
             setServerError(err.toString());
             return;
         }
 
         //TODO: the actual submission using the service
+        try {
+            accountService.createAccount(username, password, email, profilePic)
+            setSuccessMessage("Account created successfully!");
+            setFormData({ username: '', email: '', password: '', profilePic: '' });
+            setTimeout(() => navigate("/login"), 1500); 
+        } catch(e) {
+            console.log(e.response.data)
+            throw "Error: account could not be created"
+        }
+
     }
         
      

@@ -1,17 +1,8 @@
 import axios from 'axios';
-import idValidationFunctions from '../../../data-server/validation/id_validation.js';
 import validationFunctions from '../../../data-server/validation/validation.js';
 
 const accountService = {
     async getAccount(id) {
-        // Input Validation
-        try {
-            id = await idValidationFunctions.validObjectId(id, "Account ID");
-        } catch (e) {
-            console.log(e)
-            throw e 
-            // Not sure how this will interact with frontend, whether throwing or not throwing is better for re-renders, will test once frontend up
-        }
         // Sending request to data-server
         try {
             const data = await axios.get(`http://localhost:3000/accounts/data/${id}`)
@@ -23,14 +14,6 @@ const accountService = {
     },
 
     async getAccountCard(id) {
-        // Input Validation
-        try {
-            id = await idValidationFunctions.validObjectId(id, "Account ID");
-        } catch (e) {
-            console.log(e)
-            throw e 
-            // Not sure how this will interact with frontend, whether throwing or not throwing is better for re-renders, will test once frontend up
-        }
         // Sending request to data-server
         try {
             const data = await axios.get(`http://localhost:3000/accounts/formdata/${id}`)
@@ -86,7 +69,6 @@ const accountService = {
         // Input Validation
         const editObj = {}
         try {
-            accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
             if (newUsername) {
                 editObj.username = await validationFunctions.validString(newUsername);
             }
@@ -106,7 +88,7 @@ const accountService = {
         }
         // Sending request to data-server
         try {
-            const data = await axios.patch(`http://localhost:3000/accounts/data/${id}`, editObj)
+            const data = await axios.patch(`http://localhost:3000/accounts/data/${accountID}`, editObj)
             return data.data
         } catch (e) {
             console.log(e)
@@ -115,14 +97,6 @@ const accountService = {
     },
 
     async deleteAccount(accountID) {
-        // Input Validation
-        try {
-            accountID = await idValidationFunctions.validObjectId(accountID, 'Account ID');
-        } catch (e) {
-            console.log(e)
-            throw e 
-            // Not sure how this will interact with frontend, whether throwing or not throwing is better for re-renders, will test once frontend up
-        }
         // Sending request to data-server
         try {
             const data = await axios.delete(`http://localhost:3000/accounts/data/${accountID}`)
@@ -134,14 +108,6 @@ const accountService = {
     }
     // addPostToAccount, removePostFromAccount, and toggle like/dislike post all handled in postService.js 
 
-}
-
-try {
-    const y = await accountService.createAccount("Sammisas", "1234abcd!", "samantha38068@gmail.com")
-    console.log(y)
-} catch (e) {
-    console.log(e)
-    throw e
 }
 
 export default accountService;

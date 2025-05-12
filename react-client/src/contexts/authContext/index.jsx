@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import accountService from "../../services/accountService";
 
 const AuthContext = React.createContext();
 
@@ -29,6 +30,7 @@ export function AuthProvider({ children }) {
             try {
                 const mongoUserId = user.displayName;
                 //TODO: make call under aaccountService "getAccount" which will be passed the mongoID
+                setMongoUser(accountService.getAccount(mongoUserId))
             } catch(e) {
                 console.log(e)
                 setMongoUser(null);
