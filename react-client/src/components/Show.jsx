@@ -31,21 +31,29 @@ function Show() {
         fetchShow();
     }, [id]);
 
-    if (error) return <p className="errorText">{error}</p>
-    if (!show) return <p>Loading show...</p>
+    if (error) return <p className="text-red-500 text-center mt-8">{error}</p>
+    if (!show) return <p className="text-center mt-8">Loading show...</p>
 
     return (
-        <div>
-            <h1>{show.name}</h1>
+        <div className="max-w-5x1 mx-auto p-4">
+            {/* Poster and Title */}
+            <div className="flex flex-col items-center md:flex-row md:items-start gap-6 mb-10">
+                <img
+                    src={show.image?.medium || No_image}
+                    alt={show.name}
+                    className="rounded-lg shadow-md max-w-sm md:max-w-xs object-cover"
+                />
+                <div className="flex-1">
+                    <h1 className="text-3x1 font-bold mb-3">{show.name}</h1>
+                    <p className="text-gray-700">{stripTags(show.summary)}</p>
+                </div>
+            </div>
 
-            {show.image && (
-                <img src={show.image.medium}/>
-            )}
-
-            <p>{stripTags(show.summary)}</p>
+            {/*Reviews if they exist */}
+            <h2 className="text-2x1 font-semibold mb-4">Reviews</h2>
 
             {!reviews && (
-                <p>No reviews found</p>
+                <p className="text-gray-600">No reviews found</p>
             )}
         </div>
     )
