@@ -20,7 +20,7 @@ const reviewService = {
             if (data.status === 200) {
                 return data.data.reviewID;
             } else {
-                throw response.error;
+                throw data.error;
             }
         } catch (e) {
             console.log(e);
