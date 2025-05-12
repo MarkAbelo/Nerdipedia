@@ -84,7 +84,7 @@ router.route("/getBooksRecs").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try{
-        const bookList = await bookData.getBooksRecs(accountId, n);
+        const bookList = await bookData.getBookRecs(accountId, n);
         return res.status(200).json(bookList);
     }catch (e) {
         return res.status(500).json({error: e});

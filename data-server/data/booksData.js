@@ -74,6 +74,7 @@ const booksDataFunctions={
         return booksData.docs.map(book=>
             (
                 {
+                    id: this.getId(book.key),
                     title:book.title,
                     authors: book.author_name || [],
                     //-S, -M, -L for image size
@@ -108,7 +109,7 @@ const booksDataFunctions={
             throw (e);
         }
         //-S, -M, -L for image size
-        const returnCard = {title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
+        const returnCard = {id,title: bookInfo.title, cover: bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(returnInfo));
@@ -116,7 +117,7 @@ const booksDataFunctions={
         return returnCard;
 
     },
-
+    
     async getBookRecs(accountID, n){
         // assumes accountID exists
         accountID = await idValidationFunctions.validObjectId(accountID);

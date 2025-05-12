@@ -104,7 +104,7 @@ const showsDataFunctions = {
         } catch(e) {
             throw (e);
         }
-        const returnCard =  {title: showInfo.show.name, image: show.image?.medium || null};
+        const returnCard =  {id,title: showInfo.show.name, image: show.image?.medium || null};
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(returnInfo));

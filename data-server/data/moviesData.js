@@ -134,6 +134,7 @@ const moviesDataFunctions = {
         }
 
         const movieCard = {
+            id,
             title: movieInfo.Title,
             image: movieInfo.Poster? movieInfo.Poster : null
         }
