@@ -84,7 +84,6 @@ const accountsDataFunctions = {
                 password,
                 displayName: username
             });
-            console.log(firebaseUserCredential)
             firebaseUser = firebaseUserCredential;
         } catch (e) {
             console.log(e)
