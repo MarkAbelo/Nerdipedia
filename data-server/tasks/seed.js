@@ -22,7 +22,7 @@ try {
         {username: "Deadman123", password: "testPass03C", email: "thelivingdead@gmail.com", profilePic: "https://storage.googleapis.com/nerdipedia_images/soul.jpg"}
     ];
     await Promise.all(seedAccounts.map(async (acc) => {
-        let { firebaseUid, mongoUserId } = await accountData.createAccount(acc.email, acc.password, acc.email, acc.profilePic);
+        let { firebaseUid, mongoUserId } = await accountData.createAccount(acc.username, acc.password, acc.email, acc.profilePic);
         accountIDs.push(mongoUserId);
     }));
 
