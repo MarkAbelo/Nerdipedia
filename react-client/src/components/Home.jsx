@@ -4,11 +4,11 @@ import { useAuth } from "../contexts/authContext";
 
 function Home() {
 
-    const { currentUser } = useAuth()
+    const { currentUser, mongoUser } = useAuth()
 
     const getUsername = () => {
         if (!currentUser) return "Guest";
-        if (currentUser.displayName) return currentUser.email;
+        if (mongoUser) return mongoUser.username;
     }
 
     return(

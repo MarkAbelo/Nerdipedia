@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
             try {
                 const mongoUserId = user.displayName;
                 //TODO: make call under aaccountService "getAccount" which will be passed the mongoID
-                setMongoUser(accountService.getAccount(mongoUserId))
+                setMongoUser(await accountService.getAccount(mongoUserId))
             } catch(e) {
                 console.log(e)
                 setMongoUser(null);
