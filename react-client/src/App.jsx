@@ -7,6 +7,7 @@ import Login from './components/Login'
 import Signout from './components/signout'
 import Show from './components/Show'
 import Post from './components/Post'
+import Profile from './components/Profile'
 
 function App() {
 
@@ -15,6 +16,8 @@ function App() {
       <header>
         <NavBar/>
       </header>
+      <div className='mainBody'>
+        <br/>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/register' element={<Register />} />
@@ -23,8 +26,9 @@ function App() {
         <Route path='/signout' element={<Signout />} />
         <Route path='/show/:id' element={<Show />} />
         <Route path='/post/:id' element={<Post/>} />
-        <Route path='/account/:id' element={<></>} />
+        <Route path='/account/:id' element={<Profile />} />
       </Routes>
+      </div>
     </>
   )
 }

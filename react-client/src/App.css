@@ -3,3 +3,7 @@
 input {
     @apply pl-1;
 }
+
+.mainBody div {
+    @apply sm:max-w-4/5 sm:mx-auto 
+}

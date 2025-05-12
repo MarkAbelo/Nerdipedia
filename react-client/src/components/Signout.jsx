@@ -36,7 +36,7 @@ const Signout = () => {
 
             {!confirm ? (
                 <div>
-                    <p>Are you sure you want to sign out, {currentUser?.email}?</p>
+                    <p>Are you sure you want to sign out of {currentUser?.email}?</p><br/>
                     <button onClick={() => setConfirm(true)}>Yes, sign out</button>
                     <br />
                     <button onClick={() => navigate(-1)}>

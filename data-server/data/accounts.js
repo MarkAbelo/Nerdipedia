@@ -25,7 +25,6 @@ const accountsDataFunctions = {
         if(!accountCol) throw 'Failed to connect to post database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)});
         if (!accountFound) throw 'Account not found';
-        console.log(accountFound)
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(accountFound));
 

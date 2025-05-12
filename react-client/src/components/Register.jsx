@@ -79,7 +79,7 @@ function Register() {
             return;
         }
 
-        //TODO: the actual submission using the service
+        //create account using data service
         try {
             await accountService.createAccount(username, password, email, profilePic)
             setSuccessMessage("Account created successfully!");

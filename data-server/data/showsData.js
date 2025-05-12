@@ -87,7 +87,7 @@ const showsDataFunctions = {
     async getShowCard(id) {
         //given a show id, returns the title and image of the show 
         if (!id) throw ('Id must be provided!');
-        id = await idValidationFunctions.validPositiveNumber(id, "show ID");
+        id = await validationFunctions.validPositiveNumber(Number(id), "show ID");
 
         // check cache
         const cacheKey = `show/card/${id}`;
@@ -104,10 +104,10 @@ const showsDataFunctions = {
         } catch(e) {
             throw (e);
         }
-        const returnCard =  {id,title: showInfo.show.name, image: show.image?.medium || null};
+        const returnCard =  {id,title: showInfo.name, image: showInfo.image?.medium || null};
 
         // cache data
-        await redis_client.set(cacheKey, JSON.stringify(returnInfo));
+        await redis_client.set(cacheKey, JSON.stringify(returnCard));
 
         return returnCard;
     },

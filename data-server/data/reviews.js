@@ -196,7 +196,7 @@ const reviewsDataFunctions = {
             { $match: {posterID: posterID, section: "movie"} },
             { $sort: {rating: -1} },
             { $limit: 10 },
-            { $project: {_id: 1}}
+            { $project: {_id: 0, forID: 1}}
         ]).toArray();
         if (!reviewList) throw 'Could not get account\'s top movies';
 
@@ -227,7 +227,7 @@ const reviewsDataFunctions = {
             { $match: {posterID: posterID, section: "book"} },
             { $sort: {rating: -1} },
             { $limit: 10 },
-            { $project: {_id: 1}}
+            { $project: {_id: 0, forID: 1}}
         ]).toArray();
         if (!reviewList) throw 'Could not get account\'s top books';
 
@@ -258,7 +258,7 @@ const reviewsDataFunctions = {
             { $match: {posterID: posterID, section: "show"} },
             { $sort: {rating: -1} },
             { $limit: 10 },
-            { $project: {_id: 1}}
+            { $project: {_id: 0, forID: 1}}
         ]).toArray();
         if (!reviewList) throw 'Could not get account\'s top shows';
 
