@@ -4,7 +4,6 @@ import idValidationFunctions from "../validation/id_validation.js";
 import booksDataFunctions from "../data/booksData.js";
 import moviesDataFunctions from "../data/moviesData.js";
 import showsDataFunctions from "../data/showsData.js";
-import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
 import { movieRec, showRec, bookRec } from "../config/recRaccoon.js";
 
 import redis from 'redis';
