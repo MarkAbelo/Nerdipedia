@@ -7,3 +7,7 @@ input {
 .mainBody div {
     @apply sm:max-w-4/5 sm:mx-auto 
 }
+
+h2 {
+    @apply text-lg font-semibold
+}
