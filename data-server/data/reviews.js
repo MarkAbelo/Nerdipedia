@@ -12,6 +12,19 @@ await redis_client.connect();
 import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
 
 const reviewsDataFunctions = {
+    async getReview(id){
+        //check to see if the review object is valid
+        if(!id) throw (`No review ID found`);
+        id= await idValidationFunctions.validObjectId(id, "Review ID");
+
+        const reviewsCollection = await reviews();
+        if(!reviewsCollection) throw 'Failed to connect to review database';
+        const reviewFound = await reviewsCollection.findOne({ _id: new ObjectId(id) });
+        if (!reviewFound) throw 'Review not found';
+
+        return reviewFound;
+    },
+
     async createReview(posterID, body, rating, section, forID){
         if(!posterID) throw (`No User ID found`);
         if(!body) throw (`No review body text found`);
@@ -46,8 +59,8 @@ const reviewsDataFunctions = {
         // delete related cache entries
         await redis_client.del(`reviews/${section}/${forID}`);
         await redis_client.del(`reviews/topMoviesFor/${posterID}`)
-        await redis_client.del(`reviews/topBooksFor/${reviewToUpdate.posterID}`)
-        await redis_client.del(`reviews/topShowsFor/${reviewToUpdate.posterID}`)
+        await redis_client.del(`reviews/topBooksFor/${posterID}`)
+        await redis_client.del(`reviews/topShowsFor/${posterID}`)
 
         // update recommendation info
         switch (section){

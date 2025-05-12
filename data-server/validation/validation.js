@@ -35,7 +35,7 @@ const validationFunctions= {
     async validPostBody(body){
         body = await this.validString(body, 'Post body');
         if(body.length===0) throw 'Post body cannot be empty!';
-        if(body.length > 1000) throw 'Post body is too long, please keep it under 1000 characters!'
+        if(body.length > 3000) throw 'Post body is too long, please keep it under 3000 characters!'
         return body;
     },
 
