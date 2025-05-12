@@ -19,8 +19,7 @@ function Show() {
             try {
                 const show = await showService.getShow(id)
                 setShow(show);
-                setReviews(show.reviews)
-                console.log(show.data)
+                setReviews(show.showReview)
             } catch(e) {
                 setError("Failed to load show or reviews.");
                 console.log(e);
@@ -51,12 +50,23 @@ function Show() {
             {/*Reviews if they exist */}
             <h2 className="text-2x1 font-semibold mb-4">Reviews</h2>
 
-            {!reviews && (
+            {reviews.length === 0 ? (
                 <p className="text-gray-600">No reviews found</p>
+            ) : (
+                <ul className="space-y-4">
+                    {reviews.map((review) => (
+                        <li key={review._id} className="bg-gray-100 rounded-md">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-gray-800">{review.username || "Anon"}</span>
+                                <span className="text-sm text-yellow-600 font-semibold">{review.rating}/10</span>
+                            </div>
+                            <p className="text-gray-700">{review.body}</p>
+                        </li>
+                    ))}
+                </ul>
             )}
         </div>
     )
-
 
 
 }
