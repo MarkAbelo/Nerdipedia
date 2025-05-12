@@ -1,5 +1,6 @@
 import { reviews, accounts } from "../config/mongoCollections.js";
 import validationFunctions from "../validation/validation.js";
+import idValidationFunctions from "../validation/id_validation.js";
 import booksDataFunctions from "../data/booksData.js";
 import moviesDataFunctions from "../data/moviesData.js";
 import showsDataFunctions from "../data/showsData.js";
@@ -13,9 +14,9 @@ const reviewsDataFunctions = {
         if(!rating) throw (`No rating found`);
         if(!section) throw (`No section found`);
         if(!forID) throw (`No media ID found`);
-        posterID= await validationFunctions.validObjectId(posterID, "posterID");
+        posterID= await idValidationFunctions.validObjectId(posterID, "posterID");
         body= await validationFunctions.validString(body, "body");
-        section= await validationFunctions.validSection(reviewObject.section);
+        section= await validationFunctions.validSection(section);
         if (section === 'dnd') throw 'Cannot write a review for D&D media'
         forID= await validationFunctions.validString(forID, "forID");
         if(typeof rating !== 'number' && rating<1 || rating>10) throw (`Rating must be a number between 1 and 10`);
@@ -65,7 +66,7 @@ const reviewsDataFunctions = {
     async updateReview(id, reviewObject){
         //check to see if the review object is valid
         if(!id) throw (`No review ID found`);
-        id= await validationFunctions.validObjectId(id, "Review ID");
+        id= await idValidationFunctions.validObjectId(id, "Review ID");
 
         if(!reviewObject) throw (`No review object found`);
         if(typeof reviewObject !== 'object') throw (`Review object must be an object`);
@@ -130,7 +131,7 @@ const reviewsDataFunctions = {
     async deleteReview(id){
         //parameter check and delete
         if(!id) throw (`No review ID found`);
-        id= await validationFunctions.validObjectId(id, "Review ID");
+        id= await idValidationFunctions.validObjectId(id, "Review ID");
         const reviewsCollection = await reviews();
         const deletedReview = await reviewsCollection.findOneAndDelete({ _id: new ObjectId(id) });
         if (!deletedReview) throw (`Could not delete review with id of ${id}`);
@@ -162,7 +163,7 @@ const reviewsDataFunctions = {
     async getAccountTopMovies(posterID){
         // returns the 10 highest rated movies for an account based on their written reviews
         if(!posterID) throw (`No User ID found`);
-        posterID = await validationFunctions.validObjectId(posterID, "posterID");
+        posterID = await idValidationFunctions.validObjectId(posterID, "posterID");
 
         // check cache
         const cacheKey = `reviews/topMoviesFor/${posterID}`;
@@ -193,7 +194,7 @@ const reviewsDataFunctions = {
     async getAccountTopBooks(posterID){
         // returns the 10 highest rated books for an account based on their written reviews
         if(!posterID) throw (`No User ID found`);
-        posterID = await validationFunctions.validObjectId(posterID, "posterID");
+        posterID = await idValidationFunctions.validObjectId(posterID, "posterID");
 
         // check cache
         const cacheKey = `reviews/topBooksFor/${posterID}`;
@@ -224,7 +225,7 @@ const reviewsDataFunctions = {
     async getAccountTopShows(posterID){
         // returns the 10 highest rated shows for an account based on their written reviews
         if(!posterID) throw (`No User ID found`);
-        posterID = await validationFunctions.validObjectId(posterID, "posterID");
+        posterID = await idValidationFunctions.validObjectId(posterID, "posterID");
 
         // check cache
         const cacheKey = `reviews/topShowsFor/${posterID}`;
@@ -306,7 +307,7 @@ const reviewsDataFunctions = {
     //also don't know if this is useful but ge all reviews for a user
     async getReviewsForAUser(posterID){
         if(!posterID) throw (`No poster ID found`);
-        posterID= await validationFunctions.validObjectId(posterID, "posterID");
+        posterID= await idValidationFunctions.validObjectId(posterID, "posterID");
         //grab all the user's reviews
         const reviewsCollection = await reviews();
         const reviewList = await reviewsCollection.find({posterID: posterID}).toArray();

@@ -3,6 +3,7 @@ import postRoutes from './posts.js';
 import bookRoutes from './books.js';
 import showRoutes from './shows.js';
 import movieRoutes from './movies.js';
+import reviewsRoutes from './reviews.js';
 import imageRoutes from './images.js';
 
 const constructorMethod = (app) => {
@@ -12,6 +13,7 @@ const constructorMethod = (app) => {
     app.use('/books', bookRoutes);
     app.use('/shows', showRoutes);
     app.use('/movies', movieRoutes);
+    app.use('/reviews', reviewsRoutes);
     app.use('/images', imageRoutes);
 
     // undefined routes
