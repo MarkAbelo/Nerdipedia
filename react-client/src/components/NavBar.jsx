@@ -9,11 +9,12 @@ function NavBar() {
     const location = useLocation();
 
     const navigation = [
-        { name: 'Home', href: '/', current: true},
-        { name: 'Books', href: '/books', current: false },
-        { name: 'Shows', href: '/shows', current: false },
-        { name: 'Movies', href: '/movies', current: false },
-        { name: 'D&D', href: '/dnd', current: false }
+        { name: 'Home', href: '/', current: true, needsUser: false},
+        { name: 'Books', href: '/books', current: false, needsUser: false },
+        { name: 'Shows', href: '/shows', current: false, needsUser: false },
+        { name: 'Movies', href: '/movies', current: false, needsUser: false },
+        { name: 'D&D', href: '/dnd', current: false, needsUser: false },
+        { name: 'Create Post', href: '/createpost', current: false, needsUser: true}
     ]
 
     for (const i in navigation){
@@ -29,18 +30,12 @@ function NavBar() {
             </NavLink>
             <div className="max-sm:hidden sm:max-w-screen-xl flex flex-wrap item-center left-0 p-0 my-0 mx-auto">
                 <div className="hidden sm:ml-6 sm:block" id="navbar-default">
-                    <div className="justify-between font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0">
-                        {navigation.map( (navOpt) => (
-                            <NavLink to={navOpt.href} aria-current={navOpt.current ? 'page' : undefined} className={navOpt.current? "bg-teal-900 text-white text-lg rounded-md p-5" : "text-gray-300 hover:bg-teal-700 hover:text-white rounded-md p-5 text-md font-medium"}>
+                    <div className="font-medium flex p-4 md:p-0 mt-4 md:flex-row md:space-x-10 rtl:space-x-reverse md:mt-0 ">
+                        {navigation.map( (navOpt) => !navOpt.needsUser || currentUser? (
+                            <NavLink key={`nav-${navOpt.name}`} to={navOpt.href} aria-current={navOpt.current ? 'page' : undefined} className={navOpt.current? "bg-teal-900 text-white text-lg rounded-md p-5" : "text-gray-300 hover:bg-teal-700 hover:text-white rounded-md p-5 text-md font-medium"}>
                                 {navOpt.name}
                             </NavLink>
-                        ))}
-                        {currentUser? (
-                        <li>
-                            <NavLink to='/createpost' className={"block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"}>Create Post</NavLink>
-                        </li>
-                        ) : null}
-
+                        ) : null)}
                     </div>
                 </div>
             </div>

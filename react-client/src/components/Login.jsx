@@ -26,26 +26,24 @@ const Login = () => {
   return (
     <div className='card bg-gray-800'>
       <h2 className="mb-5 text-[30px] font-bold">Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label><br />
+      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
+        <div className="m-4 grid">
+          <label>Email:</label>
           <input
             className="bg-white"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-          />
-        </div>
-        <div>
-          <label>Password:</label><br />
+          /><br />
+          <label>Password:</label>
           <input
             className="bg-white"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-          />
+          /><br />
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit" style={{ marginTop: "1rem" }}>Login</button>
