@@ -42,6 +42,8 @@ router.route("/data/:id").get(async (req, res) => {
         const topMovies = await reviewData.getAccountTopBooks(reqParams.id);
         const topShows = await reviewData.getAccountTopBooks(reqParams.id);
         const returnData = {
+            likedPosts: accountFound.likedPosts,
+            dislikedPosts: accountFound.dislikedPosts,
             username: accountFound.username,
             profilePic: accountFound.profilePic,
             postCards: postCards,
@@ -52,7 +54,7 @@ router.route("/data/:id").get(async (req, res) => {
         return res.status(200).json(returnData);
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (e.message.toLowerCase().includes('no') && e.message.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });

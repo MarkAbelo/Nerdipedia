@@ -13,7 +13,6 @@ await redis_client.connect();
 const accountsDataFunctions = {
     async getAccount(id) {
         id = await idValidationFunctions.validObjectId(id, "Account ID");
-
         // check cache
         const cacheKey = `account/${id}`;
         const checkCache = await redis_client.exists(cacheKey);
@@ -26,7 +25,7 @@ const accountsDataFunctions = {
         if(!accountCol) throw 'Failed to connect to post database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)});
         if (!accountFound) throw 'Account not found';
-
+        console.log(accountFound)
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(accountFound));
 

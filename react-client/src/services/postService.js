@@ -1,5 +1,5 @@
 import axios from 'axios';
-import idValidationFunctions from '../../../data-server/validation/id_validation.js';
+//import idValidationFunctions from '../../../data-server/validation/id_validation.js';
 import validationFunctions from '../../../data-server/validation/validation.js';
 
 const postService = {
@@ -7,7 +7,7 @@ const postService = {
         // Input Validation
         try {
             postObj.title = await validationFunctions.validString(postObj.title, "Post title");
-            postObj.posterID = await idValidationFunctions.validObjectId(postObj.posterID, "Poster Account ID");
+            //postObj.posterID = await idValidationFunctions.validObjectId(postObj.posterID, "Poster Account ID");
             postObj.section = await validationFunctions.validSection(postObj.section);
             postObj.body = await validationFunctions.validPostBody(postObj.body);
             postObj.images = await Promise.all(postObj.images.map(async (imageURL) => await validationFunctions.validURL(imageURL, 'Image URL')));
@@ -31,10 +31,10 @@ const postService = {
     },
     async getPost(id) { // GET post by id
         try {
-            id = await idValidationFunctions.validObjectId(id, "Post ID")
+            //id = await idValidationFunctions.validObjectId(id, "Post ID")
             const data = await axios.get(`http://localhost:3000/posts/data/${id}`)
             if (data.status == 200) {
-                return data.data.postID
+                return data.data
             } else {
                 throw data.error
             }
@@ -46,7 +46,7 @@ const postService = {
     async updatePost(id, updateObj) { // PATCH post to update post
         // Input Validation
         try {
-            id = await idValidationFunctions.validObjectId(id, "Post ID");
+            //id = await idValidationFunctions.validObjectId(id, "Post ID");
             if (updateObj.title) updateObj.title = await validationFunctions.validString(updateObj.title, "Post title");
             if (updateObj.section) updateObj.section = await validationFunctions.validSection(updateObj.section);
             if (updateObj.body) updateObj.body = await validationFunctions.validPostBody(updateObj.body);
@@ -72,7 +72,7 @@ const postService = {
     async deletePost(id) { // DELETE post to delete post
         // Input Validation
         try {
-            id = await idValidationFunctions.validObjectId(id, "Post ID");
+            //id = await idValidationFunctions.validObjectId(id, "Post ID");
         } catch (e) {
             console.log(e)
             throw e 
@@ -175,7 +175,7 @@ const postService = {
     async getPostsByAuthor(authorID) { // GET all posts by authorID
         // Input Validation
         try {
-            authorID = await idValidationFunctions.validObjectId(authorID, "Account ID");
+            //authorID = await idValidationFunctions.validObjectId(authorID, "Account ID");
         } catch (e) {
             console.log(e)
             throw e
@@ -195,14 +195,11 @@ const postService = {
     },
     
 
-    /* 
-        Problems with disliking a liked post
-    */
     async toggleLikedPost(postID, accountID) { // PATCH to like/unlike post
         // Input Validation
         try {
-            postID = await idValidationFunctions.validObjectId(postID, "Post ID");
-            accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
+            //postID = await idValidationFunctions.validObjectId(postID, "Post ID");
+            //accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
         } catch (e) {
             console.log(e)
             throw e
@@ -223,8 +220,8 @@ const postService = {
     async toggleDislikedPost(postID, accountID) { // PATCH to dislike/undislike post
         // Input Validation
         try {
-            postID = await idValidationFunctions.validObjectId(postID, "Post ID");
-            accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
+            //postID = await idValidationFunctions.validObjectId(postID, "Post ID");
+            //accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
         } catch (e) {
             console.log(e)
             throw e
@@ -254,19 +251,6 @@ const postService = {
 //    'images': ["https://sitechecker.pro/wp-content/uploads/2023/05/URL-meaning.jpg"]
 //})
 //console.log(x)
-try {
-    const y = await postService.deletePost("6815529a5eb4cc6861a53a49")
-    //const x = await postService.createPost({
-    //        'posterID': '68154dc228f4196771248e88', 
-    //        'title': "Thoughts on White Lotus",
-    //        'section': "show",
-    //        'body': "Very fun and awesome to watch :)",
-    //        'images': ["https://sitechecker.pro/wp-content/uploads/2023/05/URL-meaning.jpg"]
-    //    })
-    console.log(y)
-} catch (e) {
-    console.log(e)
-}
 
 
 export default postService;
