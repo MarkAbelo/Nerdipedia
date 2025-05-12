@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
 
     const value = {
         currentUser,
-        mongoUser,
+        mongoUser, //has user, profilepic, postCards, top(books,shows,movies)
         userLoggedIn,
         loading
     }
