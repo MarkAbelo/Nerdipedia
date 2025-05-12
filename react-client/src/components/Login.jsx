@@ -24,8 +24,8 @@ const Login = () => {
   };
 
   return (
-    <div className='card'>
-      <h2 className="mb-5 text-[46px] font-bold">Login</h2>
+    <div className='card bg-gray-800'>
+      <h2 className="mb-5 text-[30px] font-bold">Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label><br />

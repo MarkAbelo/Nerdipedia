@@ -52,27 +52,27 @@ function Register() {
     
 
     return(
-        <div className="card">
+        <div className="card bg-gray-800">
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-            <h2>Sign Up</h2>
+            <h2 className="mb-5 text-[30px] font-bold">Sign Up</h2>
 
-            <div className="m-4">
-                <label>Username:</label><br />
-                <input name="username" className="bg-white" value={formData.username} onChange={handleChange} />
+            <div className="m-4 grid">
+                <label>Username:</label>
+                <input name="username" className="bg-white" value={formData.username} onChange={handleChange} /><br />
                 {errors.username && <p className="errorText">{errors.username}</p>}
             
-                <label>Email:</label><br />
-                <input name="email" className="bg-white" value={formData.email} onChange={handleChange} />
+                <label>Email:</label>
+                <input name="email" className="bg-white" value={formData.email} onChange={handleChange} /><br />
                 {errors.email && <p className="errorText">{errors.email}</p>}
 
             
-                <label>Password:</label><br />
-                <input type="password" name="password" className="bg-white" value={formData.password} onChange={handleChange} />
+                <label>Password:</label>
+                <input type="password" name="password" className="bg-white" value={formData.password} onChange={handleChange} /><br />
                 {errors.password && <p className="errorText">{errors.password}</p>}
 
 
-                <label>Profile Picture URL:</label><br />
-                <input name="profilePic" className="bg-white" value={formData.profilePic} onChange={handleChange} />
+                <label>Profile Picture URL:</label>
+                <input name="profilePic" className="bg-white" value={formData.profilePic} onChange={handleChange} /><br />
                 {errors.profilePic && <p className="errorText">{errors.profilePic}</p>}
             </div>
             
