@@ -39,8 +39,8 @@ router.route("/data/:id").get(async (req, res) => {
         const accountFound = await accountData.getAccount(reqParams.id);
         const postCards = await Promise.all(accountFound.posts.map(postData.getPostCard));
         const topBooks = await reviewData.getAccountTopBooks(reqParams.id);
-        const topMovies = await reviewData.getAccountTopBooks(reqParams.id);
-        const topShows = await reviewData.getAccountTopBooks(reqParams.id);
+        const topMovies = await reviewData.getAccountTopMovies(reqParams.id);
+        const topShows = await reviewData.getAccountTopShows(reqParams.id);
         const returnData = {
             username: accountFound.username,
             profilePic: accountFound.profilePic,

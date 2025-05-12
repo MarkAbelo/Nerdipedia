@@ -370,6 +370,16 @@ const accountsDataFunctions = {
                 console.error(`Failed to delete Firebase user with email ${acc.email}:`, e)
             }
         }
+        //after completing the intersection of mongodb and firebase, deleting all left in firebase
+        try {
+            const users = await admin.auth().listUsers();
+
+            for (const user of users) {
+                await admin.auth().deleteUser(user.uid);
+            }
+        } catch(e) {
+            console.error(`Failed to delete Firebase user with uid ${user.uid}`)
+        }
 
         return true;
     }

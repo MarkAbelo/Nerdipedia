@@ -1,9 +1,8 @@
 import {React, useState, useEffect} from "react";
 import {useAuth} from "../contexts/authContext";
 import { useParams } from "react-router-dom";
-import showService from "../services/bookService";
+import showService from "../services/showService";
 import No_image from "../assets/no_image.png";
-import axios from "axios";
 
 function Show() {
     const { id } = useParams();
@@ -18,8 +17,8 @@ function Show() {
     useEffect(() => {
         const fetchShow = async () => {
             try {
-                const show = await axios.get(`http://localhost:3000/shows/getShow/${id}`);
-                setShow(show.data);
+                const show = await showService.getShow(id)
+                setShow(show);
                 setReviews(show.reviews)
                 console.log(show.data)
             } catch(e) {
