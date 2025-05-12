@@ -74,7 +74,6 @@ const accountsDataFunctions = {
         if (profilePic) {
             profilePic = await validationFunctions.validURL(profilePic);
         }
-        
 
         // Try create user in firebase auth BEFORE inserting to mongodb
         let firebaseUser
@@ -352,6 +351,25 @@ const accountsDataFunctions = {
 
         // delete related cache entries
         await redis_client.del(`account/${accountID}`);
+
+        return true;
+    },
+
+    async deleteFirebaseAccountsUnstable(){
+        // deletes all accounts in the account collection from firebase, ONLY USED FOR RESEEDING
+        const accountCol = await accounts();
+        if (!accountCol) throw 'Failed to connect to account database';
+        const allAccounts = await accountCol.find().project({_id: 0, email: 1}).toArray();
+        if (!allAccounts) throw 'Could not retrieve accounts';
+
+        for (const acc of allAccounts){
+            try {
+                const user = await admin.auth().getUserByEmail(acc.email);
+                await admin.auth().deleteUser(user.uid);
+            } catch(e) {
+                console.error(`Failed to delete Firebase user with email ${acc.email}:`, e)
+            }
+        }
 
         return true;
     }
