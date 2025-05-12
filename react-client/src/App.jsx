@@ -8,6 +8,7 @@ import Signout from './components/signout'
 import Show from './components/Show'
 import Post from './components/Post'
 import Profile from './components/Profile'
+import CreatePost from './components/CreatePost'
 
 function App() {
 
@@ -22,7 +23,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/createpost' element={<></>} />
+        <Route path='/createpost' element={<CreatePost/>} />
         <Route path='/signout' element={<Signout />} />
         <Route path='/show/:id' element={<Show />} />
         <Route path='/post/:id' element={<Post/>} />
