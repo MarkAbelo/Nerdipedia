@@ -12,6 +12,7 @@ function Register() {
         username: '',
         email: '',
         password: '',
+        passwordConfirm: '',
         profilePic: ''
     });
     const [errors, setErrors] = useState({});
@@ -33,6 +34,18 @@ function Register() {
         } catch(e) {
             setErrors(prev => ({ ...prev, [name]: e.toString() }));
         }
+
+        //check if passwords match
+        if (name === 'passwordConfirm' || name === 'password') {
+            const passwordToCompare = name === 'password' ? value : formData.password;
+            const confirmToCompare = name === 'passwordConfirm' ? value : formData.passwordConfirm;
+
+            if (confirmToCompare && passwordToCompare !== confirmToCompare) {
+                setErrors(prev => ({ ...prev, passwordConfirm: 'Passwords do not match' }));
+            } else {
+                setErrors(prev => ({ ...prev, passwordConfirm: '' }));
+            }
+        }
     };
 
     const handleSubmit = async(e) => {
@@ -48,6 +61,7 @@ function Register() {
             email = await validationFunctions.validEmail(formData.email);
             password = await validationFunctions.validPassword(formData.password);
             if (formData.profilePic.trim()) profilePic = await validationFunctions.validURL(formData.profilePic, 'Profile picture URL'); 
+
         } catch (err) {
             setServerError(err.toString());
             return;
@@ -87,6 +101,10 @@ function Register() {
                 <label>Password:</label>
                 <input type="password" name="password" className="bg-white" value={formData.password} onChange={handleChange} /><br />
                 {errors.password && <p className="errorText">{errors.password}</p>}
+
+                <label>Confirm Password:</label>
+                <input type="password" name="passwordConfirm" className="bg-white" value={formData.passwordConfirm} onChange={handleChange} /><br />
+                {errors.passwordConfirm && <p className="errorText">{errors.passwordConfirm}</p>}
 
 
                 <label>Profile Picture URL:</label>
