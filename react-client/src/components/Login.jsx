@@ -23,6 +23,15 @@ const Login = () => {
     }
   };
 
+  if (userLoggedIn) {
+    return (
+      <div>
+        <h2>You are already logged in... welcome {mongoUser?.username}!</h2>
+        <button onClick={() => navigate("/")}>Go Home</button>
+      </div>
+    )
+  }
+
   return (
     <div className='card bg-gray-800'>
       <h2 className="mb-5 text-[30px] font-bold">Login</h2>
@@ -47,15 +56,18 @@ const Login = () => {
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit" style={{ marginTop: "1rem" }}>Login</button>
+        <br />
+        <br />
+        <button onClick={() => navigate("/register")}>No Account? Register Here</button>
       </form>
 
-      {userLoggedIn && mongoUser && (
+      {/* {userLoggedIn && mongoUser && (
         <div style={{ marginTop: "2rem", borderTop: "1px solid #ccc", paddingTop: "1rem" }}>
-          <h3>Welcome, {mongoUser.name}</h3>
+          <h3>Welcome, {mongoUser.username}</h3>
           <p>Username: {mongoUser.username}</p>
           <p>MongoDB ID: {mongoUser._id}</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
