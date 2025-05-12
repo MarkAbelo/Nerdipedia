@@ -9,7 +9,6 @@ router.route("/getMovie/:movieId").get(async (req, res) => {
     let movieFound;
     try{
         if(!id) throw "No movie id provided";
-        id= await idValidationFunctions.validObjectId(id, "Movie ID");
     }catch (e) {
         return res.status(400).json({error: e});
     }

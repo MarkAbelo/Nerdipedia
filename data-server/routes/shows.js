@@ -10,7 +10,6 @@ router.route("/getShow/:showId").get(async (req, res) => {
     let showFound;
     try{
         if(!id) throw "No show id provided";
-        id= await idValidationFunctions.validObjectId(id, "Show ID");
     }catch (e) {
         return res.status(400).json({error: e});
     }

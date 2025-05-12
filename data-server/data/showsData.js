@@ -19,7 +19,7 @@ const showsDataFunctions = {
         */
         if (!id) throw ('Id must be provided!');
         //show ids are numbers like: 139 for the show "Girls"
-        id = await idValidationFunctions.validPositiveNumber(id, "Show ID");
+        id = await validationFunctions.validPositiveNumber(Number(id), "Show ID");
 
         // check cache
         const cacheKey = `show/${id}`;

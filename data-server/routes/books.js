@@ -10,7 +10,6 @@ router.route("/getBook/:bookId").get(async (req, res) => {
     let bookFound;
     try{
         if(!id) throw "No book id provided";
-        id= await idValidationFunctions.validObjectId(id, "Book ID");
     }catch (e) {
         return res.status(400).json({error: e});
     }
@@ -23,7 +22,7 @@ router.route("/getBook/:bookId").get(async (req, res) => {
         else return res.status(500).json({error: e});
     }
     try{
-        const bookReview = await reviewsDataFunctions.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
+        const bookReview = await reviewData.getAllReviews(id, "book") // Errors handled by func, returns a string if no reviews
         bookInfo['bookReview']=bookReview;
         return res.status(200).json(bookFound);
     }
