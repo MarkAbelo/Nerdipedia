@@ -169,7 +169,7 @@ function Profile(){
                         <input 
                             id="username"
                             type="text"
-                            autoComplete="off"
+                            autoComplete="new-password"
                             value={editedUsername}
                             onChange={(e) => setEditedUsername(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
@@ -179,7 +179,7 @@ function Profile(){
                         <input 
                             id="password"
                             type="password"
-                            autoComplete="off"
+                            autoComplete="new-password"
                             value={editedPassword}
                             onChange={(e) => setEditedPassword(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"

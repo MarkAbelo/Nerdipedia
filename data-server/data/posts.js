@@ -35,7 +35,7 @@ const postsDataFunctions = {
         if (!postFound) throw 'Post not found';
 
         // cache data
-        await redis_client.set(cacheKey, JSON.stringify(postFound));
+        await redis_client.set(cacheKey, JSON.stringify(postFound), {EX: 60*60});
 
         return postFound;
     },
@@ -67,7 +67,7 @@ const postsDataFunctions = {
         };
 
         // cache data
-        await redis_client.set(cacheKey, JSON.stringify(returnInfo));
+        await redis_client.set(cacheKey, JSON.stringify(returnInfo), {EX: 60*60});
 
         return returnInfo;
     },

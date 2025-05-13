@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Reviews({reviews}){
     const formatUTCDate = (timestamp) => {
@@ -29,7 +30,7 @@ function Reviews({reviews}){
                     {/*Header section*/}
                     <div className="flex flex-col mb-2">
                         {/*Username with icon*/}
-                        <div className="flex justify-between items-start w-full">
+                        <Link to={`/account/${review.posterID}`} className="flex justify-between items-start w-full">
                             <div className="flex items-start gap-3">
                             <img
                                 src={review.profilePic || '/default-avatar.png'}
@@ -40,7 +41,7 @@ function Reviews({reviews}){
                                 <p className="font-semibold text-blue-300">{review.username}</p>
                                 <p className="text-xs text-blue-400 font-mono">{formatUTCDate(review.timeStamp)}</p>
                             </div>
-                        </div>
+                            </div>
                             {/*Rating with conditional color*/}
                             <span className={`text-sm font-medium px-2.5 py-1 rounded-full ${
                                 Number(review.rating) <= 5 
@@ -49,7 +50,7 @@ function Reviews({reviews}){
                             }`}>
                                 ⭐ {review.rating}/10
                             </span>
-                        </div>
+                        </Link>
                     </div>
                     {/*Review body*/}
                     <p className="text-white leading-relaxed border-t border-amber-100 pt-3">

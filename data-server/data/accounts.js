@@ -26,7 +26,7 @@ const accountsDataFunctions = {
         const accountFound = await accountCol.findOne({_id: new ObjectId(id)});
         if (!accountFound) throw 'Account not found';
         // cache data
-        await redis_client.set(cacheKey, JSON.stringify(accountFound));
+        await redis_client.set(cacheKey, JSON.stringify(accountFound), {EX: 60*60});
 
         return accountFound;
     },
@@ -48,7 +48,7 @@ const accountsDataFunctions = {
         if (!accountFound) throw 'Account not found';
 
         // cache data
-        await redis_client.set(cacheKey, JSON.stringify(accountFound));
+        await redis_client.set(cacheKey, JSON.stringify(accountFound), {EX: 60*60});
 
         return accountFound;
     },
