@@ -17,7 +17,6 @@ function SearchMovies() {
             if (searchParams.searchQuery) {
                 try {
                     const data = await movieService.searchMovie(searchParams.searchQuery, searchParams.pageNum);
-                    console.log(data)
                     setSearchResults(data);
                     setLoading(false);
                 } catch (err) {
