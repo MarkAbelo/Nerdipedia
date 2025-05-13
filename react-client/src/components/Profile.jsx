@@ -14,7 +14,7 @@ function Profile(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [accountData, setAccountData] = useState(undefined);
-
+    const [removeProfilePic, setRemoveProfilePic] = useState(false);
     const [getData, reGetData] = useState(false)
     //user state
     const { currentUser, mongoUser } = useAuth()
@@ -37,6 +37,7 @@ function Profile(){
         setEditedPassword("")
         setEditedEmail("")
         setEditedProfilePic("")
+        setRemoveProfilePic(false)
     }
 
     useEffect(() => {
@@ -54,13 +55,17 @@ function Profile(){
 
     async function handleSave() {
 
-        let profilePic = imageService(imageFile)
+        let profilePic;
         try {
-            profilePic = await imageService(imageFile);        
-        } catch (e) {
-            setError('Could not upload image file');
+            profilePic = await imageService(imageFile)
+        if (removeProfilePic){
+            profilePic = await imageService("react-client/public/nouser.jpg")
+        }
+
+        } catch(e) {
             console.log(e)
         }
+        
 
         try {
             //build form data
@@ -92,6 +97,8 @@ function Profile(){
 
     function handleClose() {
         setModalActive(false)
+        resetEditAccount()
+        setRemoveProfilePic(false);
     }
 
     function EditAction() {
@@ -196,6 +203,16 @@ function Profile(){
                             className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                             file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                         />
+
+                        {mongoUser.profilePic && !removeProfilePic && mongoUser.profilePic !== "react-client/public/nouser.jpg" && (
+                            <div className="relative inline-block w-20 h-20">
+                                <img
+                                    src={mongoUser.profilePic}
+                                    alt="Current Profile"
+                                    className="w-20 h-20 rounded-full object-cover border"
+                                />
+                            </div>
+                        )}
 
                        <div className="flex justify-end space-x-2">
                             <button 

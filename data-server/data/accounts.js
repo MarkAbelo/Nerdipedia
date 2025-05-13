@@ -143,6 +143,9 @@ const accountsDataFunctions = {
             newPassword = await validationFunctions.validPassword(newPassword);
         }
         if (newProfilePic) {
+            if (newProfilePic === "remove") {
+                newProfilePic = "react-client/public/nouser.jpg"
+            }
             newProfilePic = await validationFunctions.validURL(newProfilePic);
         } else {
             newProfilePic = accountFound.profilePic;
