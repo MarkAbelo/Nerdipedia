@@ -34,16 +34,16 @@ function SearchBooks() {
         setLoading(true);
         setError(null);
         let term = document.getElementById('searchParam').value.trim();
-        setSearchParams(params => (
-            {...params, searchQuery: term}
-        ));
+        setSearchParams({searchQuery: term, pageNum: 1});
     }
 
     const handleMoreResults = (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSearchParams({searchQuery: term, pageNum: 1});
+        setSearchParams(params => (
+            {...params, pageNum: params.pageNum + 1}
+        ));
     }
 
     const handleClearSearch = (e) => {
