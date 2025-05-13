@@ -77,7 +77,7 @@ function ListingsVertical({type, title, data}) {
             {Array.isArray(listings) && listings.map((book) => (
             <Link
                 to={`/${type}/${book.id}`}
-                key={book.forID}
+                key={book.id}
                 className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500 w-72"
             >
                 <img
@@ -109,7 +109,7 @@ function ListingsVertical({type, title, data}) {
                     {Array.isArray(listings) && listings.map((media) => (
                         <Link
                         to={`/${type}/${media.id}`}
-                        key={media.forID}
+                        key={media.id}
                         className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500 w-72"
                         >
                         <img

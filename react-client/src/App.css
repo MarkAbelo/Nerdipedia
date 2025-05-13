@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
-.mainBody div {
-    @apply sm:max-w-9/10 sm:mx-auto 
+.mainBody {
+    @apply my-7
+}
+
+.mainBody div:not(.fullWidth) {
+    @apply sm:max-w-9/10 sm:mx-auto
 }
 
 h2 {

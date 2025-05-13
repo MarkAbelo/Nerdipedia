@@ -25,7 +25,6 @@ function App() {
         <NavBar/>
       </header>
       <div className='mainBody'>
-        <br/>
       <Routes>
         {/*Public Routes*/}
         <Route path='/' element={<Home />} />
@@ -53,7 +52,6 @@ function App() {
 
       </Routes>
       </div>
-      <br/>
     </>
   )
 }

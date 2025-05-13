@@ -5,7 +5,7 @@ import NotFoundCat from '../assets/NotFoundCat.png';
 function NotFound() {
     const navigate = useNavigate();
     return (
-<div className="flex w-full flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-900 to-purple-900 text-white p-4 text-center">            {/* Cat Image with Animation */}
+<div className="fullWidth flex w-full flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-blue-900 to-purple-900 text-white p-4 text-center">            {/* Cat Image with Animation */}
             <img 
                 src={NotFoundCat} 
                 alt="Confused cat" 
