@@ -38,6 +38,17 @@ const booksDataFunctions={
         catch(e){
             throw (e);
         }
+        const authorNameList = await Promise.all(bookInfo.authors.map(async(item)=>
+        {
+            try{
+                const authorInfo= await axios.get(`https://openlibrary.org/${item.author.key}`)
+                return authorInfo.data.name;
+            }
+            catch(e){
+                throw (e);
+            }
+        }))
+        bookInfo.authors= authorNameList;
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(bookInfo));
 
@@ -102,14 +113,15 @@ const booksDataFunctions={
         //id = this.getId(book.key)  
         let bookInfo;
         try{
-            const bookResponse = await axios.get(`https://openlibrary.org/works/${id}.json`);
-            bookInfo=bookResponse.data;
+            bookInfo = await this.getBook(id);
+            //bookInfo=bookResponse.data;
         }
         catch(e){
             throw (e);
         }
+
         //-S, -M, -L for image size
-        const returnCard = {id,title: bookInfo.title, authors: bookInfo.author_name || [], publish_year: bookInfo.first_publish_year, cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
+        const returnCard = {id,title: bookInfo.title, authors: bookInfo.authors || [], publish_year: bookInfo.first_publish_year, cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(returnCard));
