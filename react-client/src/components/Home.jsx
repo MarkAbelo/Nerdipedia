@@ -4,6 +4,9 @@ import PopularPosts from "./PopularPosts";
 import PopularBooks from "./PopularBooks";
 import PopularMovies from "./PopularMovies";
 import PopularShows from "./PopularShows";
+import RecommendedBooks from "./RecommendedBooks";
+import RecommendedMovies from "./RecommendedMovies";
+import RecommendedShows from "./RecommendedShows";
 import { useAuth } from "../contexts/authContext";
 
 function Home() {
@@ -15,6 +18,17 @@ function Home() {
         if (mongoUser) return mongoUser.username;
     }
 
+    let recommendations = null;
+    if (currentUser) {
+        recommendations = (
+        <>
+            <RecommendedBooks/>
+            <RecommendedMovies/>
+            <RecommendedShows/>
+        </>
+        );
+    }
+
     return(
         <div>
             <h1>Hello, {getUsername()}!</h1>
@@ -23,6 +37,7 @@ function Home() {
             <PopularBooks/>
             <PopularMovies/>
             <PopularShows/>
+            {recommendations}
         </div>
     )
 }

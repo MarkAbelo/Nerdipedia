@@ -1,8 +1,11 @@
 import { React, useState, useEffect} from "react";
 import ListingsHorizontal from "./ListingsHorizontal";
 import showService from "../services/showService";
+import { useAuth } from "../contexts/authContext";
 
-function PopularShows() {
+function RecommendedShows() {
+    const { currentUser } = useAuth()
+    
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10,7 +13,7 @@ function PopularShows() {
     useEffect(() => {
         async function fetchData() {
             try {                
-                const data = await showService.getPopularShows(10);
+                const data = await showService.getShowRecs(currentUser.displayName, 10);
                 setListings(data);
                 setLoading(false);
             }
@@ -21,15 +24,18 @@ function PopularShows() {
             }
         }
         fetchData();
-    }, []);
+    }, [currentUser]);
 
+    if (!currentUser) {
+        return null;
+    }
     if(loading){
         return <div className="p-4 text-gray-500">Loading...</div>;
     }
     if(error){
-        return <div className="p-4 text-red-500">Error: {error.message}</div>;
+        return <div className="p-4 text-red-500">Error: {error}</div>;
     }
-    return <ListingsHorizontal title="Popular Shows" cards={listings} type="shows" />
+    return <ListingsHorizontal title="Recommended Shows" cards={listings} type="shows" noneFoundMessage="No shows found... Review movies to receive recommendations"/>
 }
 
-export default PopularShows;
+export default RecommendedShows;

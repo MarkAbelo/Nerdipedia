@@ -68,12 +68,12 @@ router.route("/popularShows").get(async (req,res)=>{
     }
 });
 //we have not written this function yet 
-router.route("/getShowsRec").get(async (req, res) => {
-    let accountID = req.query.accountID;
+router.route("/getShowsRecs").get(async (req, res) => {
+    let accountId = req.query.accountId;
     let n = parseInt(req.query.n, 10);
     try {
-        if (!accountID) throw "No account ID provided";
-        accountID = await idValidationFunctions.validObjectId(accountID, "Account ID");
+        if (!accountId) throw "No account ID provided";
+        accountId = await idValidationFunctions.validObjectId(accountId, "Account ID");
         if (!n) n = 10;
         if (isNaN(n)) n = 10;
         n = await validationFunctions.validPositiveNumber(n, "Number of Movies");
@@ -81,7 +81,7 @@ router.route("/getShowsRec").get(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try{
-        const showList = await showData.getShowRecs(accountID, n);
+        const showList = await showData.getShowRecs(accountId, n);
         return res.status(200).json(showList);
     }
     catch (e) {

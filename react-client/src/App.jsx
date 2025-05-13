@@ -6,6 +6,10 @@ import Register from './components/Register'
 import Login from './components/Login'
 import Signout from './components/signout'
 import Show from './components/Show'
+import Shows from './components/Shows'
+import Movies from './components/Movies'
+import Books from './components/Books'
+import DnD from './components/Dnd'
 import Post from './components/Post'
 import Profile from './components/Profile'
 import CreatePost from './components/CreatePost'
@@ -26,6 +30,10 @@ function App() {
         <Route path='/createpost' element={<CreatePost/>} />
         <Route path='/signout' element={<Signout />} />
         <Route path='/show/:id' element={<Show />} />
+        <Route path='/shows' element={<Shows />} />
+        <Route path='/movies' element={<Movies />} />
+        <Route path='/books' element={<Books />} />
+        <Route path='/dnd' element={<DnD />} />
         <Route path='/post/:id' element={<Post/>} />
         <Route path='/account/:id' element={<Profile />} />
       </Routes>

@@ -119,7 +119,7 @@ const showsDataFunctions = {
 
         let showList = await showRec.recommendFor(accountID, n);
         showList = await Promise.all(showList.map(this.getShowCard));
-        return movieList;
+        return showList;
     }
 }
 

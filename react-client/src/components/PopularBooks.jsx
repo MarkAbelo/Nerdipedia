@@ -29,9 +29,6 @@ function PopularBooks() {
     if(error){
         return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
-    if(!listings || listings.length === 0){
-        return <div className="p-4 text-gray-500">No books found</div>;
-    }
     return <ListingsHorizontal title="Popular Books" cards={listings} type="books" />
 }
 

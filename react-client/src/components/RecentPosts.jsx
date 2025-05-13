@@ -30,9 +30,6 @@ function RecentPosts({type}) {
     if(error){
         return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
-    if(!posts || posts.length === 0){
-        return <div className="p-4 text-gray-500">No posts found</div>;
-    }
     return <ListingsHorizontal title="Recent Posts" cards={posts} type="posts" />
 }
 

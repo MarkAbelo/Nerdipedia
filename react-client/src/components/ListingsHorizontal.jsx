@@ -2,7 +2,7 @@ import { React, useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import No_image from "../assets/no_image.png";
 
-function ListingsHorizontal({title, cards, type}) {    
+function ListingsHorizontal({title, cards, type, noneFoundMessage}) {    
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
     const scrollRef = useRef(null);
@@ -70,7 +70,12 @@ function ListingsHorizontal({title, cards, type}) {
       
     
     if(!cards || cards.length === 0){
-        return <div className="p-4 text-gray-500">No {type} found</div>;
+        return (
+            <div className="px-8 py-6">
+                <h2 className="text-xl font-bold mb-4">{title}</h2> 
+                <div className="p-4 text-gray-500">{noneFoundMessage? noneFoundMessage : `No ${type} found`}</div>
+            </div>
+        );
     }
     let body;
     if (type === 'posts') {
