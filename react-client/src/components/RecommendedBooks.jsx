@@ -36,7 +36,7 @@ function RecommendedBooks() {
     if(error){
         return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
-    return <ListingsHorizontal title="Recommended Books" cards={listings} type="books" noneFoundMessage="No books found... Review movies to receive recommendations"/>
+    return <ListingsHorizontal title="Recommended Books" cards={listings} type="books" noneFoundMessage="No books found... Review books to receive recommendations"/>
 }
 
 export default RecommendedBooks;
