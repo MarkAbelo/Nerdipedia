@@ -217,7 +217,7 @@ export default function Movie() {
     }
     
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-8 text-gray-300">
+    <div className="max-w-5xl mx-auto p-6 space-y-8 dark:text-gray-300">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row gap-6">
         <img
@@ -237,8 +237,8 @@ export default function Movie() {
             <hr/>
             <br/>
             <div className="grid grid-cols-2 items-center">
-                <p className="text-lg text-gray-300"><strong>Directed by:</strong> {movie.Director}</p>
-                <p className="text-lg text-gray-300 mx-10"><strong>Awards:</strong> {movie.Awards}</p>
+                <p className="text-lg dark:text-gray-300"><strong>Directed by:</strong> {movie.Director}</p>
+                <p className="text-lg dark:text-gray-300 mx-10"><strong>Awards:</strong> {movie.Awards}</p>
             </div>
             
             <div className="grid grid-cols-2">

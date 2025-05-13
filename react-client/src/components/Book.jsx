@@ -180,6 +180,22 @@ function Book(){
         </div>
     );
 
+    const averageRating = (reviews) => {
+        if (typeof(reviews) == 'object') {
+            let x = 0
+            let tot = 0
+            reviews.map((review) => {
+                x += review.rating
+                tot += 1
+            })
+            const y = x / tot
+            return y.toFixed(1)
+        } else {
+            return 0
+        }
+        
+    }
+
     if(loading){
         return <div className="p-4 text-gray-500">Loading...</div>;
     }
@@ -208,10 +224,23 @@ function Book(){
                         </div>
                     )}
 
+                    {/*ratings*/}
+                    <div className="flex justify-end">
+                        {typeof(book.bookReview) == 'object' ? (
+                            <p className="mt-4 text-m text-gray-400 font-bold">
+                                Nerdipedia Rating: ⭐{averageRating(book.bookReview)} / 10  &nbsp; ({book.bookReview.length} votes)
+                            </p>
+                        ) : 
+                            <p className="mt-4 text-m text-red-400">
+                                No Nerdipedia Ratings: Be the first to review this book!
+                            </p>
+                        }
+                    </div>
+
                     {/*Description*/}
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4 text-amber-400">Description</h2>
-                        <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                        <h2 className="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-400">Description</h2>
+                        <p className="dark:text-gray-300 whitespace-pre-line leading-relaxed">
                         {typeof book.description === 'object' ? book.description.value : book.description}
                         </p>
                     </div>
@@ -256,7 +285,7 @@ function Book(){
 
                     {/*External Links*/}
                     <div className="mb-12">
-                        <h2 className="text-2xl font-bold mb-4 text-amber-400">Related Links</h2>
+                        <h2 className="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-400">Related Links</h2>
                         <div className="space-y-2">
                             {book.links?.map((link, index) => (
                                 <a
@@ -275,7 +304,7 @@ function Book(){
                     {/*Gallery*/}
                     {book.covers?.length > 0 && (
                         <div className="expandable-gallery mb-8">
-                            <h2 className="text-2xl font-bold mb-4 text-amber-400">Gallery</h2>
+                            <h2 className="text-2xl font-bold mb-4 text-amber-700 dark:text-amber-400">Gallery</h2>
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                 {book.covers.map((cover, index) => (
                                     <div 

@@ -31,17 +31,16 @@ const Signout = () => {
 
     return (
         <div>
-            <h2>Sign Out</h2>
+            <h2 className="text-center mb-5">Sign Out</h2>
             {error && <p>{error}</p>}
 
             {!confirm ? (
-                <div>
-                    <p>Are you sure you want to sign out of {currentUser?.email}?</p><br/>
-                    <button onClick={() => setConfirm(true)}>Yes, sign out</button>
-                    <br />
-                    <button onClick={() => navigate(-1)}>
-                        Cancel
-                    </button>
+                <div className="mx-auto w-fit">
+                    <p>Are you sure you want to sign out of {currentUser?.email}?</p>
+                    <div className="flex justify-center space-x-10 mt-5">
+                        <button onClick={() => setConfirm(true)}>Yes, sign out</button>
+                        <button onClick={() => navigate(-1)}>Cancel</button>
+                    </div>
                 </div>
             ) : (
                 <div>

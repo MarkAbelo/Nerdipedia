@@ -186,6 +186,22 @@ function Show() {
         </div>
     )
 
+    const averageRating = (reviews) => {
+        if (typeof(reviews) == 'object') {
+            let x = 0
+            let tot = 0
+            reviews.map((review) => {
+                x += review.rating
+                tot += 1
+            })
+            const y = x / tot
+            return y.toFixed(1)
+        } else {
+            return 0
+        }
+        
+    }
+
     if(loading) {
         return <div className="p-4 text-gray-500">Loading...</div>
     }
@@ -196,11 +212,6 @@ function Show() {
 
     if (!show) return <p className="text-center mt-8">Loading show...</p>
 
-
-
-
-
-
     return (
         <div className="max-w-5x1 mx-auto p-4">
             {/* Poster and Title */}
@@ -208,21 +219,45 @@ function Show() {
                 <img
                     src={show.image?.medium || No_image}
                     alt={show.name}
-                    className="rounded-lg shadow-md max-w-sm md:max-w-xs object-cover"
+                    className="w-full md:w-64 rounded-lg shadow-md md:max-w-xs object-cover"
                 />
                 <div className="flex-1">
                     <h1 className="text-3x1 font-bold mb-3">{show.name}</h1>
-                    <p className="text-gray-700">{stripTags(show.summary)}</p>
-                    <br />
-                    <p className="text-sm text-gray-700">Language: {show.language}</p>
-                    <p className="text-sm text-gray-700">Status: {show.ended ? `Ended ${show.ended}` : "Ongoing"}</p>
                     {show.genres && show.genres.length > 0 && (
-                        <p className="text-sm text-gray-600">
-                            Genres: {show.genres.join(", ")}
-                        </p>
+                        <div className="flex justify-start space-x-5 mb-2">
+                            {show.genres.map(genre => <p key={genre} className="w-fit font-bold text-lg dark:text-blue-400">{genre}</p>)}
+                        </div>
                     )}
+                    <hr/>
+                    <br />
+                    <p className="dark:text-gray-300">{stripTags(show.summary)}</p>
+                    <br />
+                    <div className="grid grid-cols-2">
+                        {show.rating?.average && (
+                            <p className="mt-4 text-md text-gray-400 font-bold">
+                            TVMaze Rating: ⭐{show.rating.average} / 10
+                            </p>
+                        )}
+                        {typeof(show.showReview) == 'object' ? (
+                            <p className="mt-4 text-m text-gray-400 font-bold">
+                                Nerdipedia Rating: ⭐{averageRating(show.showReview)} / 10  &nbsp; ({show.showReview.length} votes)
+                            </p>
+                        ) : 
+                            <p className="mt-4 text-m text-red-400">
+                                No Nerdipedia Ratings: Be the first to review this show!
+                            </p>
+                        }
+                    </div>
+                    <br/>
+                    <div>
+                        <p className="dark:text-gray-300"><strong>Language:</strong> {show.language}</p>
+                        <p className="dark:text-gray-300"><strong>Type:</strong> {show.type}</p>
+                        <p className="dark:text-gray-300"><strong>Premiered:</strong> {show.premiered}</p>
+                        <p className="dark:text-gray-300"><strong>Status:</strong> {show.ended ? `Ended (${show.ended})` : "Ongoing"}</p>
+                    </div>
                 </div>
             </div>
+            <hr/>
             {/*Changing review section to match */}
             <div className="reviews-section mt-8">
                 <div className="flex justify-between items-center mb-4">

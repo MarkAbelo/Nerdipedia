@@ -180,14 +180,14 @@ function Post() {
         <div className="flex space-x-4 mt-4">
           <button
             onClick={() => setModalActive(true)}
-            className="px-4 py-2 text-white font-semibold rounded transition"
+            className="px-4 py-2 dark:text-white font-semibold rounded transition"
           >
             📝 Edit Post
           </button>
     
           <button
             onClick={handleDelete}
-            className="px-4 py-2 text-white font-semibold rounded transition"
+            className="px-4 py-2 dark:text-white font-semibold rounded transition"
           >
             🗑️ Delete Post
           </button>
@@ -224,17 +224,18 @@ function Post() {
         setUploadedImages(updated)
     }
 
+
     return(
     <div>
         <div className="flex justify-end px-4 py-3 mx-2">
-            {mongoUser?.postCards.filter(x => x._id == id).length > 0 ? <PostActions/> : null}
+            {currentUser?.displayName === post.posterID? <PostActions/> : null}
         </div>
-        <hr className="text-gray-500"/>
+        <hr className="dark:text-gray-500"/>
         
         <div className="grid grid-cols-2 flex-row gap-50">
             <div className=" mx-auto bg-gray overflow-hidden p-6 space-y-4">
 
-                <h1 className="text-2xl font-bold text-gray-200">{post.title}</h1>
+                <h1 className="text-2xl font-bold dark:text-gray-200">{post.title}</h1>
 
                 {/* Poster Info */}
                 <Link to={`/account/${post.posterID}`} className="flex items-center space-x-4">
@@ -244,8 +245,8 @@ function Post() {
                     className="w-14 h-14 rounded-full object-cover border"
                   />
                   <div>
-                    <p className="text-sm font-medium text-gray-400">By: {post.posterUsername}</p>
-                    <p className="text-xs text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
+                    <p className="text-sm font-medium dark:text-gray-400">By: {post.posterUsername}</p>
+                    <p className="text-xs dark:text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
                   </div>
                 </Link>
 
@@ -257,13 +258,16 @@ function Post() {
                 </div>
 
                 {/* Body */}
-                <p className="text-gray-400 text-base whitespace-pre-line">{post.body}</p>
+                <p className="dark:text-gray-400 text-base whitespace-pre-line">{post.body}</p>
 
                 {/* Likes / Dislikes */}
+                {userLoggedIn? (
                 <div className="flex items-center space-x-6 pt-2 text-sm text-gray-600">
                   <button onClick={() => handleLike().then(() => console.log('like: ',userLikeState))}>👍 {post.likes}</button>
                   <button onClick={() => handleDislike().then(() => console.log('dislike: ',userLikeState))}>👎 {post.dislikes}</button>
                 </div>
+                ) : null}
+
             </div>
             <div className="mx-auto bg-gray overflow-hidden p-6 space-y-4">
                 {/* Images */}
@@ -282,7 +286,7 @@ function Post() {
             </div>
         </div>
         {modalActive && (
-              <div className="fixed inset-0 flex items-center bg-gray-400/50 justify-center z-50">
+              <div className="text-white fixed inset-0 flex items-center bg-gray-400/50 justify-center z-50">
                 <div className="bg-black p-6 rounded-lg w-full max-w-lg space-y-4 shadow-xl">
                   {editErr != '' ? (<p className="text-red-400 font-bold">Error: {editErr}</p>) : null}
                   <h2 className="text-2xl font-bold">Edit Post</h2>
@@ -344,7 +348,7 @@ function Post() {
                       />
                       <button
                         onClick={() => removeImage(idx)}
-                        className="absolute top-0 right-0 text-white bg-red-600 rounded-full px-1 text-xs"
+                        className="absolute top-0 right-0 text-black dark:text-white bg-red-600 rounded-full px-1 text-xs"
                       >
                         ✕
                       </button>
@@ -359,7 +363,7 @@ function Post() {
                       />
                       <button
                         onClick={() => removeUploadedImage(idx)}
-                        className="absolute top-0 right-0 text-white bg-red-600 rounded-full px-1 text-xs"
+                        className="absolute top-0 right-0 text-black dark:text-white bg-red-600 rounded-full px-1 text-xs"
                       >
                         ✕
                       </button>
@@ -371,13 +375,13 @@ function Post() {
                   <div className="flex justify-end space-x-2">
                     <button
                       onClick={() => handleClose()}
-                      className="px-4 py-2 bg-gray-200 text-gray-300 rounded hover:bg-gray-300"
+                      className="px-4 py-2 bg-gray-200 text-black dark:text-gray-300 rounded hover:bg-gray-300"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => handleSave()}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="px-4 py-2 bg-blue-600 text-black dark:text-white rounded hover:bg-blue-700"
                     >
                       Save Changes
                     </button>

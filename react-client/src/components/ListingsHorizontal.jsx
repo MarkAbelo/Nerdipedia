@@ -101,7 +101,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage, forSearch}) {
                                             className="w-14 h-14 rounded-full object-cover border"
                                         />
                                         <div>
-                                            <p className="text-sm font-medium text-gray-400">By {post.posterUsername}</p>
+                                            <p className="text-sm font-medium dark:text-gray-400">By {post.posterUsername}</p>
                                             <p className="text-xs text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
                                         </div>
                                     </div>

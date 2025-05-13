@@ -135,7 +135,7 @@ export default function CreatePost() {
         />
         <br/>
         <br/>
-      <label className="block text-sm font-medium text-gray-300">
+      <label className="block text-sm font-medium dark:text-gray-300">
           Upload Images (optional)
       </label>
       <input
@@ -143,7 +143,7 @@ export default function CreatePost() {
         multiple
         accept="image/*"
         onChange={handleFileChange}
-        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
+        className="block w-full text-sm dark:text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
 
@@ -157,7 +157,7 @@ export default function CreatePost() {
             />
             <button
               onClick={() => removeImage(idx)}
-              className="absolute top-0 right-0 text-white bg-red-600 rounded-full px-1 text-xs"
+              className="absolute top-0 right-0 dark:text-white bg-red-600 rounded-full px-1 text-xs"
             >
               ✕
             </button>
@@ -169,13 +169,13 @@ export default function CreatePost() {
         <div className="flex justify-end space-x-2">
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-gray-200 text-gray-300 rounded hover:bg-gray-300"
+            className="px-4 py-2 bg-gray-200 dark:text-gray-300 rounded hover:bg-gray-300"
           >
             Reset Post
           </button>
           <button
             onClick={handlePost}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 dark:text-white rounded hover:bg-blue-700"
           >
             Post!
           </button>
