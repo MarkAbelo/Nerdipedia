@@ -15,7 +15,7 @@ import Post from './components/Post'
 import Profile from './components/Profile'
 import CreatePost from './components/CreatePost'
 import Movie from './components/Movie'
-
+import NotFound from './components/NotFound'
 function App() {
 
   return (
@@ -41,6 +41,7 @@ function App() {
         <Route path='/account/:id' element={<Profile />} />
         <Route path='/show/:id' element={<Show />} />
         <Route path='/book/:id' element={<Book />} />
+        <Route path='*' element={<NotFound/>}/>
       </Routes>
       </div>
       <br/>
