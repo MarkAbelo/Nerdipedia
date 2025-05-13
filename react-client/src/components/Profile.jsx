@@ -1,8 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
-import { Link, redirect, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import accountService from "../services/accountService";
-import postService from "../services/postService";
 import ListingsHorizontal from "./ListingsHorizontal";
 import ListingsVertical from "./ListingsVertical";
 import imageService from "../services/imageService";
@@ -19,7 +18,7 @@ function Profile(){
 
     const [getData, reGetData] = useState(false)
     //user state
-    const { currentUser } = useAuth()
+    const { currentUser, mongoUser } = useAuth()
 
     // Edit Modal state
     const [modalActive, setModalActive] = useState(false) 
@@ -28,6 +27,7 @@ function Profile(){
     const [editedEmail, setEditedEmail] = useState("");
     const [editProfilePic, setEditedProfilePic] = useState("");
     const [imageFile, setImageFile] = useState(null);
+    const [editError, setEditError] = useState(null);
 
     const selectFileHandler = (e) => {
         setImageFile(e.target.files[0])
@@ -56,9 +56,9 @@ function Profile(){
 
     async function handleSave() {
 
-        let profilePic = ""
+        let profilePic = imageService(imageFile)
         try {
-            profilePic = await imageService(editProfilePic);
+            profilePic = await imageService(imageFile);        
         } catch (e) {
             setError('Could not upload image file');
             console.log(e)
@@ -70,7 +70,7 @@ function Profile(){
                 newUsername: editedUsername.length > 0 ? editedUsername : false,
                 newPassword: editedPassword.length > 0 ? editedPassword : false,
                 newEmail: editedEmail.length > 0 ? editedEmail : false,
-                newProfilePic: profilePic > 0 ? profilePic : false
+                newProfilePic: profilePic !== undefined ? profilePic : mongoUser.profilePic
             }
             console.log(updateObj)
             //send to accountService
@@ -87,6 +87,8 @@ function Profile(){
             }
         } catch(e) {
             console.log(e)
+            resetEditAccount()
+            setEditError(e)
         }
     }
 
@@ -122,7 +124,7 @@ function Profile(){
 
     if (error) {
         return (
-            <>{error.message}</>
+            <>{error}</>
         )
     }
     return (
@@ -154,6 +156,10 @@ function Profile(){
                     <div className="bg-black p-6 rounded-lg w-full max-w-lg space-y-4 shadow-xl">
                         <h2 className="text-2x1 font-bold">Edit Profile</h2>
 
+                        {editError && (
+                            <div className="text-red-600">{editError}</div>
+                        )}
+
                         <label className="text-lg" for="Username">Username:</label>
                         <input 
                             id="username"
@@ -184,6 +190,7 @@ function Profile(){
                         <input 
                             id="profilepic"
                             type="file"
+                            
                             onChange={selectFileHandler}
                             className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                             file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"

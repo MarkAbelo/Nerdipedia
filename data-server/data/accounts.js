@@ -163,7 +163,7 @@ const accountsDataFunctions = {
                 await admin.auth().updateUser(user.uid, updateObj);
             }
         } catch(e) {
-            throw `Failed to update Firebase account info for ${accountID}`;
+            throw `Failed to update Firebase account info for ${accountID} because ${e}`;
         }
 
         //update monogoDB
@@ -172,7 +172,7 @@ const accountsDataFunctions = {
             {$set: { username: newUsername, email: newEmail , profilePic: newProfilePic} }
         );
 
-        if (!updateInfo.acknowledged || updateInfo.modifiedCount === 0) {
+        if (!updateInfo.acknowledged) {
             throw `Faialed to update MongoDB account info for ${accountID}`;
         }
 
