@@ -186,7 +186,6 @@ function Book(){
     if(error){
         return <div className="p-4 text-red-500">Error: {error.message}</div>;
     }
-    console.log(mongoUser)
     return (
         <div className="book-page p-4">
              {book && (

@@ -204,7 +204,6 @@ export default function Movie() {
         if (typeof(reviews) == 'object') {
             let x = 0
             let tot = 0
-            console.log(reviews)
             reviews.map((review) => {
                 x += review.rating
                 tot += 1
@@ -216,8 +215,6 @@ export default function Movie() {
         }
         
     }
-
-    console.log(movie)
     
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8 text-gray-300">

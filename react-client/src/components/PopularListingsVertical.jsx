@@ -16,30 +16,12 @@ function PopularListingsVertical({type, section}) {
     useEffect(() => {
         async function fetchData() {
             try {
-                // if(type ==="books"){
-                //     let {data} = await axios.get(`http://localhost:3000/books/search`,{
-                //         params:{
-                //             searchTerm: 'Harry Potter',
-                //             pageNum: 1
-                //         }
-                //     })
-                //     data= data.map((book) => ({
-                //         ...book,
-                //         averageRating: 10,
-                //         reviewCount: 100,
-                //         publish_year: book.publish_year,
-                //     }))
-                //     setListings(data);
-                //     setLoading(false);
-                // }
-                // else{
                 const params = type === 'posts' && section ? { n: 10, section: section } : { n: 10 };
                 const {data} = await axios.get(`http://localhost:3000/${type}/${typeToQuery[type]}`,
                     {params}
                 );
                 setListings(data);
                 setLoading(false);
-            // }
             }
             catch(e){
                 setLoading(false);

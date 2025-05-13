@@ -45,7 +45,6 @@ function Show() {
             try {
                 const show = await showService.getShow(id)
                 setShow(show);
-                console.log(show)
                 const reviews = show.showReview === 'There are no reviews' ?
                     [] : show.showReview
                 setReviews(reviews);

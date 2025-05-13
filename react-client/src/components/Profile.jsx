@@ -43,7 +43,6 @@ function Profile(){
         async function fetchData(){
             try {
                 const data = await accountService.getAccount(id);
-                console.log(data) //for checking
                 setAccountData(data);
                 setLoading(false);
             } catch (e) {

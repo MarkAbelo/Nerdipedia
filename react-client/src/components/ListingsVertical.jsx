@@ -16,26 +16,8 @@ function ListingsVertical({type, title, data}) {
     useEffect(() => {
         async function fetchData() {
             try {
-                // if(type ==="books"){
-                //     let {data} = await axios.get(`http://localhost:3000/books/search`,{
-                //         params:{
-                //             searchTerm: 'Harry Potter',
-                //             pageNum: 1
-                //         }
-                //     })
-                //     data= data.map((book) => ({
-                //         ...book,
-                //         averageRating: 10,
-                //         reviewCount: 100,
-                //         publish_year: book.publish_year,
-                //     }))
-                //     setListings(data);
-                //     setLoading(false);
-                // }
-                // else{
                 setListings(data);
                 setLoading(false);
-            // }
             }
             catch(e){
                 setLoading(false);
