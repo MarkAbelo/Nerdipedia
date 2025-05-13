@@ -119,7 +119,8 @@ function Register() {
 
 
                 <label>Profile Picture:</label>
-                <input type="file" name="profilePic" className="bg-white" onChange={selectFileHandler} />
+                <input type="file" name="profilePic" className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onChange={selectFileHandler} />
                 {errors.profilePic && <p className="errorText">{errors.profilePic}</p>}
             </div>
             

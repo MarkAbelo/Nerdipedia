@@ -1,7 +1,9 @@
 import { React, useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import No_image from "../assets/no_image.png";
-import axios from "axios";
+import showService from "../services/showService";
+import movieService from "../services/movieService";
+import bookService from "../services/bookService";
 
 function PopularListingsHorizontal({type}) {
     //I don't think we actually need 'section' for this component because its on the Home page (not entirely sure but this my guess)
@@ -44,32 +46,25 @@ function PopularListingsHorizontal({type}) {
     useEffect(() => {
         async function fetchData() {
             try {
-                // if(type ==="books"){
-                //     let {data} = await axios.get(`http://localhost:3000/books/search`,{
-                //         params:{
-                //             searchTerm: 'Harry Potter',
-                //             pageNum: 1
-                //         }
-                //     })
-                //     data= data.map((book) => ({
-                //         ...book,
-                //         averageRating: 10,
-                //         reviewCount: 100,
-                //         publish_year: book.publish_year,
-                //     }))
-                //     setListings(data);
-                //     setLoading(false);
-                // }
-                // else{
-                // const params = type === 'posts' && section ? { n: 10, section: section } : { n: 10 };
-                const {data} = await axios.get(`http://localhost:3000/${type}/${typeToQuery[type]}`,
-                    {params:{
-                        n: 10,
-                    }
-                });
-                setListings(data);
-                setLoading(false);
-            // }
+                let data = null;
+                switch (type) {
+                    case "shows":
+                        data = await showService.getPopularShows(10);
+                        setListings(data);
+                        setLoading(false);
+                        break;
+                    case "movies":
+                        data = await movieService.getPopularMovies(10);
+                        setListings(data);
+                        setLoading(false);
+                        break;
+                    case "books":
+                        data = await bookService.getPopularBooks(10);
+                        console.log(data)
+                        setListings(data);
+                        setLoading(false);
+                        break;
+                }
             }
             catch(e){
                 setLoading(false);
@@ -142,7 +137,7 @@ function PopularListingsHorizontal({type}) {
                                 key={book.forID} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
                             >
-                                <Link to={`/${type}/${book.forID}`} className="block">
+                                <Link to={`/book/${book.forID}`} className="block">
                                     {/*Image container*/}
                                     <div className="relative">
                                         <img 
@@ -202,7 +197,7 @@ function PopularListingsHorizontal({type}) {
                                 key={media.forID} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
                             >
-                                <Link to={`/${type}/${media.forID}`} className="block">
+                                <Link to={`/${type ==='shows'? 'show' : 'movie'}/${media.forID}`} className="block">
                                     {/*Image container*/}
                                     <div className="relative rounded-lg overflow-hidden">
                                         <img 

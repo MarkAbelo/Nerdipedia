@@ -376,7 +376,7 @@ const accountsDataFunctions = {
                 await admin.auth().deleteUser(user.uid);
             }
         } catch(e) {
-            console.error(`Failed to delete Firebase user with uid ${user.uid}`)
+            console.error(`Failed to delete Firebase users`)
         }
 
         return true;

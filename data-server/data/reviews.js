@@ -354,7 +354,7 @@ const reviewsDataFunctions = {
         //grab all the reviews for movies
         
         const reviewsCollection = await reviews();
-        const ratedMovies  = await reviewsCollection().aggregate([
+        const ratedMovies  = await reviewsCollection.aggregate([
             {
               $match: {
                 section: "movie" // Only include movie
@@ -398,7 +398,7 @@ const reviewsDataFunctions = {
     },
     async mostPopularShows(n=20){
         const reviewsCollection = await reviews();
-        const ratedShows  = await reviewsCollection().aggregate([
+        const ratedShows  = await reviewsCollection.aggregate([
             {
               $match: {
                 section: "show" // Only include movie
@@ -442,7 +442,7 @@ const reviewsDataFunctions = {
     },
     async mostPopularBooks(n=20){
         const reviewsCollection = await reviews();
-        const ratedBooks  = await reviewsCollection().aggregate([
+        const ratedBooks  = await reviewsCollection.aggregate([
             {
               $match: {
                 section: "book" // Only include movie

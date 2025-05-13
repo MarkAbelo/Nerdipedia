@@ -66,6 +66,7 @@ router.route("/popularBooks").get(async (req,res)=>{
         const bookList = await reviewData.mostPopularBooks(n);
         return res.status(200).json(bookList);
     }catch (e) {
+        console.log(e)
         return res.status(500).json({error: e});
     }
 })  

@@ -109,7 +109,7 @@ const booksDataFunctions={
             throw (e);
         }
         //-S, -M, -L for image size
-        const returnCard = {id,title: bookInfo.title, cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
+        const returnCard = {id,title: bookInfo.title, authors: bookInfo.author_name || [], publish_year: bookInfo.first_publish_year, cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(returnCard));
