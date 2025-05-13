@@ -45,10 +45,15 @@ function Book(){
                 const reviews = bookData.bookReview === 'There are no reviews' ? 
                     [] : bookData.bookReview;
                 setReviews(reviews);
-                const existingReview = reviews.find(review => 
-                    review.posterID === currentUser.displayName
-                );
-                setUserReview(existingReview || null);
+                if(currentUser===null){
+                    setUserReview(null);
+                }
+                else{
+                    const existingReview = reviews.find(review => 
+                        review.posterID === currentUser.displayName
+                    );
+                    setUserReview(existingReview || null);
+                }
                 setLoading(false);
             } catch (e) {
                 setLoading(false);
@@ -56,7 +61,7 @@ function Book(){
             }
         };
         fetchBook();
-    }, [id,currentUser.displayName]);
+    }, [id]);
     
     const handleFormChange = (e) => {
         setFormData({
