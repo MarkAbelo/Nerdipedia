@@ -45,6 +45,7 @@ function Show() {
             try {
                 const show = await showService.getShow(id)
                 setShow(show);
+                console.log(show)
                 const reviews = show.showReview === 'There are no reviews' ?
                     [] : show.showReview
                 setReviews(reviews);
@@ -209,6 +210,14 @@ function Show() {
                 <div className="flex-1">
                     <h1 className="text-3x1 font-bold mb-3">{show.name}</h1>
                     <p className="text-gray-700">{stripTags(show.summary)}</p>
+                    <br />
+                    <p className="text-sm text-gray-700">Language: {show.language}</p>
+                    <p className="text-sm text-gray-700">Status: {show.ended ? `Ended ${show.ended}` : "Ongoing"}</p>
+                    {show.genres && show.genres.length > 0 && (
+                        <p className="text-sm text-gray-600">
+                            Genres: {show.genres.join(", ")}
+                        </p>
+                    )}
                 </div>
             </div>
             {/*Changing review section to match */}
