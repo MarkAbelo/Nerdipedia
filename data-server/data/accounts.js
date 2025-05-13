@@ -359,7 +359,9 @@ const accountsDataFunctions = {
         const allAccounts = await accountCol.find().project({_id: 0, email: 1}).toArray();
         if (!allAccounts) throw 'Could not retrieve accounts';
 
-        for (const acc of allAccounts){
+        //const firebaseAccounts = await admin.auth().listUsers(1000) // | iterate over firebaseAccounts.users if mongo cleared but not firebase
+
+        for (const acc of allAccounts) {
             try {
                 const user = await admin.auth().getUserByEmail(acc.email);
                 await admin.auth().deleteUser(user.uid);

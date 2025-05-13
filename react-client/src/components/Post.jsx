@@ -4,17 +4,17 @@ import { useAuth } from "../contexts/authContext";
 import postService from "../services/postService";
 import accountService from "../services/accountService";
 import imageService from "../services/imageService";
+import No_image from "../assets/no_image.png";
 
 
 function Post() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [getData, reGetData] = useState(false)
+    const [getData, reGetData] = useState(false) // used after Edit post to re-trigger useEffect
 
     // User state
-    const { currentUser } = useAuth(); 
-    const [userData, setUserData] = useState(null)
+    const {userLoggedIn, mongoUser, currentUser } = useAuth(); 
 
     // Edit Modal state
     const [modalActive, setModalActive] = useState(false) 
@@ -26,19 +26,20 @@ function Post() {
 
     // Like/Dislike state
     const [userLikeState, setUserLikeState] = useState("") 
-    const [likes, setLikes] = useState(0)
-    const [dislikes, setDislikes] = useState(0)
 
     // Post data state
+    const [ editErr, setEditErr ] = useState("")
     const [ loading, setLoading ] = useState(true); 
     const [ error, setError] = useState(null)
     const [ post, setPostData ] = useState(undefined);
+
     
     function resetEditPost (postObj) {
         setEditedTitle(postObj.title)
         setEditedBody(postObj.body)
         setEditedSection(postObj.section)
         setEditedImages(postObj.images)
+        setEditErr("")
         setUploadedImages([])
     } 
 
@@ -47,20 +48,19 @@ function Post() {
             try {
                 setLoading(true)
                 const postResponse = await postService.getPost(id);
-                const userRespnse = await accountService.getAccount(currentUser.displayName)
-                setUserData(userRespnse)
-                if (userRespnse.dislikedPosts.includes(id)) {
+                if (userLoggedIn) {
+                  const userRespnse = await accountService.getAccount(currentUser.displayName)
+                  if (userRespnse.dislikedPosts.includes(id)) {
                     setUserLikeState("dislikes")
-                } else if (userRespnse.likedPosts.includes(id)) {
+                  } else if (userRespnse.likedPosts.includes(id)) {
                     setUserLikeState("likes")
-                } else {
+                  } else {
                     setUserLikeState("none")
+                  }
                 }
                 // Making quite the STATEment here! :))
                 resetEditPost(postResponse)
                 setPostData(postResponse)
-                setLikes(postResponse.likes)
-                setDislikes(postResponse.dislikes)
                 setError(null)
             } catch (e) {
                 setError(e)
@@ -69,10 +69,26 @@ function Post() {
                 setLoading(false)
             }
         }
-        fetchData();
-    }, [id, getData]);
+        fetchData().then(() => console.log('useffect state: ', userLikeState));
+    }, [id, userLikeState, getData]);
 
     async function handleSave () {
+      try {
+        if (editedBody == '') {
+          setEditErr("Your body must contain some text!")
+          return 
+        } 
+        if (editedTitle == '') {
+          setEditErr("You can't have a post without a title!")
+          return
+        } 
+        if (editedSection == '') {
+          setEditErr("Don't forget to select a section!")
+          return
+        }
+      } catch (e) {
+        throw e
+      }
         try {
             // build image url array
             let updatedImages;
@@ -87,7 +103,11 @@ function Post() {
             } else { // No new images, just take remaining existing images
                 updatedImages = editedImages
             }
-            console.log(updatedImages)
+
+            if (editedSection == '') {
+              throw new Error('Error: Please select a section')
+            }
+
             // build form data
             const updateObj = {
                 body: editedBody,
@@ -118,21 +138,12 @@ function Post() {
         try {
           setLoading(true);
           const state = await postService.toggleLikedPost(id, currentUser.displayName);
-          if (userLikeState == 'dislikes') {
-            setDislikes(dislikes - 1)
-            setLikes(likes + 1)
-          } else if (userLikeState == 'likes') {
-            setLikes(likes - 1)
-          } else { // userLikeState = 'none'
-            setLikes(likes + 1);
-          }
           setUserLikeState(state)
+          setLoading(false);
           setError(null)
         } catch (err) {
           console.error("Failed to like post:", err);
           setError(err)
-        } finally {
-          setLoading(false);
         }
       };
     
@@ -140,21 +151,12 @@ function Post() {
         try {
           setLoading(true);
           const state = await postService.toggleDislikedPost(id, currentUser.displayName);
-          if (userLikeState == 'likes') {
-            setLikes(likes - 1)
-            setDislikes(dislikes + 1)
-          } else if (userLikeState == 'dislikes') {
-            setDislikes(dislikes - 1)
-          } else { // userLikeState = 'none'
-            setDislikes(dislikes + 1)
-          }
           setUserLikeState(state)
+          setLoading(false);
           setError(null)
         } catch (err) {
           console.error("Failed to dislike post:", err);
           setError(err)
-        } finally {
-          setLoading(false);
         }
       };
 
@@ -225,7 +227,7 @@ function Post() {
     return(
     <div>
         <div className="flex justify-end px-4 py-3 mx-2">
-            {userData.postCards.filter(x => x._id == id).length > 0 ? <PostActions/> : null}
+            {mongoUser?.postCards.filter(x => x._id == id).length > 0 ? <PostActions/> : null}
         </div>
         <hr className="text-gray-500"/>
         
@@ -237,7 +239,7 @@ function Post() {
                 {/* Poster Info */}
                 <Link to={`/account/${post.posterID}`} className="flex items-center space-x-4">
                   <img
-                    src={post.posterPic}
+                    src={post.posterPic ? post.posterPic : No_image}
                     alt="Poster profile"
                     className="w-14 h-14 rounded-full object-cover border"
                   />
@@ -257,12 +259,10 @@ function Post() {
                 {/* Body */}
                 <p className="text-gray-400 text-base whitespace-pre-line">{post.body}</p>
 
-
-
                 {/* Likes / Dislikes */}
                 <div className="flex items-center space-x-6 pt-2 text-sm text-gray-600">
-                  <button onClick={handleLike}>👍 {JSON.stringify(likes)}</button>
-                  <button onClick={handleDislike}>👎 {JSON.stringify(dislikes)}</button>
+                  <button onClick={() => handleLike().then(() => console.log('like: ',userLikeState))}>👍 {post.likes}</button>
+                  <button onClick={() => handleDislike().then(() => console.log('dislike: ',userLikeState))}>👎 {post.dislikes}</button>
                 </div>
             </div>
             <div className="mx-auto bg-gray overflow-hidden p-6 space-y-4">
@@ -284,6 +284,7 @@ function Post() {
         {modalActive && (
               <div className="fixed inset-0 flex items-center bg-gray-400/50 justify-center z-50">
                 <div className="bg-black p-6 rounded-lg w-full max-w-lg space-y-4 shadow-xl">
+                  {editErr != '' ? (<p className="text-red-400 font-bold">Error: {editErr}</p>) : null}
                   <h2 className="text-2xl font-bold">Edit Post</h2>
                     
                   <label className="text-lg" for='title'>Title:</label>
@@ -369,13 +370,13 @@ function Post() {
 
                   <div className="flex justify-end space-x-2">
                     <button
-                      onClick={handleClose}
+                      onClick={() => handleClose()}
                       className="px-4 py-2 bg-gray-200 text-gray-300 rounded hover:bg-gray-300"
                     >
                       Cancel
                     </button>
                     <button
-                      onClick={handleSave}
+                      onClick={() => handleSave()}
                       className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                       Save Changes

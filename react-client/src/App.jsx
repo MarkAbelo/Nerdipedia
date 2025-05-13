@@ -14,7 +14,8 @@ import DnD from './components/Dnd'
 import Post from './components/Post'
 import Profile from './components/Profile'
 import CreatePost from './components/CreatePost'
-// import Movie from './components/Movie'
+import Movie from './components/Movie'
+
 function App() {
 
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path='/show/:id' element={<Show />} />
         <Route path='/shows' element={<Shows />} />
         <Route path='/movies' element={<Movies />} />
+        <Route path='/movie/:id' element={<Movie />} />
         <Route path='/books' element={<Books />} />
         <Route path='/dnd' element={<DnD />} />
         <Route path='/post/:id' element={<Post/>} />

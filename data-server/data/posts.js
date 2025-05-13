@@ -200,12 +200,12 @@ const postsDataFunctions = {
 
         let returnStatus = {status: null};
 
-        const poster = await accountsDataFunctions.getAccount(postFound.posterID);
-        if (poster.likedPosts.includes(postID)){
+        const user = await accountsDataFunctions.getAccount(accountID);
+        if (user.likedPosts.includes(postID)){
             // user has liked post, set status to none
             returnStatus.status = 'none';
         } else {
-            if (poster.dislikedPosts.includes(postID)) {
+            if (user.dislikedPosts.includes(postID)) {
                 // user has disliked post, remove dislike
                 await accountsDataFunctions.toggleDislikedPost(accountID, postID);
                 await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {dislikes: -1}})
@@ -253,12 +253,12 @@ const postsDataFunctions = {
         if (!postFound) throw 'Post not found';
 
         let returnStatus = {status: null};
-        const poster = await accountsDataFunctions.getAccount(postFound.posterID);
-        if (poster.dislikedPosts.includes(postID)) {
+        const user = await accountsDataFunctions.getAccount(accountID);
+        if (user.dislikedPosts.includes(postID)) {
             // user has disliked post, set status to none
             returnStatus.status = 'none';
         } else {
-            if (poster.likedPosts.includes(postID)) {
+            if (user.likedPosts.includes(postID)) {
                 // user has liked post, remove like
                 await accountsDataFunctions.toggleLikedPost(accountID, postID);
                 await postCol.findOneAndUpdate({_id: new ObjectId(postID)}, {$inc: {likes: -1}})

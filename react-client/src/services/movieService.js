@@ -4,8 +4,9 @@ import validationFunctions from '../../../data-server/validation/validation.js';
 const movieService={
     async getMovie(id){
         try{
-            if(!id) throw "No movie id provided";;
-            const data= await axios.get( `http://localhost:3000/movies/getMovie/${id}`);
+            if(!id) throw "No movie id provided";
+            id = await validationFunctions.validString(id, "movie")
+            const data = await axios.get( `http://localhost:3000/movies/getMovie/${id}`);
             if(data.status === 200){
                 return data.data;
             }
