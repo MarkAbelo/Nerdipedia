@@ -22,6 +22,10 @@ function Book(){
         rating: 5,
         section: 'book' // Assuming reviews are for books
     });
+
+    //image expanding
+    const [expandedImageIndex, setExpandedImageIndex] = useState(null)
+    
     const formatUTCDate = (timestamp) => {
         const utcDate = new Date(timestamp);
         return utcDate.toLocaleString('en-GB', {
@@ -65,13 +69,13 @@ function Book(){
     }
     const handleEditReview = () => {
         setShowReviewForm(true);
-        // Pre-populate form with existing review data
+        // Set fields to orginal entry
         setFormData({
           body: userReview.body,
           rating: userReview.rating,
         });
       };
-    //console.log(mongoUser)
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -94,7 +98,7 @@ function Book(){
                 [] : updatedBook.bookReview;
             
             setReviews(updatedReviews);
-            setUserReview(updatedReviews.find(r => r.posterID === mongoUser._id));
+            setUserReview(updatedReviews.find(r => r.posterID === currentUser.displayName));
             setShowReviewForm(false);
             setFormData({ body: '', rating: 5, section: 'book' });
             
@@ -183,6 +187,113 @@ function Book(){
     console.log(mongoUser)
     return (
         <div className="book-page p-4">
+             {book && (
+                <div className="book-details">
+                    {/*Title & Author*/}
+                    <h1 className="text-4xl font-bold mb-2">{book.title}</h1>
+                    <p className="text-xl text-gray-400 mb-6">
+                        by {book.authors?.join(', ') || 'Unknown Author'}
+                    </p>
+
+                    {/*Cover Gallery*/}
+                    {book.covers?.length > 0 && (
+                        <div className="flex justify-center mb-8">
+                            <img 
+                                src={book.covers[0].includes('-1-M.jpg') ? No_image : book.covers[0]}
+                                alt="Main Cover"
+                                className="max-w-xs max-h-128 object-contain bg-gray-900 rounded-lg p-2"
+                                onError={(e) => e.target.src = No_image}
+                            />
+                        </div>
+                    )}
+
+                    {/*Description*/}
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold mb-4 text-amber-400">Description</h2>
+                        <p className="text-gray-300 whitespace-pre-line leading-relaxed">
+                        {typeof book.description === 'object' ? book.description.value : book.description}
+                        </p>
+                    </div>
+
+                    {/*The Metadata Grid*/}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        {/*Subjects*/}
+                        <div>
+                            <h3 className="text-xl font-semibold mb-3 text-blue-400">Subjects</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {book.subjects?.slice(0, Math.max((book.subjects.length/4),10)).map((subject, index) => (
+                                    <span 
+                                        key={index}
+                                        className="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm"
+                                    >
+                                        {subject}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/*Characters*/}
+                        <div>
+                            <h3 className="text-xl font-semibold mb-3 text-green-400">Key People</h3>
+                            <ul className="space-y-1">
+                                {book.subject_people?.slice(0, 5).map((person, index) => (
+                                    <li key={index} className="text-gray-400">• {person}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/*Locations*/}
+                        <div>
+                            <h3 className="text-xl font-semibold mb-3 text-purple-400">Locations</h3>
+                            <ul className="space-y-1">
+                                {book.subject_places?.map((place, index) => (
+                                    <li key={index} className="text-gray-400">• {place}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/*External Links*/}
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-bold mb-4 text-amber-400">Related Links</h2>
+                        <div className="space-y-2">
+                            {book.links?.map((link, index) => (
+                                <a
+                                    key={index}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block py-2 px-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-blue-400 hover:text-blue-300"
+                                >
+                                    ➤ {link.title}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/*Gallery*/}
+                    {book.covers?.length > 0 && (
+                        <div className="expandable-gallery mb-8">
+                            <h2 className="text-2xl font-bold mb-4 text-amber-400">Gallery</h2>
+                            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                {book.covers.map((cover, index) => (
+                                    <div 
+                                        key={index}
+                                        onClick={() => setExpandedImageIndex(index)}
+                                    >
+                                        <img
+                                            src={cover.includes('-1-M.jpg') ? No_image : cover}
+                                            alt={`Cover ${index + 1}`}
+                                            className="w-full h-24 object-cover rounded-lg"
+                                            onError={(e) => e.target.src = No_image}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
             {/*put page stuff here*/}
             <div className="reviews-section mt-8">
                 <div className="flex justify-between items-center mb-4">
@@ -229,18 +340,20 @@ function Book(){
                             <p className="text-white-700 leading-relaxed border-t border-amber-100 pt-3">
                                 {userReview.body}
                             </p>
-                            <button
-                                onClick={handleEditReview}
-                                className="text-blue-300 mt-2 hover:text-blue-400 text-sm font-medium"
-                            >
-                                Edit Review
-                            </button>
+                            <div className="flex justify-end gap-2 mt-2">
+                                <button
+                                    onClick={handleEditReview}
+                                    className="text-blue-300 hover:text-blue-400 text-sm font-medium"
+                                >
+                                    Edit Review
+                                </button>
                                 <button
                                     onClick={handleDeleteReview}
                                     className="text-red-300 hover:text-red-400 text-sm font-medium px-3 py-1 border border-red-300 rounded"
                                 >
                                     Delete Review
                                 </button>
+                        </div>
                         </div>
                     </div>
                 )}
