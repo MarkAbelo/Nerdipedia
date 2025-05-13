@@ -52,7 +52,7 @@ function Reviews({reviews}){
                         </div>
                     </div>
                     {/*Review body*/}
-                    <p className="text-white-700 leading-relaxed border-t border-amber-100 pt-3">
+                    <p className="text-white leading-relaxed border-t border-amber-100 pt-3">
                         {review.body}
                     </p>
                 </div>

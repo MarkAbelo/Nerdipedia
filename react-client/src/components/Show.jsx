@@ -166,14 +166,14 @@ function Show() {
                 <div className="flex gap-2">
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        className="bg-blue-500 text-blue-600 px-4 py-2 rounded hover:bg-blue-600"
                     >
                         {userReview ? "Update Review" : "Submit Review"}
                     </button>
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                        className="bg-gray-500 text-blue-600 px-4 py-2 rounded hover:bg-gray-600"
                     >
                         Cancel
                     </button>
@@ -217,7 +217,7 @@ function Show() {
                     {!userReview && userLoggedIn && (
                         <button
                             onClick={() => setShowReviewForm(true)}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                            className="bg-green-500 text-blue-600 px-4 py-2 rounded hover:bg-green-600"
                         >
                             Write a Review
                         </button>
@@ -254,7 +254,7 @@ function Show() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-white-700 leading-relaxed border-t border-amber-100 pt-3">
+                            <p className="text-white leading-relaxed border-t border-amber-100 pt-3">
                                 {userReview.body}
                             </p>
                             <button
