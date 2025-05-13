@@ -65,7 +65,7 @@ router.route("/data/:id").patch(async (req, res) => {
             if(typeof bodyParams.rating !== 'number' && bodyParams.rating<1 || bodyParams.rating>10) throw (`Rating must be a number between 1 and 10`);
             reviewInfo['rating'] = bodyParams.rating;
         } 
-        if (bodyParams.body) reviewInfo['section'] = await validationFunctions.validSection(bodyParams.section);
+        //if (bodyParams.body) reviewInfo['section'] = await validationFunctions.validSection(bodyParams.section);
     } catch (e) {
         return res.status(400).json({error: e});
     }

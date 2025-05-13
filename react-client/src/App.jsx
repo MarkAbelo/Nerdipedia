@@ -8,12 +8,13 @@ import Signout from './components/signout'
 import Show from './components/Show'
 import Shows from './components/Shows'
 import Movies from './components/Movies'
+import Book from './components/book'
 import Books from './components/Books'
 import DnD from './components/Dnd'
 import Post from './components/Post'
 import Profile from './components/Profile'
 import CreatePost from './components/CreatePost'
-
+// import Movie from './components/Movie'
 function App() {
 
   return (
@@ -36,6 +37,8 @@ function App() {
         <Route path='/dnd' element={<DnD />} />
         <Route path='/post/:id' element={<Post/>} />
         <Route path='/account/:id' element={<Profile />} />
+        <Route path='/show/:id' element={<Show />} />
+        <Route path='/book/:id' element={<Book />} />
       </Routes>
       </div>
     </>

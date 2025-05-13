@@ -302,20 +302,32 @@ const reviewsDataFunctions = {
         const accountList = await accountsCollection.find({
             _id: { $in: posterObjectIDs } 
           }, {
-            projection: { username: 1 }
+            projection: { username: 1, profilePic: 1 }
           }).toArray();
         if(accountList.length===0){
             return `Not sure how there were no usernames, but there are no usernames`;
         }
         const accountMap = new Map();
+        // When populating the accountMap, store an object with both username and profilePic
         accountList.forEach(account => {
-            accountMap.set(account._id.toString(), account.username);
+            accountMap.set(account._id.toString(), {
+                username: account.username,
+                profilePic: account.profilePic
+            });
         });
-        //adding usernames to the reviews
-        const reviewListWithUsernames = reviewList.map(review => ({
-            ...review,
-            username: accountMap.get(review.posterID.toString()) || 'Deleted User'
-        }));
+
+        // When creating reviewListWithUsernames, include both username and profilePic
+        const reviewListWithUsernames = reviewList.map(review => {
+            const accountInfo = accountMap.get(review.posterID.toString()) || { 
+                username: 'Deleted User', 
+                profilePic: null
+            };
+            return {
+                ...review,
+                username: accountInfo.username,
+                profilePic: accountInfo.profilePic
+            };
+});
 
         // cache data
         await cacheObjectArray(cacheKey, reviewListWithUsernames);
