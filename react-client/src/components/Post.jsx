@@ -238,16 +238,16 @@ function Post() {
                 <h1 className="text-2xl font-bold dark:text-gray-200">{post.title}</h1>
 
                 {/* Poster Info */}
-                <Link to={`/account/${post.posterID}`} className="flex items-center space-x-4">
+                <Link to={`/account/${post.posterID}`} className="flex items-center">
                   <img
                     src={post.posterPic ? post.posterPic : No_image}
                     alt="Poster profile"
                     className="w-14 h-14 rounded-full object-cover border"
                   />
-                  <div>
-                    <p className="text-sm font-medium dark:text-gray-400">By: {post.posterUsername}</p>
-                    <p className="text-xs dark:text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
-                  </div>
+                  <elem className="mx-4">
+                    <p className="text-sm font-medium text-gray-400">By: {post.posterUsername}</p>
+                    <p className="text-xs text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
+                  </elem>
                 </Link>
 
 
