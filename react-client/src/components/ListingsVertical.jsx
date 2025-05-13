@@ -96,7 +96,7 @@ function ListingsVertical({type, title, data}) {
             <Link
                 to={`/${type}/${book.id}`}
                 key={book.forID}
-                className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500"
+                className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500 w-72"
             >
                 <img
                 src={book.cover || No_image}
@@ -109,11 +109,7 @@ function ListingsVertical({type, title, data}) {
                 <p className="text-sm text-gray-400">
                     {book.authors?.join(", ") || "Unknown author"}
                 </p>
-                <div className="mt-1 text-xs text-gray-500 flex gap-4">
-                    <span>⭐ {book.averageRating}</span>
-                    <span>📝 {book.reviewCount} Reviews</span>
-                    <span>📅 {book.publish_year}</span>
-                </div>
+
                 </div>
             </Link>
             ))}
@@ -132,7 +128,7 @@ function ListingsVertical({type, title, data}) {
                         <Link
                         to={`/${type}/${media.id}`}
                         key={media.forID}
-                        className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500"
+                        className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-gray-800/50 border border-gray-700 hover:border-blue-500 w-72"
                         >
                         <img
                             src={media.image || No_image}
@@ -143,8 +139,6 @@ function ListingsVertical({type, title, data}) {
                         <div className="flex-1 text-white">
                             <h3 className="text-lg font-medium leading-tight">{media.title}</h3>
                             <div className="mt-1 text-xs text-gray-500 flex gap-4">
-                            <span>⭐ {media.averageRating}</span>
-                            <span>📝 {media.reviewCount} Reviews</span>
                             </div>
                         </div>
                         </Link>

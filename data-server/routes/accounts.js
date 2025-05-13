@@ -99,7 +99,7 @@ router.route("/data/:id").patch(async (req, res) => {
         return res.status(400).json({error: e});
     }
     try {
-        const success = await postData.editAccount(reqParams.id, bodyParams.username, bodyParams.password, bodyParams.email, bodyParams.profilePic);
+        const success = await accountData.editAccount(reqParams.id, bodyParams.username, bodyParams.password, bodyParams.email, bodyParams.profilePic);
         return res.status(200).json({success: success});
 
     } catch (e) {

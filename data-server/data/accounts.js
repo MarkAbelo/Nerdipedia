@@ -127,9 +127,8 @@ const accountsDataFunctions = {
         if (!accountCol) throw 'Failed to connect to account database';
         const accountFound = await accountCol.findOne({_id: new ObjectId(accountID)});
         if (!accountFound) throw 'No account found with that ID';
-
+        
         //validating inputs for the edit if they exist
-
         if (newUsername) {
             newUsername = await validationFunctions.validString(newUsername);
         } else {
