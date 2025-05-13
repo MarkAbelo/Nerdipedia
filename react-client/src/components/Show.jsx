@@ -11,7 +11,7 @@ function Show() {
     const [reviews, setReviews] = useState([]);
     const [error, setError] = useState("");
 
-    const { userLoggedIn, mongoUser } = useAuth();
+    const { userLoggedIn, mongoUser, currentUser } = useAuth();
     const [newReview, setNewReview] = useState({ rating: '', body: ''})
     const [reviewError, setReviewError] = useState('');
     const [submittingReview, setSubmittingReview] = useState(false);
@@ -19,6 +19,8 @@ function Show() {
     function stripTags(taggedHTML) {
         return taggedHTML.replace(/<[^>]+>/g, '');
     }
+
+    //for submitting new reviews
 
     const handleReviewChange = (e) => {
         const {name, value} = e.target;
@@ -40,7 +42,7 @@ function Show() {
         }
 
         const reviewObject = {
-            posterID: mongoUser._id,
+            posterID: currentUser.displayName,
             body: newReview.body.trim(),
             rating,
             section: 'show',
@@ -49,7 +51,6 @@ function Show() {
 
         setSubmittingReview(true);
         try {
-            //service still needs to be completed 
             const review = await reviewService.createReview(reviewObject);
             setReviews((prev) => [...prev, { ...review, username: mongoUser.username }]);
             setNewReview({ rating: '', body: '' });
@@ -61,13 +62,24 @@ function Show() {
         }
     }
 
+    //for deleting reviews made by you on this page
+    const deleteReview = async (reviewId) => {
+        if (!window.confirm("Do you want to delete this review?")) return;
+
+        try {
+            await reviewService.deleteReview(reviewId);
+            setReviews((prev) => prev.filter((review) => review._id !== reviewId));
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     useEffect(() => {
         const fetchShow = async () => {
             try {
                 const show = await showService.getShow(id)
                 setShow(show);
                 setReviews(show.showReview)
-                console.log(show)
             } catch(e) {
                 setError("Failed to load show or reviews.");
                 console.log(e);
@@ -109,6 +121,17 @@ function Show() {
                                 <span className="text-sm text-yellow-600 font-semibold">{review.rating}/10</span>
                             </div>
                             <p className="text-gray-700">{review.body}</p>
+
+                            {/*Delete button*/}
+                            <div>
+                                {userLoggedIn && mongoUser && currentUser.displayName === review.posterID && (
+                                    <button onClick={() => deleteReview(review._id)}
+                                    className="m-3 text-xs text-red-600 hover:text-red-800 ">
+                                        Delete
+                                    </button>
+                                )}  
+                            </div>
+                            
                         </li>
                     ))}
                 </ul>
