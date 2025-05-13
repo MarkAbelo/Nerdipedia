@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import bookService from "../services/bookService";
+import showService from "../services/showService";
 import ListingsHorizontal from "./ListingsHorizontal";
 
-function SearchBooks() {
+function SearchShows() {
 
     const [ searchParams, setSearchParams ] = useState({
         pageNum: 1,
@@ -16,7 +16,7 @@ function SearchBooks() {
         async function fetchData() {
             if (searchParams.searchQuery) {
                 try {
-                    const data = await bookService.searchBook(searchParams.searchQuery, searchParams.pageNum);
+                    const data = await showService.searchShow(searchParams.searchQuery, searchParams.pageNum);
                     setSearchResults(data);
                     setLoading(false);
                 } catch (err) {
@@ -34,19 +34,19 @@ function SearchBooks() {
         setLoading(true);
         setError(null);
         let term = document.getElementById('searchParam').value.trim();
-        setSearchParams(params => (
-            {...params, searchQuery: term}
-        ));
+        setSearchParams({searchQuery: term, pageNum: 1});
     }
 
     const handleMoreResults = (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        setSearchParams({searchQuery: term, pageNum: 1});
+        setSearchParams(params => (
+            {...params, pageNum: params.pageNum + 1}
+        ));
     }
 
-    const handleClearSearch = (e) => {
+     const handleClearSearch = (e) => {
         e.preventDefault();
         setSearchParams({
             pageNum: 1,
@@ -66,14 +66,14 @@ function SearchBooks() {
     } else if (searchResults && searchResults.length > 0) {
         body = <div>
             <p className="mt-5 text-gray-500 text-center">Showing results for "{searchParams.searchQuery}"</p>
-            <ListingsHorizontal cards={searchResults} type='books' limit='30' />
+            <ListingsHorizontal cards={searchResults} type='shows' limit='30' />
         </div>
     } else {
         body = <div className="py-25 text-gray-500 text-center">No Results</div>;
     }
     return (
         <div>
-            <h2 className="text-xl font-bold mb-4">Search Books</h2>
+            <h2 className="text-xl font-bold mb-4">Search Shows</h2>
             <form
                 method='POST'
                 onSubmit={handleSubmit}
@@ -92,4 +92,4 @@ function SearchBooks() {
 
 }
 
-export default SearchBooks
+export default SearchShows

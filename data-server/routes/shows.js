@@ -47,7 +47,7 @@ router.route("/search").get(async (req, res) => { //the url in the search bar sh
         const showList = await showData.searchShowByTitle(searchTerm, pageNum);
         return res.status(200).json(showList);
     } catch (e) {
-        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(200).json([]);
         else return res.status(500).json({error: e});
     }
 });

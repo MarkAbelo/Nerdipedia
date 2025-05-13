@@ -2,7 +2,7 @@ import { React, useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import No_image from "../assets/no_image.png";
 
-function ListingsHorizontal({title, cards, type, noneFoundMessage}) {    
+function ListingsHorizontal({title, cards, type, noneFoundMessage, forSearch}) {    
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
     const scrollRef = useRef(null);
@@ -133,10 +133,10 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                     >
                         {Array.isArray(cards) && cards.map((book) => (
                             <div 
-                                key={book.forID} 
+                                key={book.forID? book.forID : book.id} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
                             >
-                                <Link to={`/book/${book.forID}`} className="block">
+                                <Link to={`/book/${book.forID? book.forID : book.id}`} className="block">
                                     {/*Image container*/}
                                     <div className="relative">
                                         <img 
@@ -155,6 +155,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                                         </div>
     
                                         {/*Hover overlay*/}
+                                        {book.averageRating && book.reviewCount? (
                                         <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2">
                                             <div className="text-white text-center">
                                                 <div className="flex flex-col gap-1">
@@ -163,6 +164,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                                                 </div>
                                             </div>
                                         </div>
+                                        ) : null}
                                     </div>
     
                                     {/*Bottom text*/}
@@ -192,10 +194,10 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                     >
                         {Array.isArray(cards) && cards.map((media) => (
                             <div 
-                                key={media.forID} 
+                                key={media.forID? media.forID : media.id} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
                             >
-                                <Link to={`/${type ==='shows'? 'show' : 'movie'}/${media.forID}`} className="block">
+                                <Link to={`/${type ==='shows'? 'show' : 'movie'}/${media.forID? media.forID : media.id}`} className="block">
                                     {/*Image container*/}
                                     <div className="relative rounded-lg overflow-hidden">
                                         <img 
@@ -214,6 +216,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                                         </div>
     
                                         {/*Hover overlay*/}
+                                        {media.averageRating && media.reviewCount? (
                                         <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2">
                                             <div className="text-white text-center">
                                                 <div className="flex flex-col gap-1">
@@ -222,6 +225,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
                                                 </div>
                                             </div>
                                         </div>
+                                        ) : null}
                                     </div>
     
                                     {/*Bottom text*/}

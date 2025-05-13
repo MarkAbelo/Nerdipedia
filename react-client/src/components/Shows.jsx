@@ -4,6 +4,7 @@ import PopularPosts from "./PopularPosts";
 import SearchPosts from "./SearchPosts";
 import PopularShows from "./PopularShows";
 import RecommendedShows from "./RecommendedShows";
+import SearchShows from "./SearchShows";
 import { useAuth } from "../contexts/authContext";
 
 function Shows() {
@@ -23,6 +24,7 @@ function Shows() {
             <SearchPosts title='Search Show Posts' type='show'/>
             <PopularShows/>
             {recommendations}
+            <SearchShows/>
         </div>
     )
 }

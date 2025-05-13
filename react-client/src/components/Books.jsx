@@ -4,6 +4,8 @@ import PopularPosts from "./PopularPosts";
 import SearchPosts from "./SearchPosts";
 import PopularBooks from "./PopularBooks";
 import RecommendedBooks from "./RecommendedBooks";
+import SearchBooks from "./SearchBooks";
+
 import { useAuth } from "../contexts/authContext";
 
 function Books() {
@@ -23,6 +25,7 @@ function Books() {
             <SearchPosts title='Search Book Posts' type='book'/>
             <PopularBooks/>
             {recommendations}
+            <SearchBooks/>
         </div>
     )
 }

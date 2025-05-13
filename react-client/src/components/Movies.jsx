@@ -4,6 +4,7 @@ import PopularPosts from "./PopularPosts";
 import SearchPosts from "./SearchPosts";
 import PopularMovies from "./PopularMovies";
 import RecommendedMovies from "./RecommendedMovies";
+import SearchMovies from "./SearchMovies";
 import { useAuth } from "../contexts/authContext";
 
 function Movies() {
@@ -23,6 +24,7 @@ function Movies() {
             <SearchPosts title='Search Movie Posts' type='movie'/>
             <PopularMovies/>
             {recommendations}
+            <SearchMovies/>
         </div>
     )
 }

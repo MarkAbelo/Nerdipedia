@@ -89,14 +89,11 @@ const booksDataFunctions={
         catch(e){
             throw (e)
         }
-        if(booksData.numFound ===0){
-            throw ('No books found!');
-        }
         // this returns suffient data for each entry
         return booksData.docs.map(book=>
             (
                 {
-                    id: this.getId(book.key),
+                    forID: this.getId(book.key),
                     title:book.title,
                     authors: book.author_name || [],
                     //-S, -M, -L for image size

@@ -63,9 +63,6 @@ const showsDataFunctions = {
         } catch(e) {
             throw(e);
         }
-        if (showsData == []) {
-            throw ('No shows found!');
-        }
 
         const showsOnPage = showsData.slice(startIndex, endIndex);
         if (showsOnPage.length === 0) {

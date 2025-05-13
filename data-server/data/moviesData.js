@@ -81,7 +81,7 @@ const moviesDataFunctions = {
         //encode the query 
         const encodedSearchTerm = encodeURIComponent(searchTerm);
         //axios
-        let moviesData; 
+        let moviesData = []; 
         try {
             const searchResponse = await axios.get(uri + `s=${encodedSearchTerm}&page=${pageNum}`); // Gets up to 10 results based on page #
             if (searchResponse.data.Response === 'False') {
@@ -105,8 +105,13 @@ const moviesDataFunctions = {
               }
             If we want to display more in the Movies List page, we can query the API again here
         */
-        
-        return moviesData
+        moviesData = moviesData.map( movie => { return {
+            forID: movie.imdbID,
+            title: movie.Title,
+            image: movie.Poster,
+            premiered: movie.Year
+        }});
+        return moviesData;
 
     },
     async getMovieCard(id) {
