@@ -11,6 +11,7 @@ export default function CreatePost() {
     const navigate = useNavigate()
 
     const [error, setError] = useState(null)
+    const [editErr, setEditErr ] = useState("")
 
     const [title, setTitle] = useState("")
     const [body, setBody] = useState("")
@@ -34,12 +35,33 @@ export default function CreatePost() {
             setTitle("")
             setBody("")
             setSection("")
+            setEditErr("")
             setImages([])
         }
     }
 
     const handlePost = async () => {
+      try {
+        setEditErr("")
+        if (title == '') {
+          setEditErr("You can't have a post without a title!")
+          return
+        } 
+        if (section == '') {
+          setEditErr("Don't forget to select a section!")
+          return
+        }
+        if (body == '') {
+          setEditErr("Your body must contain some text!")
+          return 
+        } 
+        
+        
+      } catch (e) {
+        throw e
+      }
         try {
+            
             // build image url array
             let imageURLs = [];
             if (images.length > 0) { // If images, upload to google storage
@@ -77,7 +99,7 @@ export default function CreatePost() {
     <div className="flex items-center justify-center z-50">
       <div className="p-6 rounded-lg w-full max-w-3xl space-y-4 shadow-xl border-1 border-zinc-800">
         <h2 className="text-2xl font-bold">Create Post</h2>
-          
+          {editErr != '' ? (<p className="text-red-400 font-bold">Error: {editErr}</p>) : null}
         <label className="text-lg" for='title'>Title:</label>
         <input
           id='title'
@@ -114,7 +136,7 @@ export default function CreatePost() {
         <br/>
         <br/>
       <label className="block text-sm font-medium text-gray-300">
-          Upload Images
+          Upload Images (optional)
       </label>
       <input
         type="file"
