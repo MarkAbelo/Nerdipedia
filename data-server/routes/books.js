@@ -18,7 +18,7 @@ router.route("/getBook/:bookId").get(async (req, res) => {
     }
     catch (e) {
         //not really sure why the error is written like this, but i am sticking with it
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
     try{
@@ -49,7 +49,7 @@ router.route("/search").get(async (req, res) => { //the url in the search bar sh
         const bookList = await bookData.searchBookByTitle(searchTerm, pageNum);
         return res.status(200).json(bookList);
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });

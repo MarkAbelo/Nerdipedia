@@ -21,7 +21,7 @@ router.route("/create").post(async (req, res) => {
         const postID = await postData.createPost(bodyParams.title, bodyParams.posterID, bodyParams.section, bodyParams.body, bodyParams.images);
         return res.status(200).json({postID: postID});
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 
@@ -54,7 +54,7 @@ router.route("/data/:id").get(async (req, res) => {
         return res.status(200).json(returnData);
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -78,7 +78,7 @@ router.route("/data/:id").patch(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -96,7 +96,7 @@ router.route("/data/:id").delete(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -148,7 +148,7 @@ router.route("/search").get(async (req, res) => {
         const postsList = await postData.searchPostsByTitle(queryParams.term, queryParams.section);
         return res.status(200).json(postsList);
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         return res.status(500).json({error: e});
     }
 });
@@ -165,7 +165,7 @@ router.route("/byAuthor/:authorID").get(async (req, res) => {
         const postsList = await postData.getPostsByAuthor(reqParams.authorID);
         return res.status(200).json(postsList);
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         return res.status(500).json({error: e});
     }
 });

@@ -22,7 +22,7 @@ router.route("/create").post(async (req, res) => {
         const reviewID = await reviewData.createReview(bodyParams.posterID, bodyParams.body, bodyParams.rating, bodyParams.section, bodyParams.forID);
         return res.status(200).json({reviewID: reviewID});
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -48,7 +48,7 @@ router.route("/data/:id").get(async (req, res) => {
         return res.status(200).json(returnData);
     
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -74,7 +74,7 @@ router.route("/data/:id").patch(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
@@ -92,7 +92,7 @@ router.route("/data/:id").delete(async (req, res) => {
         return res.status(200).json({success: success});
 
     } catch (e) {
-        if (e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
+        if (typeof e === 'string' && e.toLowerCase().includes('no') && e.toLowerCase().includes('found')) return res.status(404).json({error: e});
         else return res.status(500).json({error: e});
     }
 });
