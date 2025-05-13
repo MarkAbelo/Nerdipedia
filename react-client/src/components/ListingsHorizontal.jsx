@@ -72,7 +72,7 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
     if(!cards || cards.length === 0){
         return (
             <div className="px-8 py-6">
-                <h2 className="text-xl font-bold mb-4">{title}</h2> 
+                {title? <h2 className="text-xl font-bold mb-4">{title}</h2> : null}
                 <div className="p-4 text-gray-500">{noneFoundMessage? noneFoundMessage : `No ${type} found`}</div>
             </div>
         );
@@ -80,8 +80,8 @@ function ListingsHorizontal({title, cards, type, noneFoundMessage}) {
     let body;
     if (type === 'posts') {
         body = (
-            <div className="px-8 py-6">
-                <h2 className="text-xl font-bold mb-4">{title}</h2>
+            <div className="px-0 py-6">
+                {title? <h2 className="text-xl font-bold mb-4">{title}</h2> : null}
                 <div className="relative -mx-4">
                     <div
                         ref={scrollRef}

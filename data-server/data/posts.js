@@ -53,7 +53,7 @@ const postsDataFunctions = {
 
         const postCol = await posts();
         if(!postCol) throw 'Failed to connect to post database';
-        const postFound = await postCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, title: 1, posterID: 1, likes: 1}});
+        const postFound = await postCol.findOne({_id: new ObjectId(id)}, {projection: {_id: 1, title: 1, posterID: 1, timeStamp: 1, likes: 1}});
         if (!postFound) throw 'Post not found';
 
         const poster = await accountsDataFunctions.getAccount(postFound.posterID);
@@ -62,6 +62,7 @@ const postsDataFunctions = {
             title: postFound.title,
             posterUsername: poster.username,
             posterProfilePic: poster.profilePic,
+            timeStamp: postFound.timeStamp,
             likes: postFound.likes
         };
 
@@ -365,7 +366,6 @@ const postsDataFunctions = {
         matchCase.title = {$regex: searchTerm, $options: "i"};
         let postsList = await postCol.find(matchCase, {projection: {_id: 1}}).toArray();
         if (!postsList) throw 'Could not search posts';
-        if (postsList.length === 0) throw 'No posts found';
         postsList = postsList.map((post) => post._id.toString()); // Michael: added .toString()
         postsList = await Promise.all(postsList.map(this.getPostCard));
         return postsList;

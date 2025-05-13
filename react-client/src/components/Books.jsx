@@ -1,6 +1,7 @@
 import React from "react";
 import RecentPosts from "./RecentPosts";
 import PopularPosts from "./PopularPosts";
+import SearchPosts from "./SearchPosts";
 import PopularBooks from "./PopularBooks";
 import RecommendedBooks from "./RecommendedBooks";
 import { useAuth } from "../contexts/authContext";
@@ -19,6 +20,7 @@ function Books() {
             <h1>Books and Book Posts</h1>
             <RecentPosts type='book'/>
             <PopularPosts type='book'/>
+            <SearchPosts title='Search Book Posts' type='book'/>
             <PopularBooks/>
             {recommendations}
         </div>

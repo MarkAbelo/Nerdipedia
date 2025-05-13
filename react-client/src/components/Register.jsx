@@ -95,31 +95,31 @@ function Register() {
     
 
     return(
-        <div className="card bg-gray-800">
+        <div className="card bg-teal-700 dark:bg-gray-800">
             <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-            <h2 className="mb-5 text-[30px] font-bold">Sign Up</h2>
+            <h2 className="mb-5 text-[30px] font-bold">Register Account</h2>
 
             <div className="m-4 grid">
                 <label>Username:</label>
-                <input name="username" className="bg-white" value={formData.username} onChange={handleChange} /><br />
+                <input name="username" className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded" value={formData.username} onChange={handleChange} /><br />
                 {errors.username && <p className="errorText">{errors.username}</p>}
             
                 <label>Email:</label>
-                <input name="email" className="bg-white" value={formData.email} onChange={handleChange} /><br />
+                <input name="email" className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded" value={formData.email} onChange={handleChange} /><br />
                 {errors.email && <p className="errorText">{errors.email}</p>}
 
             
                 <label>Password:</label>
-                <input type="password" name="password" className="bg-white" value={formData.password} onChange={handleChange} /><br />
+                <input type="password" name="password" className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded" value={formData.password} onChange={handleChange} /><br />
                 {errors.password && <p className="errorText">{errors.password}</p>}
 
                 <label>Confirm Password:</label>
-                <input type="password" name="passwordConfirm" className="bg-white" value={formData.passwordConfirm} onChange={handleChange} /><br />
+                <input type="password" name="passwordConfirm" className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded" value={formData.passwordConfirm} onChange={handleChange} /><br />
                 {errors.passwordConfirm && <p className="errorText">{errors.passwordConfirm}</p>}
 
 
                 <label>Profile Picture:</label>
-                <input type="file" name="profilePic" className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
+                <input type="file" name="profilePic" className="dark:bg-gray-700 dark:text-white rounded bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                    file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onChange={selectFileHandler} />
                 {errors.profilePic && <p className="errorText">{errors.profilePic}</p>}
             </div>

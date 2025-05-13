@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-input {
-    @apply pl-1;
-}
-
 .mainBody div {
     @apply sm:max-w-9/10 sm:mx-auto 
 }

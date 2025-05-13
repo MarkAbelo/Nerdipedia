@@ -133,11 +133,11 @@ const reviewsDataFunctions = {
                     break;
                 case 'book':
                     if (reviewObject.rating <= 5 && reviewToUpdate.rating > 5) await bookRec.liked(reviewToUpdate.posterID, reviewToUpdate.forID);
-                    else if (reviewObject.rating > 5 && reviewToUpdate.rating <= 5) await movieRec.unliked(reviewToUpdate.posterID, reviewToUpdate.forID);
+                    else if (reviewObject.rating > 5 && reviewToUpdate.rating <= 5) await bookRec.unliked(reviewToUpdate.posterID, reviewToUpdate.forID);
                     break;
                 case 'show':
                     if (reviewObject.rating <= 5 && reviewToUpdate.rating > 5) await showRec.liked(reviewToUpdate.posterID, reviewToUpdate.forID);
-                    else if (reviewObject.rating > 5 && reviewToUpdate.rating <= 5) await movieRec.unliked(reviewToUpdate.posterID, reviewToUpdate.forID);
+                    else if (reviewObject.rating > 5 && reviewToUpdate.rating <= 5) await showRec.unliked(reviewToUpdate.posterID, reviewToUpdate.forID);
                     break;
                 default:
                     throw 'Unknown section encountered, this should not be possible.';

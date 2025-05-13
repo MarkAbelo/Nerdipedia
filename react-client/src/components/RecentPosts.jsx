@@ -11,7 +11,6 @@ function RecentPosts({type}) {
         async function fetchData() {
             try {                
                 const data = await postService.getRecentPosts(20, type);
-                console.log(data)
                 setPosts(data);
                 setLoading(false);
             }

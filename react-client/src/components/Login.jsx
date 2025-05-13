@@ -33,13 +33,13 @@ const Login = () => {
   }
 
   return (
-    <div className='card bg-gray-800'>
+    <div className='card bg-teal-700 dark:bg-gray-800'>
       <h2 className="mb-5 text-[30px] font-bold">Login</h2>
       <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
         <div className="m-4 grid">
           <label>Email:</label>
           <input
-            className="bg-white"
+            className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -47,7 +47,7 @@ const Login = () => {
           /><br />
           <label>Password:</label>
           <input
-            className="bg-white"
+            className="bg-white dark:bg-gray-700 dark:text-white pl-2 rounded"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

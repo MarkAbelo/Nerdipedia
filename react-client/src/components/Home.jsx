@@ -1,6 +1,7 @@
 import React from "react";
 import RecentPosts from "./RecentPosts";
 import PopularPosts from "./PopularPosts";
+import SearchPosts from "./SearchPosts";
 import PopularBooks from "./PopularBooks";
 import PopularMovies from "./PopularMovies";
 import PopularShows from "./PopularShows";
@@ -34,6 +35,7 @@ function Home() {
             <h1>Hello, {getUsername()}!</h1>
             <RecentPosts/>
             <PopularPosts/>
+            <SearchPosts title='Search All Posts' />
             <PopularBooks/>
             <PopularMovies/>
             <PopularShows/>
