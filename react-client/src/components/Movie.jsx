@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {useAuth} from "../contexts/authContext";
-import {Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import movieService from "../services/movieService";
 import No_image from "../assets/no_image.png";
 import reviewService from "../services/reviewService";

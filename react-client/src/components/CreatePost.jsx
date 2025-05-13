@@ -100,7 +100,7 @@ export default function CreatePost() {
       <div className="p-6 rounded-lg w-full max-w-3xl space-y-4 shadow-xl border-1 border-zinc-800">
         <h2 className="text-2xl font-bold">Create Post</h2>
           {editErr != '' ? (<p className="text-red-400 font-bold">Error: {editErr}</p>) : null}
-        <label className="text-lg" for='title'>Title:</label>
+        <label className="text-lg" htmlFor='title'>Title:</label>
         <input
           id='title'
           type="text"
@@ -110,7 +110,7 @@ export default function CreatePost() {
         />
           <br/>
           <div className="flex flex-row items-center">
-        <label className="text-lg" for='section'>Section:</label>
+        <label className="text-lg" htmlFor='section'>Section:</label>
         <select
             id='section'
             value={section}
@@ -125,7 +125,7 @@ export default function CreatePost() {
         </select>
       </div>
       
-        <label className="text-lg" for='body'>Body:</label>
+        <label className="text-lg" htmlFor='body'>Body:</label>
         <textarea
           id='body'
           value={body}

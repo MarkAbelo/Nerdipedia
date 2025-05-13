@@ -3,7 +3,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import nerdipedia_logo from "../assets/Nerdipedia_BGless.png";
-import accountService from "../services/accountService";
 
 function NavBar() {
     const { currentUser, mongoUser } = useAuth();

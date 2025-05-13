@@ -69,7 +69,7 @@ function Post() {
                 setLoading(false)
             }
         }
-        fetchData().then(() => console.log('useffect state: ', userLikeState));
+        fetchData();
     }, [id, userLikeState, getData]);
 
     async function handleSave () {
@@ -244,10 +244,10 @@ function Post() {
                     alt="Poster profile"
                     className="w-14 h-14 rounded-full object-cover border"
                   />
-                  <elem className="mx-4">
+                  <div className="fullWidth ml-8">
                     <p className="text-sm font-medium text-gray-400">By: {post.posterUsername}</p>
                     <p className="text-xs text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
-                  </elem>
+                  </div>
                 </Link>
 
 
@@ -291,7 +291,7 @@ function Post() {
                   {editErr != '' ? (<p className="text-red-400 font-bold">Error: {editErr}</p>) : null}
                   <h2 className="text-2xl font-bold">Edit Post</h2>
                     
-                  <label className="text-lg" for='title'>Title:</label>
+                  <label className="text-lg" htmlFor='title'>Title:</label>
                   <input
                     id='title'
                     type="text"
@@ -301,7 +301,7 @@ function Post() {
                   />
                     <br/>
                     <div className="flex flex-row items-center">
-                  <label className="text-lg" for='section'>Section:</label>
+                  <label className="text-lg" htmlFor='section'>Section:</label>
                   <select
                       id='section'
                       value={editedSection}
@@ -315,7 +315,7 @@ function Post() {
                       <option value="dnd">Dungeons & Dragons</option>
                   </select>
                 </div>
-                  <label className="text-lg" for='body'>Body:</label>
+                  <label className="text-lg" htmlFor='body'>Body:</label>
                   <textarea
                     id='body'
                     value={editedBody}

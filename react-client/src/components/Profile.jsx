@@ -165,7 +165,7 @@ function Profile(){
                             <div className="text-red-600">{editError}</div>
                         )}
 
-                        <label className="text-lg" for="Username">Username:</label>
+                        <label className="text-lg" htmlFor="Username">Username:</label>
                         <input 
                             id="username"
                             type="text"
@@ -175,7 +175,7 @@ function Profile(){
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
                         />
                         <br />
-                        <label className="text-lg" for="Password">Password:</label>
+                        <label className="text-lg" htmlFor="Password">Password:</label>
                         <input 
                             id="password"
                             type="password"
@@ -185,7 +185,7 @@ function Profile(){
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
                         />
                         <br />
-                        <label className="text-lg" for="Email">Email:</label>
+                        <label className="text-lg" htmlFor="Email">Email:</label>
                         <input 
                             id="email"
                             type="text"
@@ -194,7 +194,7 @@ function Profile(){
                             onChange={(e) => setEditedEmail(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
                         />
-                        <label className="text-lg" for="ProfilePic">Profile Picture:</label>
+                        <label className="text-lg" htmlFor="ProfilePic">Profile Picture:</label>
                         <input 
                             id="profilepic"
                             type="file"

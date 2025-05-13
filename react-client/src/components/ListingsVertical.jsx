@@ -1,7 +1,6 @@
 import { React, useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import No_image from "../assets/no_image.png";
-import axios from "axios";
 
 function ListingsVertical({type, title, data}) {
     const typeToQuery = {
