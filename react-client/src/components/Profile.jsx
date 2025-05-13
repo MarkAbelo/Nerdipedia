@@ -8,7 +8,7 @@ function Profile(){
     const { id } = useParams();
 
     const [loading, setLoading] = useState(true);
-    const [ error, setError] = useState(null);
+    const [error, setError] = useState(null);
     const [accountData, setAccountData] = useState(undefined);
 
     // Edit Modal state

@@ -5,7 +5,7 @@ input {
 }
 
 .mainBody div {
-    @apply sm:max-w-4/5 sm:mx-auto 
+    @apply sm:max-w-9/10 sm:mx-auto 
 }
 
 h2 {

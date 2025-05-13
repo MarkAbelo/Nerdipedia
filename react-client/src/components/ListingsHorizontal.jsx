@@ -1,22 +1,8 @@
 import { React, useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import No_image from "../assets/no_image.png";
-import showService from "../services/showService";
-import movieService from "../services/movieService";
-import bookService from "../services/bookService";
 
-function PopularListingsHorizontal({type}) {
-    //I don't think we actually need 'section' for this component because its on the Home page (not entirely sure but this my guess)
-    //Actually on second thought, i don't think we need post at all because it would look terrible
-    //I will keep it in for now, we can always remove it later if we need to 
-    const typeToQuery = {
-        'shows': 'popularShows',
-        'movies': 'popularMovies',
-        'books': 'popularBooks'
-    }
-    const [listings, setListings] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function ListingsHorizontal({title, cards, type}) {    
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
     const scrollRef = useRef(null);
@@ -44,38 +30,6 @@ function PopularListingsHorizontal({type}) {
       };
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                let data = null;
-                switch (type) {
-                    case "shows":
-                        data = await showService.getPopularShows(10);
-                        setListings(data);
-                        setLoading(false);
-                        break;
-                    case "movies":
-                        data = await movieService.getPopularMovies(10);
-                        setListings(data);
-                        setLoading(false);
-                        break;
-                    case "books":
-                        data = await bookService.getPopularBooks(10);
-                        console.log(data)
-                        setListings(data);
-                        setLoading(false);
-                        break;
-                }
-            }
-            catch(e){
-                setLoading(false);
-                setError(e);
-                console.log(e);
-            }
-        }
-        fetchData();
-    },[type]);
-
-    useEffect(() => {
         const currentRef = scrollRef.current;
         if (currentRef) {
           currentRef.addEventListener("scroll", checkScroll);
@@ -84,7 +38,8 @@ function PopularListingsHorizontal({type}) {
         return () => {
           if (currentRef) currentRef.removeEventListener("scroll", checkScroll);
         };
-      }, [listings]); 
+      }, [cards]); 
+
       const ScrollArrows = () => (
         <div>
             <button
@@ -113,26 +68,65 @@ function PopularListingsHorizontal({type}) {
         </div>
       );
       
-    if(loading){
-        return <div className="p-4 text-gray-500">Loading...</div>;
-    }
-    if(error){
-        return <div className="p-4 text-red-500">Error: {error.message}</div>;
-    }
-    if(!listings || listings.length === 0){
-        return <div className="p-4 text-gray-500">No {type} listings found</div>;
+    
+    if(!cards || cards.length === 0){
+        return <div className="p-4 text-gray-500">No {type} found</div>;
     }
     let body;
-    if(type === 'books'){
+    if (type === 'posts') {
         body = (
-            <div className="px-4 py-6">
-                <h2 className="text-xl font-bold mb-4">Popular Books</h2>
+            <div className="px-8 py-6">
+                <h2 className="text-xl font-bold mb-4">{title}</h2>
                 <div className="relative -mx-4">
                     <div
                         ref={scrollRef}
                         className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide"
                     >
-                        {Array.isArray(listings) && listings.map((book) => (
+                        {Array.isArray(cards) && cards.map((post) => (
+                            <div 
+                                key={post._id} 
+                                className="relative flex-shrink-0 w-60 transition-transform hover:scale-105 group"
+                            >
+                                <Link to={`/post/${post._id}`} className="block pt-5">
+                                    {/*Poster Info*/}
+                                    <div className="relative flex items-center space-x-4">
+                                        <img
+                                            src={post.posterProfilePic}
+                                            alt="Poster profile"
+                                            className="w-14 h-14 rounded-full object-cover border"
+                                        />
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-400">By {post.posterUsername}</p>
+                                            <p className="text-xs text-gray-500">{new Date(post.timeStamp).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+    
+                                    {/*Bottom text*/}
+                                    <div className="mt-2 px-1">
+                                        <h3 className="font-semibold truncate">{post.title}</h3>
+                                        <p className="text-sm text-gray-600 truncate right-0">
+                                            {post.likes} Likes 👍
+                                        </p>
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                    <ScrollArrows />
+                </div>
+            </div>
+        )
+    }
+    else if(type === 'books'){
+        body = (
+            <div className="px-4 py-6">
+                <h2 className="text-xl font-bold mb-4">{title}</h2>
+                <div className="relative -mx-4">
+                    <div
+                        ref={scrollRef}
+                        className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide"
+                    >
+                        {Array.isArray(cards) && cards.map((book) => (
                             <div 
                                 key={book.forID} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
@@ -161,7 +155,6 @@ function PopularListingsHorizontal({type}) {
                                                 <div className="flex flex-col gap-1">
                                                     <div>⭐ {book.averageRating}</div>
                                                     <div>📝 {book.reviewCount}</div>
-                                                    <div>📅 {book.publish_year}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -186,13 +179,13 @@ function PopularListingsHorizontal({type}) {
     else if (type === 'shows' || type === 'movies') {
         body = (
             <div className="px-4 py-6">
-                <h2 className="text-xl font-bold mb-4">Popular {type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+                <h2 className="text-xl font-bold mb-4">{title}</h2>
                 <div className="relative -mx-4">
                     <div
                         ref={scrollRef}
                         className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide"
                     >
-                        {Array.isArray(listings) && listings.map((media) => (
+                        {Array.isArray(cards) && cards.map((media) => (
                             <div 
                                 key={media.forID} 
                                 className="relative flex-shrink-0 w-48 transition-transform hover:scale-105 group"
@@ -230,7 +223,7 @@ function PopularListingsHorizontal({type}) {
                                     <div className="mt-2 px-1">
                                         <h3 className="font-semibold truncate">{media.title}</h3>
                                         <p className="text-sm text-gray-600 truncate">
-                                            {media.releaseYear || 'Unknown year'}
+                                            {media.premiered || 'Unknown release date'}
                                         </p>
                                     </div>
                                 </Link>
@@ -246,4 +239,4 @@ function PopularListingsHorizontal({type}) {
     return body;
 }
 
-export default PopularListingsHorizontal;
+export default ListingsHorizontal;
