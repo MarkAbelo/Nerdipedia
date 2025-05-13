@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import NavBar from './components/NavBar'
+import PrivateRoute from './components/PrivateRoute'
 import Home from './components/Home'
 import Register from './components/Register'
 import Login from './components/Login'
@@ -26,21 +27,27 @@ function App() {
       <div className='mainBody'>
         <br/>
       <Routes>
+        {/*Public Routes*/}
         <Route path='/' element={<Home />} />
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/createpost' element={<CreatePost/>} />
-        <Route path='/signout' element={<Signout />} />
         <Route path='/show/:id' element={<Show />} />
         <Route path='/shows' element={<Shows />} />
-        <Route path='/movies' element={<Movies />} />
         <Route path='/movie/:id' element={<Movie />} />
+        <Route path='/movies' element={<Movies />} />
+        <Route path='/book/:id' element={<Book />} />
         <Route path='/books' element={<Books />} />
         <Route path='/dnd' element={<DnD />} />
         <Route path='/post/:id' element={<Post/>} />
         <Route path='/account/:id' element={<Profile />} />
-        <Route path='/show/:id' element={<Show />} />
-        <Route path='/book/:id' element={<Book />} />
+        {/*Private Routes*/}
+        <Route path='/createpost' element={<PrivateRoute/>} >
+          <Route path='/createpost' element={<CreatePost/>} />
+        </Route>
+        <Route path='/signout' element={<PrivateRoute />}>
+          <Route path='/signout' element={<Signout />} />
+        </Route>
+
       </Routes>
       </div>
       <br/>
