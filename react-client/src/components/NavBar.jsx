@@ -25,7 +25,7 @@ function NavBar() {
     }
 
     return (
-        <nav className="bg-teal-600 border-gray-200 dark:bg-teal-800 relative flex h16 items-center absolute inset-y-0 left-0 w-full">
+        <nav className="bg-teal-600 border-gray-200 dark:bg-teal-800 relative flex h16 items-center">
             <NavLink to='/' className={"flex items-center space-x-3 rtl:space-x-reverse ml-10"}>
                 <img src={nerdipedia_logo} className="w-35 object-scale-down" alt="nerdipedia_logo"/>
             </NavLink>
