@@ -5,6 +5,7 @@ import accountService from "../services/accountService";
 import ListingsHorizontal from "./ListingsHorizontal";
 import ListingsVertical from "./ListingsVertical";
 import imageService from "../services/imageService";
+import validationFunctions from "../validation/validation";
 
 function Profile(){
     const navigate = useNavigate();
@@ -24,19 +25,24 @@ function Profile(){
     const [editedUsername, setEditedUsername] = useState("");
     const [editedPassword, setEditedPassword] = useState("");
     const [editedEmail, setEditedEmail] = useState("");
-    const [editProfilePic, setEditedProfilePic] = useState("");
     const [imageFile, setImageFile] = useState(null);
-    const [editError, setEditError] = useState(null);
+    const [editErr, setEditErr] = useState("")
 
     const selectFileHandler = (e) => {
         setImageFile(e.target.files[0])
+        if (e.target.files[0] == null) {
+            setRemoveProfilePic(false)
+        } else {
+            setRemoveProfilePic(mongoUser.profilePic)
+        }
+        
     }
 
-    function resetEditAccount () {
-        setEditedUsername("")
+    function resetEditAccount (user) {
+        setEditedUsername(user.username)
         setEditedPassword("")
-        setEditedEmail("")
-        setEditedProfilePic("")
+        setEditedEmail(currentUser.email)
+        setImageFile(null)
         setRemoveProfilePic(false)
     }
 
@@ -45,6 +51,7 @@ function Profile(){
             try {
                 const data = await accountService.getAccount(id);
                 setAccountData(data);
+                resetEditAccount(data);
                 setLoading(false);
             } catch (e) {
                 alert(e)
@@ -54,51 +61,57 @@ function Profile(){
     }, [id, getData]);
 
     async function handleSave() {
-
-        let profilePic;
         try {
-            profilePic = await imageService(imageFile)
-        if (removeProfilePic){
-            profilePic = await imageService("react-client/public/nouser.jpg")
+            await validationFunctions.validEmail(editedEmail)
+            if (editedUsername == '') {
+               setEditErr("Your Username must contain some text!")
+               return 
+             } 
+        } catch (e) {
+            setEditErr("That's not a valid email!")
+            return
         }
-
-        } catch(e) {
-            console.log(e)
-        }
-        
-
         try {
+            setEditErr("")
+            setLoading(true)
             //build form data
+            let profilePic = mongoUser.profilePic
+            if (imageFile != undefined) {
+                profilePic = await imageService(imageFile);
+            }
+            
             const updateObj = {
                 newUsername: editedUsername.length > 0 ? editedUsername : false,
                 newPassword: editedPassword.length > 0 ? editedPassword : false,
                 newEmail: editedEmail.length > 0 ? editedEmail : false,
-                newProfilePic: profilePic !== undefined ? profilePic : mongoUser.profilePic
+                newProfilePic: profilePic !== undefined ? profilePic : false
             }
-            console.log(updateObj)
             //send to accountService
             const response = await accountService.editAccount(id, updateObj.newUsername, updateObj.newPassword, updateObj.newEmail, updateObj.newProfilePic)
             if (response) {
                 setError(null)
                 setModalActive(false)
                 if(editedEmail.length > 0) {
-                    resetEditAccount()
-                    navigate("/", {replace: true});
+                    resetEditAccount(mongoUser)
+                    navigate(`/account/${id}`, {replace: true});
                 }
-                resetEditAccount()
+                setLoading(false)
+                resetEditAccount(mongoUser)
                 reGetData(!getData)
+                window.location.reload();
             }
         } catch(e) {
             console.log(e)
-            resetEditAccount()
-            setEditError(e)
+            resetEditAccount(mongoUser)
+            setEditErr(e?.message)
         }
     }
 
     function handleClose() {
+        resetEditAccount(mongoUser)
         setModalActive(false)
-        resetEditAccount()
         setRemoveProfilePic(false);
+        setEditErr("")
     }
 
     function EditAction() {
@@ -113,13 +126,6 @@ function Profile(){
             </div>
         )
     }
-
-
-
-
-
-
-
 
     if (loading) {
         return (
@@ -161,8 +167,8 @@ function Profile(){
                     <div className="bg-black p-6 rounded-lg w-full max-w-lg space-y-4 shadow-xl">
                         <h2 className="text-2x1 font-bold">Edit Profile</h2>
 
-                        {editError && (
-                            <div className="text-red-600">{editError}</div>
+                        {editErr && (
+                            <div className="text-red-600">{editErr}</div>
                         )}
 
                         <label className="text-lg" for="Username">Username:</label>
@@ -188,7 +194,7 @@ function Profile(){
                         <label className="text-lg" for="Email">Email:</label>
                         <input 
                             id="email"
-                            type="text"
+                            type="email"
                             autoComplete="off"
                             value={editedEmail}
                             onChange={(e) => setEditedEmail(e.target.value)}
@@ -198,7 +204,7 @@ function Profile(){
                         <input 
                             id="profilepic"
                             type="file"
-                            
+                            accept="image/*"
                             onChange={selectFileHandler}
                             className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                             file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -213,16 +219,25 @@ function Profile(){
                                 />
                             </div>
                         )}
+                        {imageFile && removeProfilePic && (
+                            <div className="relative inline-block w-20 h-20">
+                                <img
+                                    src={imageFile}
+                                    alt="New Profile Image"
+                                    className="w-20 h-20 rounded-full object-cover border"
+                                />
+                            </div>
+                        )}
 
                        <div className="flex justify-end space-x-2">
                             <button 
-                                onClick={handleClose}
+                                onClick={() => handleClose()}
                                 className="px-4 py-2 bg-gray-200 text-gray-300 rounded hover:bg-gray-300"
                             >
                                 Cancel
                             </button>
                             <button 
-                                onClick={handleSave}
+                                onClick={() => handleSave()}
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                             >
                                 Save Changes
