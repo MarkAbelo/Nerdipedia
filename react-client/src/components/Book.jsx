@@ -140,7 +140,7 @@ function Book(){
                         required
                     >
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                            <option className= "text-black" key={num} value={num}>{num}</option>
+                            <option className= "bg-gray-800 text-white hover:bg-blue-600 hover:text-white transition-colors" key={num} value={num}>{num}</option>
                         ))}
                     </select>
                 </div>
@@ -245,6 +245,7 @@ function Book(){
                     </div>
                 )}
                 <div className="mb-8">
+                    <br/>
                   <h2 className="text-3xl font-bold mb-4">All Review</h2>
                     <Reviews reviews={reviews} />
                 </div>
