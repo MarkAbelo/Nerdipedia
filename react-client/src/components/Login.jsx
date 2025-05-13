@@ -58,7 +58,7 @@ const Login = () => {
         <button type="submit" style={{ marginTop: "1rem" }}>Login</button>
         <br />
         <br />
-        <button onClick={() => navigate("/register")}>No Account? Register Here</button>
+        <button onClick={(e) => {e.preventDefault(); navigate("/register");}}>No Account? Register Here</button>
       </form>
 
       {/* {userLoggedIn && mongoUser && (
