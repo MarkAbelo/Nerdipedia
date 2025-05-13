@@ -5,7 +5,6 @@ import accountService from "../services/accountService";
 import ListingsHorizontal from "./ListingsHorizontal";
 import ListingsVertical from "./ListingsVertical";
 import imageService from "../services/imageService";
-import validationFunctions from "../../../data-server/validation/validation";
 
 function Profile(){
     const navigate = useNavigate();
@@ -164,6 +163,7 @@ function Profile(){
                         <input 
                             id="username"
                             type="text"
+                            autoComplete="off"
                             value={editedUsername}
                             onChange={(e) => setEditedUsername(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
@@ -173,6 +173,7 @@ function Profile(){
                         <input 
                             id="password"
                             type="password"
+                            autoComplete="off"
                             value={editedPassword}
                             onChange={(e) => setEditedPassword(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
@@ -182,6 +183,7 @@ function Profile(){
                         <input 
                             id="email"
                             type="text"
+                            autoComplete="off"
                             value={editedEmail}
                             onChange={(e) => setEditedEmail(e.target.value)}
                             className="w-full border my-2 dark:bg-zink-900 border-gray-300 rounded px-3 py-2"
