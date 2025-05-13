@@ -49,9 +49,13 @@ function Show() {
                 const reviews = show.showReview === 'There are no reviews' ?
                     [] : show.showReview
                 setReviews(reviews);
-                const existingReview = reviews.find(review => 
+                let existingReview
+                if(currentUser) {
+                    existingReview = reviews.find(review => 
                     review.posterID === currentUser.displayName
-                );
+                ); 
+                }
+                
                 setUserReview(existingReview || null)
                 setLoading(false)
             } catch(e) {
