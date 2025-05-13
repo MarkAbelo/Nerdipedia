@@ -10,7 +10,7 @@ import { useAuth } from "../contexts/authContext";
 
 function Books() {
 
-    const { currentUser } = useAuth()
+    const { currentUser } = useAuth();
 
     let recommendations = null;
     if (currentUser) {
