@@ -206,7 +206,7 @@ function Profile(){
                             type="file"
                             accept="image/*"
                             onChange={selectFileHandler}
-                            className="bg-white block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
+                            className="bg-white block w-full text-sm rounded text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded 
                             file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                         />
 
