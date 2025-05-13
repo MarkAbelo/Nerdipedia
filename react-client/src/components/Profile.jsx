@@ -2,6 +2,9 @@ import { React, useState, useEffect } from "react";
 import { useAuth } from "../contexts/authContext";
 import { Link, useParams } from "react-router-dom";
 import accountService from "../services/accountService";
+import postService from "../services/postService";
+import ListingsHorizontal from "./ListingsHorizontal";
+import ListingsVertical from "./ListingsVertical";
 
 function Profile(){
 
@@ -23,6 +26,7 @@ function Profile(){
         async function fetchData(){
             try {
                 const data = await accountService.getAccount(id);
+                console.log(data) //for checking
                 setAccountData(data);
                 setLoading(false);
             } catch (e) {
@@ -56,10 +60,13 @@ function Profile(){
                 <h1>{accountData.username}</h1>
             </div>
 
-            <div>POSTS HERE</div>
-            <div>TOP BOOKS HERE</div>
-            <div>TOP MOVIES HERE</div>
-            <div>TOP SHOWS HERE</div>
+            <div><ListingsHorizontal title="Posts" cards={accountData.postCards} type="posts" /></div>
+            <span className="flex flex-col items-center md:flex-row md:items-start gap-6 mb-10">
+                <div><ListingsVertical type="book" data={accountData.topBooks} title="Books"/></div>
+                <div><ListingsVertical type="movie" data={accountData.topMovies} title="Movies" /></div>
+                <div><ListingsVertical type="show" data={accountData.topShows} title="Shows" /></div>
+            </span>
+            
 
         </div>
     );

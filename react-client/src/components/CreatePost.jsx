@@ -84,7 +84,7 @@ export default function CreatePost() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full border my-2 bg-zinc-900 border-gray-300 rounded px-3 py-2"
+          className="w-full border my-2 dark:bg-zinc-900 border-gray-300 rounded px-3 py-2"
         />
           <br/>
           <div className="flex flex-row items-center">
@@ -93,7 +93,7 @@ export default function CreatePost() {
             id='section'
             value={section}
             onChange={(e) => setSection(e.target.value)}
-            className="block w-full mx-2 my-2 px-3 py-2 border border-gray-300 bg-zinc-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full mx-2 my-2 px-3 py-2 border border-gray-300 dark:bg-zinc-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         >
             <option value="">Select a section</option>
             <option value="show">Show</option>
@@ -108,7 +108,7 @@ export default function CreatePost() {
           id='body'
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="w-full border my-2 bg-zinc-900 border-gray-300 rounded px-3 py-2"
+          className="w-full border my-2 dark:bg-zinc-900 border-gray-300 rounded px-3 py-2"
           rows={5}
         />
         <br/>
