@@ -105,7 +105,7 @@ function Show() {
                 [] : updatedShow.showReview;
 
             setReviews(updatedReviews);
-            setUserReview(updatedReviews.find(r => r.posterID === mongoUser._id));
+            setUserReview(updatedReviews.find(r => r.posterID === currentUser.displayName));
             setShowReviewForm(false);
             setFormData({ body: '', rating: 5, section: 'show' });
 
@@ -270,18 +270,20 @@ function Show() {
                             <p className="text-white leading-relaxed border-t border-amber-100 pt-3">
                                 {userReview.body}
                             </p>
-                            <button
-                                onClick={handleEditReview}
-                                className="text-blue-300 mt-2 hover:text-blue-400 text-sm font-medium"
-                            >
-                                Edit Review
-                            </button>
+                            <div className="flex justify-end gap-2 mt-2">
+                                <button
+                                    onClick={handleEditReview}
+                                    className="text-blue-300 hover:text-blue-400 text-sm font-medium"
+                                >
+                                    Edit Review
+                                </button>
                                 <button
                                     onClick={handleDeleteReview}
                                     className="text-red-300 hover:text-red-400 text-sm font-medium px-3 py-1 border border-red-300 rounded"
                                 >
                                     Delete Review
                                 </button>
+                            </div>
                         </div>
                     </div>
                 )}
