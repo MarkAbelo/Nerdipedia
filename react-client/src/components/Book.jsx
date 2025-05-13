@@ -1,7 +1,7 @@
 import {React, useState, useEffect, } from "react";
 import Reviews from "./Reviews";
 import {useAuth} from "../contexts/authContext";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import bookService from "../services/bookService";
 import No_image from "../assets/no_image.png";
 import reviewService from "../services/reviewService";
@@ -22,9 +22,6 @@ function Book(){
         rating: 5,
         section: 'book' // Assuming reviews are for books
     });
-
-    //image expanding
-    const [expandedImageIndex, setExpandedImageIndex] = useState(null)
     
     const formatUTCDate = (timestamp) => {
         const utcDate = new Date(timestamp);
