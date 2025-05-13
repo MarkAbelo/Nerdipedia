@@ -145,8 +145,10 @@ const accountsDataFunctions = {
         if (newProfilePic) {
             if (newProfilePic === "remove") {
                 newProfilePic = "react-client/public/nouser.jpg"
+            } else {
+                newProfilePic = await validationFunctions.validURL(newProfilePic);
             }
-            newProfilePic = await validationFunctions.validURL(newProfilePic);
+            
         } else {
             newProfilePic = accountFound.profilePic;
         }
@@ -178,10 +180,19 @@ const accountsDataFunctions = {
         if (!updateInfo.acknowledged) {
             throw `Faialed to update MongoDB account info for ${accountID}`;
         }
-
         //delete related cache entries
         await redis_client.del(`account/${accountID}`);
         await redis_client.del(`account/card/${accountID}`);
+        await redis_client.del("recentPostCardsAll")
+        await redis_client.del("recentPostCardsDnD")
+        await redis_client.del("recentPostCardsBooks")
+        await redis_client.del("recentPostCardsMovies")
+        await redis_client.del("recentPostCardsShows")
+
+        await Promise.all(accountFound.posts.map(async (postID) => {
+            await redis_client.del(`post/${postID}`)
+            await redis_client.del(`post/card/${postID}`)
+        }))
 
         return true
     },
