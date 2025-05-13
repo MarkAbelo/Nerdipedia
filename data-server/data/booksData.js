@@ -49,6 +49,17 @@ const booksDataFunctions={
             }
         }))
         bookInfo.authors= authorNameList;
+
+        const coverImgList = await Promise.all(bookInfo.covers.map(async(cover)=>
+            {
+                try{
+                    return`https://covers.openlibrary.org/b/id/${cover}-L.jpg`
+                }
+                catch(e){
+                    throw (e);
+                }
+            }))
+        bookInfo.covers= coverImgList;
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(bookInfo));
 
@@ -121,7 +132,7 @@ const booksDataFunctions={
         }
 
         //-S, -M, -L for image size
-        const returnCard = {id,title: bookInfo.title, authors: bookInfo.authors || [], cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}-M.jpg` :null };
+        const returnCard = {id,title: bookInfo.title, authors: bookInfo.authors || [], cover: bookInfo.covers && bookInfo.covers.length > 0 && bookInfo.covers[0]? bookInfo.covers[0] :null };
 
         // cache data
         await redis_client.set(cacheKey, JSON.stringify(returnCard));
