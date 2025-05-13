@@ -1,6 +1,6 @@
 import axios from 'axios';
 //import idValidationFunctions from '../../../data-server/validation/id_validation.js';
-import validationFunctions from '../../../data-server/validation/validation.js';
+import validationFunctions from '../validation/validation.js'
 
 const accountService = {
     async getAccount(id) {
