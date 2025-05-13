@@ -56,7 +56,7 @@ function Book(){
             }
         };
         fetchBook();
-    }, [id,mongoUser?._id]);
+    }, [id,currentUser.displayName]);
     
     const handleFormChange = (e) => {
         setFormData({
@@ -291,7 +291,7 @@ function Book(){
                     )}
                 </div>
             )}
-            {/*put page stuff here*/}
+            {/*--------------------------------- Review Stuff-------------------------------*/}
             <div className="reviews-section mt-8">
                 <div className="flex justify-between items-center mb-4">
                     {!userReview && userLoggedIn && (
