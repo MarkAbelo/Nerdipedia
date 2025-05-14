@@ -41,7 +41,7 @@ function Profile(){
     function resetEditAccount (user) {
         setEditedUsername(user.username)
         setEditedPassword("")
-        setEditedEmail(currentUser.email)
+        setEditedEmail(currentUser && currentUser.email? currentUser.email : "")
         setImageFile(null)
         setRemoveProfilePic(false)
     }
@@ -54,6 +54,7 @@ function Profile(){
                 resetEditAccount(data);
                 setLoading(false);
             } catch (e) {
+                console.log(e)
                 alert(e)
             }
         }
@@ -142,7 +143,7 @@ function Profile(){
         <div>
 
             <div className="flex justify-end px-4 py-3 mx-2">
-                {id === currentUser.displayName ? <EditAction/> : null}
+                {currentUser && id === currentUser.displayName ? <EditAction/> : null}
             </div>
 
             <div className="flex justify-start space-x-10 items-center my-5">
