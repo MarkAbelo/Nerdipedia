@@ -36,7 +36,9 @@ import validationFunctions from "../validation/validation.js";
 import axios from "axios";
 import redis from 'redis';
 
-const redis_client = redis.createClient();
+const redis_client = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
 await redis_client.connect();
 
 import { movieRec } from "../config/recRaccoon.js";

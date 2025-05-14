@@ -1,0 +1,9 @@
+#backend/Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+COPY ./tasks/seed.js ./tasks/seed.js
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]

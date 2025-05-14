@@ -1,5 +1,7 @@
 import redis from 'redis';
-const redis_client = redis.createClient();
+const redis_client = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
 await redis_client.connect();
 
 // given an object array and cache key, caches that array as a redis list

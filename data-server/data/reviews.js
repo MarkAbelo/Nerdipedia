@@ -8,7 +8,9 @@ import { movieRec, showRec, bookRec } from "../config/recRaccoon.js";
 import { ObjectId } from "mongodb";
 
 import redis from 'redis';
-const redis_client = redis.createClient();
+const redis_client = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
 await redis_client.connect();
 import { cacheObjectArray, getCachedObjectArray} from "../helpers/cache_helpers.js";
 

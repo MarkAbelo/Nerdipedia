@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import validationFunctions from "../../../data-server/validation/validation";
+import validationFunctions from "../validation/validation";
 import { useNavigate } from "react-router-dom";
 import accountService from "../services/accountService";
 import imageService from "../services/imageService";

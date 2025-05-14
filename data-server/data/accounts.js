@@ -7,7 +7,9 @@ import { admin } from "../config/firebaseAdmin.js";
 import redis from 'redis';
 import postsDataFunctions from "./posts.js";
 import reviewsDataFunctions from "./reviews.js";
-const redis_client = redis.createClient();
+const redis_client = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
 await redis_client.connect();
 
 const accountsDataFunctions = {

@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build:
+      context: ./react-client
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+  
+  backend:
+    build: 
+      context: ./data-server
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URI=mongodb://mongo:27017/
+    depends_on:
+      - redis
+      - mongo
+  
+  redis:
+    image: redis:7
+    ports:
+      - 6379:6379
+    volumes:
+      - /data-server/config/redis.conf:/tmp/redis.conf
+    command: ["redis-server", "/tmp/redis.conf"]
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
