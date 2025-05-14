@@ -2,38 +2,20 @@
     Neripedia Project for Web Programming II, CS 552, Spring 2025
     Created by Mark Abelo, Michael Moonan, Kendell Muldrow, Kush Parmar
 
-# Set Up
-    For data-server:
-
-    1. install npm packages
-        $ cd ./data-server/
-        $ npm i
-
-        (note: some packages give a high vulnerability warning, but when we asked the TA's on slack, they said we wouldn't be penalized for this)
-    
-    2. start redis server
-        $ sudo service redis-server start
-
-        the redis server is expected on the default port 'localhost:6379'
-
-    3. seed the database
-        $ npm run seed
-
-    4. start data server
-        $ npm run start
-    
-    For react-client
-
-    1. install npm packages
-        $ cd ./react-client/
-        $ npm i
-
-
 # To Run
-    Once data server is running and packages are installed, navigate to react-client directory and run
+    For Docker:
 
-    $ npm run start
-    or
-    $ npm run dev
+    1. Build image (run in root)
+        $ docker-compose build --no-cache
+
+    2. Seed the database
+        $ docker-compose run --rm backend node ./tasks/seed.js
+
+    3. Run the container
+        $ docker-compose up
+
+    Now the application is online! Visit http://localhost:5173 to view the app!
+
+    (Make sure your browser is on Dark Mode for the best experience! Happy browsing!)
 
 
